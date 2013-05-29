@@ -1,0 +1,60 @@
+body{font:13px/1.23 Helvetica,Arial,sans-serif}
+a:focus{outline:1px dotted}
+hr{border:0 #ccc solid;border-top-width:1px;clear:both;height:0}
+h1,h2,h3,h4,h5,h6,strong{font-weight:bold;}
+abbr,acronym {border-bottom:1px dotted #000;cursor:help;}
+em{font-style:italic;}
+strong{font-weight:bold;}
+del{text-decoration:line-through;}
+ol{list-style:decimal}
+ol li{margin:0 0 5px 15px;}
+.article h1{font-size:23px}
+.article h2{font-size:19px}
+.article h3{font-size:17px}
+.article h4{font-size:15px}
+.article h5{font-size:13px}
+.article h6{font-size:13px}
+/*.article h1{font-size:25px}
+.article h2{font-size:23px}
+.article h3{font-size:21px}
+.article h4{font-size:19px}
+.article h5{font-size:17px}
+.article h6{font-size:15px}*/
+.article > ol{list-style:decimal}
+.article > ul{list-style:disc } 
+.article > li{margin:0 0 5px 15px;} 
+.article p,
+.article dl,
+.article hr,
+.article h1,
+.article h2,
+.article h3,
+.article h4,
+.article h5,
+.article h6,
+.article ol,
+.article ul,
+.article pre,
+.article table,
+.article address,
+.article fieldset{margin-bottom:10px}
+.article p,
+.article blockquote,
+.article dl,
+.article ol,
+.article ul,
+.article table,
+.article address,
+.article fieldset{line-height:1.4;}
+
+.article-top .article,
+.article blockquote,
+.content-center .article p, .article-full .article > p,
+.content-center .article dl, .article-full .article > dl,
+.content-center .article ol, .article-full .article > ol,
+.content-center .article ul, .article-full .article > ul,
+.content-center .article table, .article-full .article > table,
+.content-center .article address, .article-full .article > address,
+.content-center .article fieldset, .article-full .article > fieldset{font-size:16px;}
+
+.article blockquote { margin:15px;padding: 0 1.5em; }

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!-- saved from url=(0066)chrome-extension://oknpjjbmpnndlpmnhmekjpocelpnlfdi/indicator.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <title>Readability Activity Indicator</title>
+        <link href="chrome-extension://oknpjjbmpnndlpmnhmekjpocelpnlfdi/css/indicator.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="indicator hidden" data-action="none">
+            <div class="read-now">
+                <h1 class="working">Cleaning up</h1>
+                <h1 class="ready">Done</h1>
+            </div>
+
+            <div class="read-later">
+                <h1 class="working">Saving</h1>
+                <h1 class="ready">Saved</h1>
+            </div>
+
+            <div class="send-to-kindle">
+                <h1 class="working">Sending</h1>
+                <h1 class="ready">Sent</h1>
+            </div>
+
+            <div class="error-msg">
+                <div class="standard-error">
+                    <h1>
+                        We're having trouble
+                    </h1>
+                    <p>
+                        Looks like our server is having some issues at the moment. You
+                        can either Try again now, or cancel and try again later.
+                    </p>
+                    <p>
+                        We don't expect the issue to last long.
+                    </p>
+                    <div class="controls">
+                        <button class="cancel">Cancel</button>
+                        <button class="confirm">Try again</button>
+                    </div>
+                </div>
+                <div class="timeout-error">
+                    <h1>
+                        This is taking a while
+                    </h1>
+                    <p>
+                        This is taking a bit longer than normal.
+                    </p>
+                    <p>
+                        Do you want to keep trying, or cancel and try again later?
+                    </p>
+                    <div class="controls">
+                        <button class="cancel">Cancel</button>
+                        <button class="confirm">Keep trying</button>
+                    </div>
+                </div>
+                <div class="blacklist-error">
+                    <h1>Our apologies</h1>
+                    <p>
+                        Readability is unable to parse content for this site.
+                    </p>
+                    <div class="controls">
+                        <button class="cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="root-url">
+                <h1>
+                    This page might not render as expected
+                </h1>
+                <p>
+                    Readability works best on individual articles, this looks like a homepage to us.
+                </p>
+                <p>
+                    Do you want us to try to render it anyway?
+                </p>
+                <div class="controls">
+                    <button class="cancel">Cancel</button>
+                    <button class="confirm">Yes, render it</button>
+                </div>
+            </div>
+
+            <div class="loader"><b></b></div>
+        </div>
+
+        <script src="chrome-extension://oknpjjbmpnndlpmnhmekjpocelpnlfdi/js/libs/jquery/jquery-1.9.1.js"></script>
+        <script src="chrome-extension://oknpjjbmpnndlpmnhmekjpocelpnlfdi/js/indicator.js"></script>
+    
+
+</body></html>
