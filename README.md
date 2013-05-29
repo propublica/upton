@@ -26,7 +26,7 @@ In more complicated cases, you may need to write additional methods; for example
 
 You get, for free, methods like `get_page(url, stash=false)` which, well, gets a page. That's not very special. The more interesting part is that `get_page(url, stash=false)` transparently stashes the response of each request. Whenever you repeat a request with `true` as the second parameter, the stashed HTML is returned without going to the server. This is helpful in the development stages of a project when you're testing some aspect of the code and don't want to hit a server each time.
 
-Upton also sleeps (by default) 30 seconds between non-stashed requests, to reduce load on the server you're scraping. This is configurable with the @nice_sleep_time option.
+Upton also sleeps (by default) 30 seconds between non-stashed requests, to reduce load on the server you're scraping. This is configurable with the `@nice_sleep_time` option.
 
 Example
 ----------------------
