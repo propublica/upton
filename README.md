@@ -4,6 +4,7 @@ Upton is a framework for easy web-scraping with a useful debug mode that doesn't
 
 Documentation
 ----------------------
+
 Upton works best if your scraper class inherits from Upton::Scraper, e.g. 
 
      class MyScraper < Upton::Scraper 
@@ -12,13 +13,13 @@ Upton works best if your scraper class inherits from Upton::Scraper, e.g.
 
 Upton::Scraper is implemented as an abstract class. For basic use cases, you only have to implement one method -- the `get_index` method -- and a block argument for `scrape` to do something with the scraped pages. 
 
-# Upton operates on the theory that, for most scraping projects, you need to
-# scrape two types of pages:
-# 
-# 1. Index pages, which list instance pages. For example, a job search 
-#     site's search page or a newspaper's homepage.
-# 2. Instance pages, which represent the goal of your scraping, e.g.
-#     job listings or news articles.
+Upton operates on the theory that, for most scraping projects, you need to
+scrape two types of pages:
+
+1. Index pages, which list instance pages. For example, a job search 
+    site's search page or a newspaper's homepage.
+2. Instance pages, which represent the goal of your scraping, e.g.
+    job listings or news articles.
 
 
 In more complicated cases, you may need to write additional methods; for example, if you need to log in to a site before scraping the instance pages, you would need to override the scrape method in your subclass.
@@ -44,6 +45,7 @@ If you want to scrape ProPublica's website with Upton, this is how you'd do it. 
         puts "here is the full text of the ProPublica article: \n #{article_string}"
         #or, do other stuff here.
       end
+
 
 Why "Upton"
 ----------------------
