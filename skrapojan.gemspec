@@ -10,5 +10,9 @@ Gem::Specification.new do |s|
   s.homepage    =
     'http://github.org/propublica/skrapojan'
 
-  s.add_runtime_dependency "restclient", ["~> 1.6.7"]
+  s.add_development_dependency 'rack'
+  s.add_development_dependency 'thin'
+  s.add_development_dependency 'nokogiri'
+
+  s.add_runtime_dependency "rest-client", ["~> 1.6.7"]
 end
