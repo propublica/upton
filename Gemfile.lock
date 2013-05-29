@@ -1,0 +1,30 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    daemons (1.1.9)
+    eventmachine (1.0.3)
+    mime-types (1.23)
+    mustache (0.99.4)
+    nokogiri (1.5.9)
+    rack (1.5.2)
+    redcarpet (1.17.2)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+    rocco (0.8.2)
+      mustache
+      redcarpet
+    thin (1.5.1)
+      daemons (>= 1.0.9)
+      eventmachine (>= 0.12.6)
+      rack (>= 1.0.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  nokogiri
+  rack
+  redcarpet (= 1.17.2)
+  rest-client
+  rocco
+  thin
