@@ -3,6 +3,7 @@ module Skrapojan
   class Scraper
     @verbose = false
     @debug = true
+    @nice_sleep_time = 30 #seconds
     @stash_folder = "stashes"
 
     def self._get_page(url, stash=false)
@@ -13,7 +14,7 @@ module Skrapojan
       else
         begin
           puts "getting " + url if @verbose
-          sleep 30
+          sleep @nice_sleep_time
           resp = RestClient.get(url, {:accept=> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
         rescue RestClient::ResourceNotFound
           resp = ""
