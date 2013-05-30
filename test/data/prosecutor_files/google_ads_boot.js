@@ -1,1 +1,0 @@
-(function(){var a="https:"==document.location.protocol;var b=(a?"https:":"http:")+"//www.googletagservices.com/tag/js/gpt.js";document.write('<script src="'+b+'"><\/script>')})();
