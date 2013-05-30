@@ -28,6 +28,8 @@ You get, for free, methods like `get_page(url, stash=false)` which, well, gets a
 
 Upton also sleeps (by default) 30 seconds between non-stashed requests, to reduce load on the server you're scraping. This is configurable with the `@nice_sleep_time` option.
 
+**For more complete documentation**, see [our Rocco docs](http://propublica.github.io/upton).
+
 **Important Note:** Upton is alpha software. The API may change at any time and without warning. 
 
 Example
