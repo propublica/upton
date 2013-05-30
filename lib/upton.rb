@@ -11,46 +11,61 @@
 #     job listings or news articles.
 
 module Upton
-  class AbstractMethodError < Exception; end
 
   # Upton::Scraper is implemented as an abstract class. Implement a class to
   # inherit from Upton::Scraper. 
+  class AbstractMethodError < Exception; end
   class Scraper
+    # ## Basic use-case methods.
+
+    # This is the main user-facing method for a basic scraper.
+    # Call `scrape` with a block; this block will be called on 
+    # the text of each instance page, (and optionally, its URL and its index
+    # in the list of instance URLs returned by `get_index`).
+    def scrape &blk
+      self.scrape_from_list(self.get_index, blk)
+    end
+
+    # Return a list of URLs for the instances you want to scrape.
+    #
+    # You probably want to use Nokogiri or another HTML parser to find the
+    # links to the instances within the HTML of the index page; alternatively,
+    # you might make a call to a search API in this method.
+    #
+    # This is an abstract method; you *must* override it in your subclass.
+    def get_index
+      raise AbstractMethodError
+    end
+
+    # ## Configuration Variables
     def initialize
 
-      # If @verbose is true, then Upton prints information about when it gets
+      # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
       @verbose = false
 
-      # If @debug is true, then Upton fetches each page only once
+      # If true, then Upton fetches each page only once
       # future requests for that file are responded to with the locally stashed
       # version.
-      # You may want to set @debug to false for production. (but maybe not)
+      # You may want to set @debug to false for production (but maybe not).
+      # You can also control stashing behavior on a per-call basis with the
+      # optional second argument to get_page, if, for instance, you want to 
+      # stash instance pages, but not index pages.
       @debug = true
 
       # In order to not hammer servers, Upton waits for, by default, 30  
       # seconds between requests to the remote server.
       @nice_sleep_time = 30 #seconds
 
-      # If you want stashes to be stored somewhere else, e.g. under /tmp.
+      # Folder name for stashes, if you want them to be stored somewhere else,
+      # e.g. under /tmp.
       @stash_folder = "stashes"
+      
     end
 
-    # ##These methods must be overridden in your subclass.
 
-    # This is the main user-facing method for a basic scraper.
-    # Call `scrape` with a block; this block will be called on 
-    # the text of each instance page (and optionally, its index).
-    def scrape &blk
-      self.scrape_from_list(self.get_index, blk)
-    end
 
-    # Return a list of URLs for the instances you want to scrape.
-    # You probably want to use Nokogiri or another HTML parser to find the
-    # links to the instances within the HTML of the index page.
-    def get_index
-      raise AbstractMethodError
-    end
+    # ## Advanced use-case methods.
 
     # If instance pages (not index pages) are paginated, **you must override**
     # this method to return the next URL, given the current URL and its index.
@@ -67,7 +82,7 @@ module Upton
 
     protected
 
-    #Handles getting pages with RestClient or getting them from the lcoal stash
+    #Handles getting pages with RestClient or getting them from the local stash
     def get_page(url, stash=false)
       return "" if url.empty?
 
@@ -100,16 +115,17 @@ module Upton
       if !resp.empty? 
         next_url = self.next_page_url(url, index + 1)
         unless next_url == url
-          next_resp = self.get_article(next_url, index + 1).to_s 
+          next_resp = self.get_instance(next_url, index + 1).to_s 
           resp += next_resp
         end
       end
       resp
     end
 
+    # Just a helper for `scrape`
     def scrape_from_list(list, blk)
-      list.each_with_index.map do |listing_url, index|
-        blk.call(scraper.get_instance(listing_url), index)
+      list.each_with_index.map do |instance_url, index|
+        blk.call(get_instance(instance_url), instance_url, index)
       end
     end
   end
