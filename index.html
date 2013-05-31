@@ -21,6 +21,17 @@
         <div class="pilwrap">
           <a class="pilcrow" href="#section-1">&#182;</a>
         </div>
+        
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-2">&#182;</a>
+        </div>
         <p><strong>Upton</strong> is a framework for easy web-scraping with a useful debug mode 
 that doesn&rsquo;t hammer your target&rsquo;s servers. It does the repetitive parts of 
 writing scrapers, so you only have to write the unique parts for each site.</p>
@@ -39,17 +50,18 @@ job listings or news articles.</li>
         <div class='highlight'><pre><span class="k">module</span> <span class="nn">Upton</span></pre></div>
       </td>
     </tr>
-    <tr id='section-2'>
+    <tr id='section-3'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-2">&#182;</a>
+          <a class="pilcrow" href="#section-3">&#182;</a>
         </div>
         <p>Upton::Scraper is implemented as an abstract class. Implement a class to
 inherit from Upton::Scraper. </p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>  <span class="k">class</span> <span class="nc">AbstractMethodError</span> <span class="o">&lt;</span> <span class="no">Exception</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">class</span> <span class="nc">Scraper</span></pre></div>
+        <div class='highlight'><pre>  <span class="k">class</span> <span class="nc">Scraper</span>
+
+    <span class="kp">attr_accessor</span> <span class="ss">:verbose</span><span class="p">,</span> <span class="ss">:debug</span><span class="p">,</span> <span class="ss">:nice_sleep_time</span><span class="p">,</span> <span class="ss">:stash_folder</span></pre></div>
       </td>
     </tr>
     <tr id='section-Basic_use-case_methods.'>
@@ -63,10 +75,10 @@ inherit from Upton::Scraper. </p>
         <div class='highlight'><pre></pre></div>
       </td>
     </tr>
-    <tr id='section-4'>
+    <tr id='section-5'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-4">&#182;</a>
+          <a class="pilcrow" href="#section-5">&#182;</a>
         </div>
         <p>This is the main user-facing method for a basic scraper.
 Call <code>scrape</code> with a block; this block will be called on 
@@ -79,25 +91,6 @@ in the list of instance URLs returned by <code>get_index</code>).</p>
     <span class="k">end</span></pre></div>
       </td>
     </tr>
-    <tr id='section-5'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-5">&#182;</a>
-        </div>
-        <p>Return a list of URLs for the instances you want to scrape.</p>
-
-<p>You probably want to use Nokogiri or another HTML parser to find the
-links to the instances within the HTML of the index page; alternatively,
-you might make a call to a search API in this method.</p>
-
-<p>This is an abstract method; you <em>must</em> override it in your subclass.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">get_index</span>
-      <span class="k">raise</span> <span class="no">AbstractMethodError</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
     <tr id='section-Configuration_Variables'>
       <td class=docs>
         <div class="pilwrap">
@@ -106,13 +99,29 @@ you might make a call to a search API in this method.</p>
         <h2>Configuration Variables</h2>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">initialize</span></pre></div>
+        <div class='highlight'><pre></pre></div>
       </td>
     </tr>
     <tr id='section-7'>
       <td class=docs>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-7">&#182;</a>
+        </div>
+        <p><code>index_url</code>: The URL of the page containing the list of instances.
+<code>selector</code>: The XPath or CSS that specifies the anchor elements within 
+              the page.
+<code>selector_method</code>: :xpath or :css. By default, :xpath
+These options are a shortcut. If you override <code>get_index</code>, you may not
+need to set them.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">index_url</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">selector</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">selector_method</span><span class="o">=</span><span class="ss">:xpath</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-8'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-8">&#182;</a>
         </div>
         <p>If true, then Upton prints information about when it gets
 files from the internet and when it gets them from its stash.</p>
@@ -121,10 +130,10 @@ files from the internet and when it gets them from its stash.</p>
         <div class='highlight'><pre>      <span class="vi">@verbose</span> <span class="o">=</span> <span class="kp">false</span></pre></div>
       </td>
     </tr>
-    <tr id='section-8'>
+    <tr id='section-9'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-8">&#182;</a>
+          <a class="pilcrow" href="#section-9">&#182;</a>
         </div>
         <p>If true, then Upton fetches each page only once
 future requests for that file are responded to with the locally stashed
@@ -138,10 +147,10 @@ stash instance pages, but not index pages.</p>
         <div class='highlight'><pre>      <span class="vi">@debug</span> <span class="o">=</span> <span class="kp">true</span></pre></div>
       </td>
     </tr>
-    <tr id='section-9'>
+    <tr id='section-10'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-9">&#182;</a>
+          <a class="pilcrow" href="#section-10">&#182;</a>
         </div>
         <p>In order to not hammer servers, Upton waits for, by default, 30<br>
 seconds between requests to the remote server.</p>
@@ -150,17 +159,23 @@ seconds between requests to the remote server.</p>
         <div class='highlight'><pre>      <span class="vi">@nice_sleep_time</span> <span class="o">=</span> <span class="mi">30</span> <span class="c1">#seconds</span></pre></div>
       </td>
     </tr>
-    <tr id='section-10'>
+    <tr id='section-11'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-10">&#182;</a>
+          <a class="pilcrow" href="#section-11">&#182;</a>
         </div>
         <p>Folder name for stashes, if you want them to be stored somewhere else,
 e.g. under /tmp.</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>      <span class="vi">@stash_folder</span> <span class="o">=</span> <span class="s2">&quot;stashes&quot;</span>
+      <span class="k">unless</span> <span class="no">Dir</span><span class="o">.</span><span class="n">exists?</span><span class="p">(</span><span class="vi">@stash_folder</span><span class="p">)</span>
+        <span class="no">Dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="vi">@stash_folder</span><span class="p">)</span>
+      <span class="k">end</span>
       
+      <span class="vi">@index_url</span> <span class="o">=</span> <span class="n">index_url</span>
+      <span class="vi">@index_selector</span> <span class="o">=</span> <span class="n">selector</span>
+      <span class="vi">@index_selector_method</span> <span class="o">=</span> <span class="n">selector_method</span>
     <span class="k">end</span></pre></div>
       </td>
     </tr>
@@ -175,22 +190,35 @@ e.g. under /tmp.</p>
         <div class='highlight'><pre></pre></div>
       </td>
     </tr>
-    <tr id='section-12'>
+    <tr id='section-13'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-12">&#182;</a>
+          <a class="pilcrow" href="#section-13">&#182;</a>
         </div>
-        <p>If instance pages (not index pages) are paginated, <strong>you must override</strong>
+        <p>If instance pages are paginated, <strong>you must override</strong>
 this method to return the next URL, given the current URL and its index.</p>
 
 <p>If instance pages aren&rsquo;t paginated, there&rsquo;s no need to override this.</p>
 
 <p>Return URLs that are empty strings are ignored (and recursion stops.)
-e.g. next<em>page</em>url(&ldquo;http://whatever.com/article/upton-sinclairs-the-jungle?page=1&rdquo;, 2)
+e.g. next<em>instance</em>page_url(&ldquo;http://whatever.com/article/upton-sinclairs-the-jungle?page=1&rdquo;, 2)
 ought to return &ldquo;http://whatever.com/article/upton-sinclairs-the-jungle?page=2&rdquo;</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">next_page_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">next_instance_page_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+      <span class="s2">&quot;&quot;</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-14'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-14">&#182;</a>
+        </div>
+        <p>The same as <code>next_instance_page_url</code>, except for index pages.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">next_index_page_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
       <span class="s2">&quot;&quot;</span>
     <span class="k">end</span>
 
@@ -198,10 +226,10 @@ ought to return &ldquo;http://whatever.com/article/upton-sinclairs-the-jungle?pa
     <span class="kp">protected</span></pre></div>
       </td>
     </tr>
-    <tr id='section-13'>
+    <tr id='section-15'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-13">&#182;</a>
+          <a class="pilcrow" href="#section-15">&#182;</a>
         </div>
         <p>Handles getting pages with RestClient or getting them from the local stash</p>
       </td>
@@ -210,10 +238,10 @@ ought to return &ldquo;http://whatever.com/article/upton-sinclairs-the-jungle?pa
       <span class="k">return</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">url</span><span class="o">.</span><span class="n">empty?</span></pre></div>
       </td>
     </tr>
-    <tr id='section-14'>
+    <tr id='section-16'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-14">&#182;</a>
+          <a class="pilcrow" href="#section-16">&#182;</a>
         </div>
         <p>the filename for each stashed version is a cleaned version of the URL.</p>
       </td>
@@ -233,17 +261,68 @@ ought to return &ldquo;http://whatever.com/article/upton-sinclairs-the-jungle?pa
         <span class="k">end</span>
         <span class="k">if</span> <span class="n">stash</span>
           <span class="nb">puts</span> <span class="s2">&quot;I just stashed (</span><span class="si">#{</span><span class="n">resp</span><span class="o">.</span><span class="n">code</span> <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:code</span><span class="p">)</span><span class="si">}</span><span class="s2">): </span><span class="si">#{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="vi">@verbose</span>
-          <span class="nb">open</span><span class="p">(</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="vi">@stash_folder</span><span class="p">,</span> <span class="n">url</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[^A-Za-z0-9\-]/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">){</span><span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">resp</span><span class="p">)}</span>
+          <span class="nb">open</span><span class="p">(</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="vi">@stash_folder</span><span class="p">,</span> <span class="n">url</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[^A-Za-z0-9\-]/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="p">),</span> <span class="s1">&#39;w:UTF-8&#39;</span><span class="p">){</span><span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">,</span> <span class="ss">:invalid</span> <span class="o">=&gt;</span> <span class="ss">:replace</span><span class="p">,</span> <span class="ss">:undef</span> <span class="o">=&gt;</span> <span class="ss">:replace</span> <span class="p">))}</span>
         <span class="k">end</span>
       <span class="k">end</span>
       <span class="n">resp</span>
     <span class="k">end</span></pre></div>
       </td>
     </tr>
-    <tr id='section-15'>
+    <tr id='section-17'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-15">&#182;</a>
+          <a class="pilcrow" href="#section-17">&#182;</a>
+        </div>
+        <p>Return a list of URLs for the instances you want to scrape.
+This can optionally be overridden if, for example, the list of instances
+comes from an API.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">get_index</span>
+      <span class="n">parse_index</span><span class="p">(</span><span class="n">get_index_pages</span><span class="p">(</span><span class="vi">@index_url</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="vi">@index_selector</span><span class="p">,</span> <span class="vi">@index_selector_method</span><span class="p">)</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-18'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-18">&#182;</a>
+        </div>
+        <p>Using the XPath or CSS selector and selector_method that uniquely locates
+the links in the index, return those links as strings.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">parse_index</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">selector</span><span class="p">,</span> <span class="n">selector_method</span><span class="o">=</span><span class="ss">:xpath</span><span class="p">)</span>
+      <span class="no">Nokogiri</span><span class="o">::</span><span class="no">HTML</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">selector_method</span><span class="p">,</span> <span class="n">selector</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">l</span><span class="o">|</span> <span class="n">l</span><span class="o">[</span><span class="s2">&quot;href&quot;</span><span class="o">]</span> <span class="p">}</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-19'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-19">&#182;</a>
+        </div>
+        <p>Returns the concatenated output of each member of a paginated index,
+e.g. a site listing links with 2+ pages.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">get_index_pages</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="c1">#maybe needs better name</span>
+      <span class="n">resp</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">get_page</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="vi">@debug</span><span class="p">)</span>
+      <span class="k">if</span> <span class="o">!</span><span class="n">resp</span><span class="o">.</span><span class="n">empty?</span> 
+        <span class="n">next_url</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">next_index_page_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">unless</span> <span class="n">next_url</span> <span class="o">==</span> <span class="n">url</span>
+          <span class="n">next_resp</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">get_index_pages</span><span class="p">(</span><span class="n">next_url</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span> 
+          <span class="n">resp</span> <span class="o">+=</span> <span class="n">next_resp</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+      <span class="n">resp</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-20'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-20">&#182;</a>
         </div>
         <p>Returns the concatenated output of each member of a paginated instance,
 e.g. a news article with 2 pages.</p>
@@ -252,7 +331,7 @@ e.g. a news article with 2 pages.</p>
         <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">get_instance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
       <span class="n">resp</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">get_page</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="vi">@debug</span><span class="p">)</span>
       <span class="k">if</span> <span class="o">!</span><span class="n">resp</span><span class="o">.</span><span class="n">empty?</span> 
-        <span class="n">next_url</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">next_page_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">next_url</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">next_instance_page_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">unless</span> <span class="n">next_url</span> <span class="o">==</span> <span class="n">url</span>
           <span class="n">next_resp</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="n">next_url</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span> 
           <span class="n">resp</span> <span class="o">+=</span> <span class="n">next_resp</span>
@@ -262,20 +341,35 @@ e.g. a news article with 2 pages.</p>
     <span class="k">end</span></pre></div>
       </td>
     </tr>
-    <tr id='section-16'>
+    <tr id='section-21'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-16">&#182;</a>
+          <a class="pilcrow" href="#section-21">&#182;</a>
         </div>
-        <p>Just a helper for <code>scrape</code></p>
-
+        <p>Just a helper for <code>scrape</code>.</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">scrape_from_list</span><span class="p">(</span><span class="n">list</span><span class="p">,</span> <span class="n">blk</span><span class="p">)</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Scraping </span><span class="si">#{</span><span class="n">list</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> instances&quot;</span> <span class="k">if</span> <span class="vi">@verbose</span>
       <span class="n">list</span><span class="o">.</span><span class="n">each_with_index</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">instance_url</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
         <span class="n">blk</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">get_instance</span><span class="p">(</span><span class="n">instance_url</span><span class="p">),</span> <span class="n">instance_url</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
       <span class="k">end</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-22'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-22">&#182;</a>
+        </div>
+        <p>it&rsquo;s often useful to have this slug method for uniquely (almost certainly) identifying pages.</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">slug</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+      <span class="s2">&quot;wapo:&quot;</span> <span class="o">+</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="o">[-</span><span class="mi">1</span><span class="o">].</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/\?.*/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/.html.*/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="k">end</span>
+
   <span class="k">end</span>
 <span class="k">end</span></pre></div>
       </td>

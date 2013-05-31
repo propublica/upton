@@ -27,17 +27,20 @@ module Upton
     # the text of each instance page, (and optionally, its URL and its index
     # in the list of instance URLs returned by `get_index`).
     def scrape &blk
-      self.scrape_from_list(self.get_index(@index_url, @index_selector, @index_selector_method), blk)
+      self.scrape_from_list(self.get_index, blk)
     end
 
-    # Return a list of URLs for the instances you want to scrape.
-    #
-    # You probably want to use Nokogiri or another HTML parser to find the
-    # links to the instances within the HTML of the index page; alternatively,
-    # you might make a call to a search API in this method.
 
     # ## Configuration Variables
-    def initialize(index_url, selector, selector_method=:xpath)
+
+    # `index_url`: The URL of the page containing the list of instances.
+    # `selector`: The XPath or CSS that specifies the anchor elements within 
+    #               the page.
+    # `selector_method`: :xpath or :css. By default, :xpath.
+    #
+    # These options are a shortcut. If you override `get_index`, you do not
+    # need to set them.
+    def initialize(index_url="", selector="", selector_method=:xpath)
 
       # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
@@ -72,7 +75,7 @@ module Upton
 
     # ## Advanced use-case methods.
 
-    # If instance pages (not index pages) are paginated, **you must override**
+    # If instance pages are paginated, **you must override**
     # this method to return the next URL, given the current URL and its index.
     #
     # If instance pages aren't paginated, there's no need to override this.
@@ -84,6 +87,7 @@ module Upton
       ""
     end
 
+    # The same as `next_instance_page_url`, except for index pages.
     def next_index_page_url(url, index)
       ""
     end
@@ -117,11 +121,15 @@ module Upton
       resp
     end
 
-    
-    def get_index(url, selector, selector_method=:xpath) #TODO needs better name
-      parse_index(get_index_pages(url, 1), "//table[@class='table_search']//tr/td[2]/a", selector_method)
+    # Return a list of URLs for the instances you want to scrape.
+    # This can optionally be overridden if, for example, the list of instances
+    # comes from an API.
+    def get_index
+      parse_index(get_index_pages(@index_url, 1), @index_selector, @index_selector_method)
     end
 
+    # Using the XPath or CSS selector and selector_method that uniquely locates
+    # the links in the index, return those links as strings.
     def parse_index(text, selector, selector_method=:xpath)
       Nokogiri::HTML(text).send(selector_method, selector).to_a.map{|l| l["href"] }
     end
@@ -155,7 +163,7 @@ module Upton
       resp
     end
 
-    # Just a helper for `scrape`
+    # Just a helper for `scrape`.
     def scrape_from_list(list, blk)
       puts "Scraping #{list.size} instances" if @verbose
       list.each_with_index.map do |instance_url, index|
