@@ -5,47 +5,34 @@ Upton is a framework for easy web-scraping with a useful debug mode that doesn't
 Documentation
 ----------------------
 
-Upton works best if your scraper class inherits from Upton::Scraper, e.g. 
+With Upton, you can scrape complex sites in just one line of code.
 
-     class MyScraper < Upton::Scraper 
-     ...
-     end
+    Upton::Scraper.new("http://www.whatever.com", "section#links a", :css).scrape do |article_str|
+      #do stuff.
+    end
 
-Upton::Scraper is implemented as an abstract class. For basic use cases, you only have to implement one method -- the `get_index` method -- and a block argument for `scrape` to do something with the scraped pages. 
+Just specify a URL to a list of links, an XPath or CSS selector for the links and a block of what to do with the content of the pages you've scraped.
 
-Upton operates on the theory that, for most scraping projects, you need to
-scrape two types of pages:
+Upton operates on the theory that, for most scraping projects, you need to scrape two types of pages:
 
-1. Index pages, which list instance pages. For example, a job search 
-    site's search page or a newspaper's homepage.
-2. Instance pages, which represent the goal of your scraping, e.g.
-    job listings or news articles.
+1. Index pages, which list instance pages. For example, a job search site's search page or a newspaper's homepage.
+2. Instance pages, which represent the goal of your scraping, e.g. job listings or news articles.
 
+For more complex use cases, subclass `Upton::Scraper` and override the relevant methods. If you're scraping links from an API, you would override `get_index`; if you needed to set a cookie or log in before scraping a site, you would override `get_instance`.
 
-In more complicated cases, you may need to write additional methods; for example, if you need to log in to a site before scraping the instance pages, you would need to override the scrape method in your subclass. 
-
-You get, for free, methods like `get_page(url, stash=false)` which, well, gets a page. That's not very special. The more interesting part is that `get_page(url, stash=false)` transparently stashes the response of each request. Whenever you repeat a request with `true` as the second parameter, the stashed HTML is returned without going to the server. This is helpful in the development stages of a project when you're testing some aspect of the code and don't want to hit a server each time.
+You get, for free, methods like `get_page(url, stash=false)` which, well, gets a page. That's not very special. The more interesting part is that `get_page(url, stash=false)` transparently stashes the response of each request. Whenever you repeat a request with `true` as the second parameter, the stashed HTML is returned without going to the server. This is helpful in the development stages of a project when you're testing some aspect of the code and don't want to hit a server each time. This can be en/disabled with the `@debug` option.
 
 Upton also sleeps (by default) 30 seconds between non-stashed requests, to reduce load on the server you're scraping. This is configurable with the `@nice_sleep_time` option.
 
-**For more complete documentation**, see [our Rocco docs](http://propublica.github.io/upton).
+**For more complete documentation**, see [the RDoc](http://propublica.github.io/upton).
 
-**Important Note:** Upton is alpha software. The API may change at any time and without warning. 
+**Important Note:** Upton is alpha software. The API may change at any time. 
 
 Example
 ----------------------
 If you want to scrape ProPublica's website with Upton, this is how you'd do it. (Scraping our [RSS feed](http://feeds.propublica.org/propublica/main) would be smarter, but not every site has a full-text RSS feed...)
 
-
-      class ProPublicaScraper < Upton::Scraper
-        def get_index
-          url = "http://www.propublica.org"
-          doc = Nokogiri::HTML(self._get_page(url, true))
-          doc.css("section#river section h1 a").to_a.map{|l| + l["href"] } #map the Nokogiri link elements to a string representation of a URL.
-        end
-      end
-
-      ProPublicaScraper.new.scrape do |article_string|
+      Upton::Scraper.new("http://www.propublica.org", "section#river section h1 a", :css).scrape do |article_string|
         puts "here is the full text of the ProPublica article: \n #{article_string}"
         #or, do other stuff here.
       end
