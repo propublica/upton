@@ -75,11 +75,12 @@ module Upton
     # If instance pages aren't paginated, there's no need to override this.
     #
     # Return URLs that are empty strings are ignored (and recursion stops.)
-    # e.g. next_page_url("http://whatever.com/article/upton-sinclairs-the-jungle?page=1", 2)
+    # e.g. next_instance_page_url("http://whatever.com/article/upton-sinclairs-the-jungle?page=1", 2)
     # ought to return "http://whatever.com/article/upton-sinclairs-the-jungle?page=2"
-    def next_page_url(url, index)
+    def next_instance_page_url(url, index)
       ""
     end
+
 
 
     protected
@@ -115,7 +116,7 @@ module Upton
     def get_instance(url, index=0)
       resp = self.get_page(url, @debug)
       if !resp.empty? 
-        next_url = self.next_page_url(url, index + 1)
+        next_url = self.next_instance_page_url(url, index + 1)
         unless next_url == url
           next_resp = self.get_instance(next_url, index + 1).to_s 
           resp += next_resp
