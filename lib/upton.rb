@@ -16,8 +16,10 @@ module Upton
 
   # Upton::Scraper is implemented as an abstract class. Implement a class to
   # inherit from Upton::Scraper. 
-  class AbstractMethodError < Exception; end
   class Scraper
+
+    attr_accessor :verbose, :debug, :nice_sleep_time, :stash_folder
+
     # ## Basic use-case methods.
 
     # This is the main user-facing method for a basic scraper.
@@ -25,7 +27,7 @@ module Upton
     # the text of each instance page, (and optionally, its URL and its index
     # in the list of instance URLs returned by `get_index`).
     def scrape &blk
-      self.scrape_from_list(self.get_index, blk)
+      self.scrape_from_list(self.get_index(@index_url, @index_selector, @index_selector_method), blk)
     end
 
     # Return a list of URLs for the instances you want to scrape.
@@ -33,14 +35,9 @@ module Upton
     # You probably want to use Nokogiri or another HTML parser to find the
     # links to the instances within the HTML of the index page; alternatively,
     # you might make a call to a search API in this method.
-    #
-    # This is an abstract method; you *must* override it in your subclass.
-    def get_index
-      raise AbstractMethodError
-    end
 
     # ## Configuration Variables
-    def initialize
+    def initialize(index_url, selector, selector_method=:xpath)
 
       # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
@@ -62,7 +59,13 @@ module Upton
       # Folder name for stashes, if you want them to be stored somewhere else,
       # e.g. under /tmp.
       @stash_folder = "stashes"
+      unless Dir.exists?(@stash_folder)
+        Dir.mkdir(@stash_folder)
+      end
       
+      @index_url = index_url
+      @index_selector = selector
+      @index_selector_method = selector_method
     end
 
 
@@ -81,6 +84,9 @@ module Upton
       ""
     end
 
+    def next_index_page_url(url, index)
+      ""
+    end
 
 
     protected
@@ -110,6 +116,30 @@ module Upton
       end
       resp
     end
+
+    
+    def get_index(url, selector, selector_method=:xpath) #TODO needs better name
+      parse_index(get_index_pages(url, 1), "//table[@class='table_search']//tr/td[2]/a", selector_method)
+    end
+
+    def parse_index(text, selector, selector_method=:xpath)
+      Nokogiri::HTML(text).send(selector_method, selector).to_a.map{|l| l["href"] }
+    end
+
+    # Returns the concatenated output of each member of a paginated index,
+    # e.g. a site listing links with 2+ pages.
+    def get_index_pages(url, index) #maybe needs better name
+      resp = self.get_page(url, @debug)
+      if !resp.empty? 
+        next_url = self.next_index_page_url(url, index + 1)
+        unless next_url == url
+          next_resp = self.get_index_pages(next_url, index + 1).to_s 
+          resp += next_resp
+        end
+      end
+      resp
+    end
+
 
     # Returns the concatenated output of each member of a paginated instance,
     # e.g. a news article with 2 pages.

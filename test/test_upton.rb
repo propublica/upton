@@ -4,9 +4,21 @@ require 'thin'
 require 'nokogiri'
 require 'restclient'
 require 'upton'
+require 'fileutils'
 
 module Upton
   module Test
+
+    class ProPublicaScraper < Upton::Scraper
+      def initialize(a, b, c)
+        super
+        @verbose = false
+        @debug = false
+        @stash_folder = "test_stashes"
+      end
+    end
+
+
     class UptonTest < ::Test::Unit::TestCase
 
       # def test_get_page
@@ -26,11 +38,12 @@ module Upton
                      "A Prosecutor, a Wrongful Conviction and a Question of Justice",
                      "Six Facts Lost in the IRS Scandal"]
 
-        ProPublicaScraper.new.scrape do |article_str|
+        ProPublicaScraper.new("http://127.0.0.1:9876/propublica.html", "section#river section h1 a", :css).scrape do |article_str|
           doc = Nokogiri::HTML(article_str)
           hed = doc.css('h1.article-title').text
           assert_equal(hed, headlines.shift)
         end
+        FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
       end
 
       private
@@ -42,16 +55,6 @@ module Upton
       end
     end
 
-    class ProPublicaScraper < Upton::Scraper
-      @verbose = false
-      @debug = false
-      @stashes
-      def get_index
-        url = "http://127.0.0.1:9876/propublica.html"
-        doc = Nokogiri::HTML(get_page(url, false))
-        doc.css("section#river section h1 a").to_a.map{|l| + l["href"] }
-      end
-    end
 
 
     # via http://stackoverflow.com/questions/10166611/launching-a-web-server-inside-ruby-tests
