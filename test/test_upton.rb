@@ -9,14 +9,14 @@ require 'fileutils'
 module Upton
   module Test
 
-    class ProPublicaScraper < Upton::Scraper
-      def initialize(a, b, c)
-        super
-        @verbose = false
-        @debug = false
-        @stash_folder = "test_stashes"
-      end
-    end
+    # class ProPublicaScraper < Upton::Scraper
+    #   def initialize(a, b, c)
+    #     super
+    #     @verbose = false
+    #     @debug = false
+    #     @stash_folder = "test_stashes"
+    #   end
+    # end
 
 
     class UptonTest < ::Test::Unit::TestCase
@@ -38,7 +38,11 @@ module Upton
                      "A Prosecutor, a Wrongful Conviction and a Question of Justice",
                      "Six Facts Lost in the IRS Scandal"]
 
-        ProPublicaScraper.new("http://127.0.0.1:9876/propublica.html", "section#river section h1 a", :css).scrape do |article_str|
+        propubscraper = Upton::Scraper.new("http://127.0.0.1:9876/propublica.html", "section#river section h1 a", :css)
+        propubscraper.verbose = false
+        propubscraper.debug = false
+
+        propubscraper.scrape do |article_str|
           doc = Nokogiri::HTML(article_str)
           hed = doc.css('h1.article-title').text
           assert_equal(hed, headlines.shift)

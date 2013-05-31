@@ -7,6 +7,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Jeremy B. Merrill"]
   s.email       = 'jeremy.merrill@propublica.org'
   s.files       = ["lib/upton.rb"]
+  s.has_rdoc    = true
+  s.test_files  = Dir.glob('test/data/*.html') + ['test/test_upton.rb']
   s.required_ruby_version = ">= 1.8.7" #not tested with 1.8.6, but it might work
   s.license     = 'MIT'
   s.homepage    =

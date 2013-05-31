@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-# **Upton** is a framework for easy web-scraping with a useful debug mode 
+# *Upton* is a framework for easy web-scraping with a useful debug mode 
 # that doesn't hammer your target's servers. It does the repetitive parts of 
 # writing scrapers, so you only have to write the unique parts for each site.
 #
@@ -14,33 +14,36 @@
 
 module Upton
 
-  # Upton::Scraper is implemented as an abstract class. Implement a class to
-  # inherit from Upton::Scraper. 
+  # Upton::Scraper can be used as-is for basic use-cases, or can be subclassed
+  # in more complicated cases; e.g. +MyScraper < Upton::Scraper+
   class Scraper
 
     attr_accessor :verbose, :debug, :nice_sleep_time, :stash_folder
 
-    # ## Basic use-case methods.
+    # == Basic use-case methods.
 
     # This is the main user-facing method for a basic scraper.
-    # Call `scrape` with a block; this block will be called on 
+    # Call +scrape+ with a block; this block will be called on 
     # the text of each instance page, (and optionally, its URL and its index
-    # in the list of instance URLs returned by `get_index`).
+    # in the list of instance URLs returned by +get_index+).
     def scrape &blk
       self.scrape_from_list(self.get_index, blk)
     end
 
 
-    # ## Configuration Variables
+    # == Configuration Options
 
-    # `index_url`: The URL of the page containing the list of instances.
-    # `selector`: The XPath or CSS that specifies the anchor elements within 
+    # +index_url+: The URL of the page containing the list of instances.
+    # +selector+: The XPath or CSS that specifies the anchor elements within 
     #               the page.
-    # `selector_method`: :xpath or :css. By default, :xpath.
+    # +selector_method+: +:xpath+ or +:css+. By default, +:xpath+.
     #
-    # These options are a shortcut. If you override `get_index`, you do not
+    # These options are a shortcut. If you override +get_index+, you do not
     # need to set them.
     def initialize(index_url="", selector="", selector_method=:xpath)
+      @index_url = index_url
+      @index_selector = selector
+      @index_selector_method = selector_method
 
       # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
@@ -65,15 +68,11 @@ module Upton
       unless Dir.exists?(@stash_folder)
         Dir.mkdir(@stash_folder)
       end
-      
-      @index_url = index_url
-      @index_selector = selector
-      @index_selector_method = selector_method
     end
 
 
 
-    # ## Advanced use-case methods.
+    # == Advanced use-case methods.
 
     # If instance pages are paginated, **you must override**
     # this method to return the next URL, given the current URL and its index.
@@ -87,13 +86,21 @@ module Upton
       ""
     end
 
-    # The same as `next_instance_page_url`, except for index pages.
+    # If index pages are paginated, **you must override**
+    # this method to return the next URL, given the current URL and its index.
+    #
+    # If index pages aren't paginated, there's no need to override this.
+    #
+    # Return URLs that are empty strings are ignored (and recursion stops.)
+    # e.g. +next_index_page_url("http://whatever.com/articles?page=1", 2)+
+    # ought to return "http://whatever.com/articles?page=2"
     def next_index_page_url(url, index)
       ""
     end
 
 
     protected
+
 
     #Handles getting pages with RestClient or getting them from the local stash
     def get_page(url, stash=false)
@@ -136,7 +143,7 @@ module Upton
 
     # Returns the concatenated output of each member of a paginated index,
     # e.g. a site listing links with 2+ pages.
-    def get_index_pages(url, index) #maybe needs better name
+    def get_index_pages(url, index)
       resp = self.get_page(url, @debug)
       if !resp.empty? 
         next_url = self.next_index_page_url(url, index + 1)
@@ -147,7 +154,6 @@ module Upton
       end
       resp
     end
-
 
     # Returns the concatenated output of each member of a paginated instance,
     # e.g. a news article with 2 pages.
@@ -163,7 +169,7 @@ module Upton
       resp
     end
 
-    # Just a helper for `scrape`.
+    # Just a helper for +scrape+.
     def scrape_from_list(list, blk)
       puts "Scraping #{list.size} instances" if @verbose
       list.each_with_index.map do |instance_url, index|
@@ -171,10 +177,9 @@ module Upton
       end
     end
 
-
     # it's often useful to have this slug method for uniquely (almost certainly) identifying pages.
     def slug(url)
-      "wapo:" + url.split("/")[-1].gsub(/\?.*/, "").gsub(/.html.*/, "")
+      url.split("/")[-1].gsub(/\?.*/, "").gsub(/.html.*/, "")
     end
 
   end
