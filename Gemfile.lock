@@ -1,3 +1,9 @@
+PATH
+  remote: .
+  specs:
+    upton (0.0.1)
+      rest-client (~> 1.6.7)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -28,3 +34,4 @@ DEPENDENCIES
   rest-client
   rocco
   thin
+  upton!

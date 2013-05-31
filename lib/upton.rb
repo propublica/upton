@@ -131,5 +131,12 @@ module Upton
         blk.call(get_instance(instance_url), instance_url, index)
       end
     end
+
+
+    # it's often useful to have this slug method for uniquely (almost certainly) identifying pages.
+    def slug(url)
+      "wapo:" + url.split("/")[-1].gsub(/\?.*/, "").gsub(/.html.*/, "")
+    end
+
   end
 end
