@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 # **Upton** is a framework for easy web-scraping with a useful debug mode 
 # that doesn't hammer your target's servers. It does the repetitive parts of 
 # writing scrapers, so you only have to write the unique parts for each site.
@@ -102,7 +104,7 @@ module Upton
         end
         if stash
           puts "I just stashed (#{resp.code if resp.respond_to?(:code)}): #{url}" if @verbose
-          open( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") ), 'w'){|f| f.write(resp)}
+          open( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") ), 'w:UTF-8'){|f| f.write(resp.encode("UTF-8", :invalid => :replace, :undef => :replace ))}
         end
       end
       resp
@@ -124,6 +126,7 @@ module Upton
 
     # Just a helper for `scrape`
     def scrape_from_list(list, blk)
+      puts "Scraping #{list.size} instances" if @verbose
       list.each_with_index.map do |instance_url, index|
         blk.call(get_instance(instance_url), instance_url, index)
       end
