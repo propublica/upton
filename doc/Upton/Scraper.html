@@ -284,7 +284,7 @@ instances.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>If index pages are paginated, *you must override* this method to return the
+<p>If index pages are paginated, you must override this method to return the
 next URL, given the current URL and its index.</p>
 </div></span>
   
@@ -309,7 +309,7 @@ next URL, given the current URL and its index.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>If instance pages are paginated, *you must override* this method to return
+<p>If instance pages are paginated, you must override  this method to return
 the next URL, given the current URL and its index.</p>
 </div></span>
   
@@ -360,15 +360,11 @@ the next URL, given the current URL and its index.</p>
     
 <p><code>index_url</code>: The URL of the page containing the list of
 instances. <code>selector</code>: The XPath or CSS that specifies the
-anchor elements within</p>
+anchor elements within  the page. <code>selector_method</code>:
+<code>:xpath</code> or <code>:css</code>. By default, <code>:xpath</code>.</p>
 
-<pre class="code ruby"><code class="ruby">the page.</code></pre>
-
-<p><code>selector_method</code>: <code>:xpath</code> or <code>:css</code>. By
-default, <code>:xpath</code>.</p>
-
-<p>These options are a shortcut. If you override <code>get_index</code>, you
-do not need to set them.</p>
+<p>These options are a shortcut. If you plant to override
+<code>get_index</code>, you do not need to set them.</p>
 
 
   </div>
@@ -649,8 +645,8 @@ do not need to set them.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>If index pages are paginated, *you must override* this method to return the
-next URL, given the current URL and its index.</p>
+<p>If index pages are paginated, <strong>you must override</strong> this
+method to return the next URL, given the current URL and its index.</p>
 
 <p>If index pages aren&#39;t paginated, there&#39;s no need to override this.</p>
 
@@ -699,8 +695,8 @@ href="http://whatever.com/articles?page=2">whatever.com/articles?page=2</a>”</
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>If instance pages are paginated, *you must override* this method to return
-the next URL, given the current URL and its index.</p>
+<p>If instance pages are paginated, <strong>you must override</strong>  this
+method to return the next URL, given the current URL and its index.</p>
 
 <p>If instance pages aren&#39;t paginated, there&#39;s no need to override
 this.</p>
@@ -787,7 +783,7 @@ instance URLs returned by <code>get_index</code>).</p>
 </div>
 
     <div id="footer">
-  Generated on Thu Jun  6 14:55:18 2013 by
+  Generated on Thu Jun  6 15:29:59 2013 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.6.1 (ruby-2.0.0).
 </div>
