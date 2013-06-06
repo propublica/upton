@@ -24,9 +24,9 @@ The `get_instance` and `get_index` methods use a protected method `get_page(url)
 
 Upton also sleeps (by default) 30 seconds between non-stashed requests, to reduce load on the server you're scraping. This is configurable with the `@nice_sleep_time` option.
 
-**For more complete documentation**, see [the RDoc](http://propublica.github.io/upton).
+<b>For more complete documentation</b>, see [the RDoc](http://propublica.github.io/upton).
 
-**Important Note:** Upton is alpha software. The API may change at any time. 
+<b>Important Note:</b> Upton is alpha software. The API may change at any time. 
 
 Example
 ----------------------

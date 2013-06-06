@@ -35,11 +35,11 @@ module Upton
 
     # +index_url+: The URL of the page containing the list of instances.
     # +selector+: The XPath or CSS that specifies the anchor elements within 
-    #               the page.
+    # the page.
     # +selector_method+: +:xpath+ or +:css+. By default, +:xpath+.
     #
-    # These options are a shortcut. If you override +get_index+, you do not
-    # need to set them.
+    # These options are a shortcut. If you plant to override +get_index+, you
+    # do not need to set them.
     def initialize(index_url="", selector="", selector_method=:xpath)
       @index_url = index_url
       @index_selector = selector
@@ -74,7 +74,7 @@ module Upton
 
 
 
-    # If instance pages are paginated, *you must override*
+    # If instance pages are paginated, <b>you must override</b> 
     # this method to return the next URL, given the current URL and its index.
     #
     # If instance pages aren't paginated, there's no need to override this.
@@ -86,7 +86,7 @@ module Upton
       ""
     end
 
-    # If index pages are paginated, *you must override*
+    # If index pages are paginated, <b>you must override</b>
     # this method to return the next URL, given the current URL and its index.
     #
     # If index pages aren't paginated, there's no need to override this.
