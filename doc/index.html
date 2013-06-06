@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.8.6.1
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!" + escape(window.location.href);
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><div id='filecontents'>
+<h1 id="label-Upton">Upton</h1>
+
+<p>Upton is a framework for easy web-scraping with a useful debug mode that
+doesn&#39;t hammer your target&#39;s servers. It does the repetitive parts
+of writing scrapers, so you only have to write the unique parts for each
+site.</p>
+
+<h2 id="label-Documentation">Documentation</h2>
+
+<p>With Upton, you can scrape complex sites in just one line of code.</p>
+
+<pre class="ruby"><span class="ruby-constant">Upton</span><span class="ruby-operator">::</span><span class="ruby-constant">Scraper</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;http://www.whatever.com&quot;</span>, <span class="ruby-node">&quot;section#links a&quot;</span>, :<span class="ruby-identifier">css</span>).<span class="ruby-identifier">scrape</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">article_str</span><span class="ruby-operator">|</span>
+  <span class="ruby-comment">#do stuff.</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>Just specify a URL to a list of links, an XPath or CSS selector for the
+links and a block of what to do with the content of the pages you&#39;ve
+scraped.</p>
+
+<p>Upton operates on the theory that, for most scraping projects, you need to
+scrape two types of pages:</p>
+<ol><li>
+<p>Index pages, which list instance pages. For example, a job search
+site&#39;s search page or a newspaper&#39;s homepage.</p>
+</li><li>
+<p>Instance pages, which represent the goal of your scraping, e.g. job
+listings or news articles.</p>
+</li></ol>
+
+<p>For more complex use cases, subclass <code>Upton::Scraper</code> and
+override the relevant methods. If you&#39;re scraping links from an API,
+you would override <code>get_index</code>; if you needed to set a cookie or
+log in before scraping a site, you would override
+<code>get_instance</code>.</p>
+
+<p>The <code>get_instance</code> and <code>get_index</code> methods use a
+protected method <code>get_page(url)</code> which, well, gets a page.
+That&#39;s not very special. The more interesting part is that
+<code>get_page(url, stash)</code> transparently stashes the response of
+each request if the second parameter, <code>stash</code>, is true. Whenever
+you repeat a request (with <code>true</code> as the second parameter), the
+stashed HTML is returned without going to the server. This is helpful in
+the development stages of a project when you&#39;re testing some aspect of
+the code and don&#39;t want to hit a server each time. If you are using
+<code>get_instance</code> and <code>get_index</code>, this can be
+en/disabled per instance of <code>Upton::Scraper</code> or its subclasses
+with the <code>@debug</code> option. Setting the <code>stash</code>
+parameter of the <code>get_page</code> method should only be used if
+you&#39;ve overridden <code>get_instance</code> or <code>get_index</code>
+in a subclass.</p>
+
+<p>Upton also sleeps (by default) 30 seconds between non-stashed requests, to
+reduce load on the server you&#39;re scraping. This is configurable with
+the <code>@nice_sleep_time</code> option.</p>
+
+<p><strong>For more complete documentation</strong>, see <a
+href="http://propublica.github.io/upton">the RDoc</a>.</p>
+
+<p><strong>Important Note:</strong> Upton is alpha software. The API may
+change at any time.</p>
+
+<h2 id="label-Example">Example</h2>
+
+<p>If you want to scrape ProPublica&#39;s website with Upton, this is how
+you&#39;d do it. (Scraping our <a
+href="http://feeds.propublica.org/propublica/main">RSS feed</a> would be
+smarter, but not every site has a full-text RSS feed…)</p>
+
+<pre class="ruby">  <span class="ruby-constant">Upton</span><span class="ruby-operator">::</span><span class="ruby-constant">Scraper</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;http://www.propublica.org&quot;</span>, <span class="ruby-node">&quot;section#river section h1 a&quot;</span>, :<span class="ruby-identifier">css</span>).<span class="ruby-identifier">scrape</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">article_string</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;here is the full text of the ProPublica article: \n #{article_string}&quot;</span>
+    <span class="ruby-comment">#or, do other stuff here.</span>
+  <span class="ruby-keyword">end</span>
+</pre>
+
+<h2 id="label-Why+%22Upton%22">Why “Upton”</h2>
+
+<p>Upton Sinclair was a pioneering, muckraking journalist who is most famous
+for <em>The Jungle</em>, a novel portraying the reality of immigrant labor
+struggles in Chicago meatpacking plants at the start of the 1900s. Upton,
+the gem, sprang out of a ProPublica project pertaining to labor issues.</p>
+
+<h2 id="label-License+%28MIT%29">License (MIT)</h2>
+
+<p>Copyright © 2013 ProPublica</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the “Software”),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.</p>
+</div></div>
+
+    <div id="footer">
+  Generated on Thu Jun  6 14:55:17 2013 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.6.1 (ruby-2.0.0).
+</div>
+
+  </body>
+</html>
