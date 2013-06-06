@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rack'
   s.add_development_dependency 'thin'
   s.add_development_dependency 'nokogiri'
-  s.add_development_dependency 'rocco'
+  s.add_development_dependency 'yard'
 
   s.add_runtime_dependency "rest-client", ["~> 1.6.7"]
   s.add_runtime_dependency 'nokogiri'

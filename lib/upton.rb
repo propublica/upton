@@ -49,14 +49,16 @@ module Upton
       # files from the internet and when it gets them from its stash.
       @verbose = false
 
-      # If true, then Upton fetches each page only once
+      # If true, then Upton fetches each instance page only once
       # future requests for that file are responded to with the locally stashed
       # version.
       # You may want to set @debug to false for production (but maybe not).
       # You can also control stashing behavior on a per-call basis with the
       # optional second argument to get_page, if, for instance, you want to 
-      # stash instance pages, but not index pages.
+      # stash certain instance pages, e.g. based on their modification date.
       @debug = true
+      # Index debug does the same, but for index pages.
+      @index_debug = false
 
       # In order to not hammer servers, Upton waits for, by default, 30  
       # seconds between requests to the remote server.
@@ -72,9 +74,7 @@ module Upton
 
 
 
-    # == Advanced use-case methods.
-
-    # If instance pages are paginated, **you must override**
+    # If instance pages are paginated, *you must override*
     # this method to return the next URL, given the current URL and its index.
     #
     # If instance pages aren't paginated, there's no need to override this.
@@ -86,7 +86,7 @@ module Upton
       ""
     end
 
-    # If index pages are paginated, **you must override**
+    # If index pages are paginated, *you must override*
     # this method to return the next URL, given the current URL and its index.
     #
     # If index pages aren't paginated, there's no need to override this.
@@ -109,7 +109,7 @@ module Upton
       #the filename for each stashed version is a cleaned version of the URL.
       if stash && File.exists?( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") ) )
         puts "usin' a stashed copy of " + url if @verbose
-        resp = open( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "")), 'r').read
+        resp = open( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "")), 'r:UTF-8').read
       else
         begin
           puts "getting " + url if @verbose
@@ -144,7 +144,7 @@ module Upton
     # Returns the concatenated output of each member of a paginated index,
     # e.g. a site listing links with 2+ pages.
     def get_index_pages(url, index)
-      resp = self.get_page(url, @debug)
+      resp = self.get_page(url, @index_debug)
       if !resp.empty? 
         next_url = self.next_index_page_url(url, index + 1)
         unless next_url == url
