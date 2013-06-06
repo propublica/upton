@@ -1,285 +1,177 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta http-equiv="content-type" content="text/html;charset=utf-8">
-  <title>upton.rb</title>
-  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
-</head>
-<body>
-<div id='container'>
-  <div id="background"></div>
-  <table cellspacing=0 cellpadding=0>
-  <thead>
-    <tr>
-      <th class=docs><h1>upton.rb</h1></th>
-      <th class=code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr id='section-1'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-1">&#182;</a>
-        </div>
-        <p><strong>Upton</strong> is a framework for easy web-scraping with a useful debug mode 
-that doesn&rsquo;t hammer your target&rsquo;s servers. It does the repetitive parts of 
-writing scrapers, so you only have to write the unique parts for each site.</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.8.6.1
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!" + escape(window.location.href);
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><div id='filecontents'>
+<h1 id="label-Upton">Upton</h1>
+
+<p>Upton is a framework for easy web-scraping with a useful debug mode that
+doesn&#39;t hammer your target&#39;s servers. It does the repetitive parts
+of writing scrapers, so you only have to write the unique parts for each
+site.</p>
+
+<h2 id="label-Documentation">Documentation</h2>
+
+<p>With Upton, you can scrape complex sites in just one line of code.</p>
+
+<pre class="ruby"><span class="ruby-constant">Upton</span><span class="ruby-operator">::</span><span class="ruby-constant">Scraper</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;http://www.whatever.com&quot;</span>, <span class="ruby-node">&quot;section#links a&quot;</span>, :<span class="ruby-identifier">css</span>).<span class="ruby-identifier">scrape</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">article_str</span><span class="ruby-operator">|</span>
+  <span class="ruby-comment">#do stuff.</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>Just specify a URL to a list of links, an XPath or CSS selector for the
+links and a block of what to do with the content of the pages you&#39;ve
+scraped.</p>
 
 <p>Upton operates on the theory that, for most scraping projects, you need to
 scrape two types of pages:</p>
+<ol><li>
+<p>Index pages, which list instance pages. For example, a job search
+site&#39;s search page or a newspaper&#39;s homepage.</p>
+</li><li>
+<p>Instance pages, which represent the goal of your scraping, e.g. job
+listings or news articles.</p>
+</li></ol>
 
-<ol>
-<li>Index pages, which list instance pages. For example, a job search 
-site&rsquo;s search page or a newspaper&rsquo;s homepage.</li>
-<li>Instance pages, which represent the goal of your scraping, e.g.
-job listings or news articles.</li>
-</ol>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre><span class="k">module</span> <span class="nn">Upton</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-2'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-2">&#182;</a>
-        </div>
-        <p>Upton::Scraper is implemented as an abstract class. Implement a class to
-inherit from Upton::Scraper. </p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>  <span class="k">class</span> <span class="nc">AbstractMethodError</span> <span class="o">&lt;</span> <span class="no">Exception</span><span class="p">;</span> <span class="k">end</span>
-  <span class="k">class</span> <span class="nc">Scraper</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-Basic_use-case_methods.'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-Basic_use-case_methods.">&#182;</a>
-        </div>
-        <h2>Basic use-case methods.</h2>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre></pre></div>
-      </td>
-    </tr>
-    <tr id='section-4'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-4">&#182;</a>
-        </div>
-        <p>This is the main user-facing method for a basic scraper.
-Call <code>scrape</code> with a block; this block will be called on 
-the text of each instance page, (and optionally, its URL and its index
-in the list of instance URLs returned by <code>get_index</code>).</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">scrape</span> <span class="o">&amp;</span><span class="n">blk</span>
-      <span class="nb">self</span><span class="o">.</span><span class="n">scrape_from_list</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">get_index</span><span class="p">,</span> <span class="n">blk</span><span class="p">)</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-5'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-5">&#182;</a>
-        </div>
-        <p>Return a list of URLs for the instances you want to scrape.</p>
+<p>For more complex use cases, subclass <code>Upton::Scraper</code> and
+override the relevant methods. If you&#39;re scraping links from an API,
+you would override <code>get_index</code>; if you needed to set a cookie or
+log in before scraping a site, you would override
+<code>get_instance</code>.</p>
 
-<p>You probably want to use Nokogiri or another HTML parser to find the
-links to the instances within the HTML of the index page; alternatively,
-you might make a call to a search API in this method.</p>
+<p>The <code>get_instance</code> and <code>get_index</code> methods use a
+protected method <code>get_page(url)</code> which, well, gets a page.
+That&#39;s not very special. The more interesting part is that
+<code>get_page(url, stash)</code> transparently stashes the response of
+each request if the second parameter, <code>stash</code>, is true. Whenever
+you repeat a request (with <code>true</code> as the second parameter), the
+stashed HTML is returned without going to the server. This is helpful in
+the development stages of a project when you&#39;re testing some aspect of
+the code and don&#39;t want to hit a server each time. If you are using
+<code>get_instance</code> and <code>get_index</code>, this can be
+en/disabled per instance of <code>Upton::Scraper</code> or its subclasses
+with the <code>@debug</code> option. Setting the <code>stash</code>
+parameter of the <code>get_page</code> method should only be used if
+you&#39;ve overridden <code>get_instance</code> or <code>get_index</code>
+in a subclass.</p>
 
-<p>This is an abstract method; you <em>must</em> override it in your subclass.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">get_index</span>
-      <span class="k">raise</span> <span class="no">AbstractMethodError</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-Configuration_Variables'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-Configuration_Variables">&#182;</a>
-        </div>
-        <h2>Configuration Variables</h2>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">initialize</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-7'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-7">&#182;</a>
-        </div>
-        <p>If true, then Upton prints information about when it gets
-files from the internet and when it gets them from its stash.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>      <span class="vi">@verbose</span> <span class="o">=</span> <span class="kp">false</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-8'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-8">&#182;</a>
-        </div>
-        <p>If true, then Upton fetches each page only once
-future requests for that file are responded to with the locally stashed
-version.
-You may want to set @debug to false for production (but maybe not).
-You can also control stashing behavior on a per-call basis with the
-optional second argument to get_page, if, for instance, you want to 
-stash instance pages, but not index pages.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>      <span class="vi">@debug</span> <span class="o">=</span> <span class="kp">true</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-9'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-9">&#182;</a>
-        </div>
-        <p>In order to not hammer servers, Upton waits for, by default, 30<br>
-seconds between requests to the remote server.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>      <span class="vi">@nice_sleep_time</span> <span class="o">=</span> <span class="mi">30</span> <span class="c1">#seconds</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-10'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-10">&#182;</a>
-        </div>
-        <p>Folder name for stashes, if you want them to be stored somewhere else,
-e.g. under /tmp.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>      <span class="vi">@stash_folder</span> <span class="o">=</span> <span class="s2">&quot;stashes&quot;</span>
-      
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-Advanced_use-case_methods.'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-Advanced_use-case_methods.">&#182;</a>
-        </div>
-        <h2>Advanced use-case methods.</h2>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre></pre></div>
-      </td>
-    </tr>
-    <tr id='section-12'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-12">&#182;</a>
-        </div>
-        <p>If instance pages (not index pages) are paginated, <strong>you must override</strong>
-this method to return the next URL, given the current URL and its index.</p>
+<p>Upton also sleeps (by default) 30 seconds between non-stashed requests, to
+reduce load on the server you&#39;re scraping. This is configurable with
+the <code>@nice_sleep_time</code> option.</p>
 
-<p>If instance pages aren&rsquo;t paginated, there&rsquo;s no need to override this.</p>
+<p><strong>For more complete documentation</strong>, see <a
+href="http://propublica.github.io/upton">the RDoc</a>.</p>
 
-<p>Return URLs that are empty strings are ignored (and recursion stops.)
-e.g. next<em>page</em>url(&ldquo;http://whatever.com/article/upton-sinclairs-the-jungle?page=1&rdquo;, 2)
-ought to return &ldquo;http://whatever.com/article/upton-sinclairs-the-jungle?page=2&rdquo;</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">next_page_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
-      <span class="s2">&quot;&quot;</span>
-    <span class="k">end</span>
+<p><strong>Important Note:</strong> Upton is alpha software. The API may
+change at any time.</p>
 
+<h2 id="label-Example">Example</h2>
 
-    <span class="kp">protected</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-13'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-13">&#182;</a>
-        </div>
-        <p>Handles getting pages with RestClient or getting them from the local stash</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">get_page</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stash</span><span class="o">=</span><span class="kp">false</span><span class="p">)</span>
-      <span class="k">return</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">url</span><span class="o">.</span><span class="n">empty?</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-14'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-14">&#182;</a>
-        </div>
-        <p>the filename for each stashed version is a cleaned version of the URL.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>      <span class="k">if</span> <span class="n">stash</span> <span class="o">&amp;&amp;</span> <span class="no">File</span><span class="o">.</span><span class="n">exists?</span><span class="p">(</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="vi">@stash_folder</span><span class="p">,</span> <span class="n">url</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[^A-Za-z0-9\-]/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
-        <span class="nb">puts</span> <span class="s2">&quot;usin&#39; a stashed copy of &quot;</span> <span class="o">+</span> <span class="n">url</span> <span class="k">if</span> <span class="vi">@verbose</span>
-        <span class="n">resp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="vi">@stash_folder</span><span class="p">,</span> <span class="n">url</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[^A-Za-z0-9\-]/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span>
-      <span class="k">else</span>
-        <span class="k">begin</span>
-          <span class="nb">puts</span> <span class="s2">&quot;getting &quot;</span> <span class="o">+</span> <span class="n">url</span> <span class="k">if</span> <span class="vi">@verbose</span>
-          <span class="nb">sleep</span> <span class="vi">@nice_sleep_time</span>
-          <span class="n">resp</span> <span class="o">=</span> <span class="no">RestClient</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="p">{</span><span class="ss">:accept</span><span class="o">=&gt;</span> <span class="s2">&quot;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&quot;</span><span class="p">})</span>
-        <span class="k">rescue</span> <span class="no">RestClient</span><span class="o">::</span><span class="no">ResourceNotFound</span>
-          <span class="n">resp</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">rescue</span> <span class="no">RestClient</span><span class="o">::</span><span class="no">InternalServerError</span>
-          <span class="n">resp</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">end</span>
-        <span class="k">if</span> <span class="n">stash</span>
-          <span class="nb">puts</span> <span class="s2">&quot;I just stashed (</span><span class="si">#{</span><span class="n">resp</span><span class="o">.</span><span class="n">code</span> <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:code</span><span class="p">)</span><span class="si">}</span><span class="s2">): </span><span class="si">#{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="vi">@verbose</span>
-          <span class="nb">open</span><span class="p">(</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="vi">@stash_folder</span><span class="p">,</span> <span class="n">url</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/[^A-Za-z0-9\-]/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">){</span><span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">resp</span><span class="p">)}</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
-      <span class="n">resp</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-15'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-15">&#182;</a>
-        </div>
-        <p>Returns the concatenated output of each member of a paginated instance,
-e.g. a news article with 2 pages.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">get_instance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-      <span class="n">resp</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">get_page</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="vi">@debug</span><span class="p">)</span>
-      <span class="k">if</span> <span class="o">!</span><span class="n">resp</span><span class="o">.</span><span class="n">empty?</span> 
-        <span class="n">next_url</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">next_page_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">unless</span> <span class="n">next_url</span> <span class="o">==</span> <span class="n">url</span>
-          <span class="n">next_resp</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="n">next_url</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span> 
-          <span class="n">resp</span> <span class="o">+=</span> <span class="n">next_resp</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
-      <span class="n">resp</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-16'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-16">&#182;</a>
-        </div>
-        <p>Just a helper for <code>scrape</code></p>
+<p>If you want to scrape ProPublica&#39;s website with Upton, this is how
+you&#39;d do it. (Scraping our <a
+href="http://feeds.propublica.org/propublica/main">RSS feed</a> would be
+smarter, but not every site has a full-text RSS feed…)</p>
 
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">scrape_from_list</span><span class="p">(</span><span class="n">list</span><span class="p">,</span> <span class="n">blk</span><span class="p">)</span>
-      <span class="n">list</span><span class="o">.</span><span class="n">each_with_index</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">instance_url</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
-        <span class="n">blk</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">get_instance</span><span class="p">(</span><span class="n">instance_url</span><span class="p">),</span> <span class="n">instance_url</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></pre></div>
-      </td>
-    </tr>
-  </table>
+<pre class="ruby">  <span class="ruby-constant">Upton</span><span class="ruby-operator">::</span><span class="ruby-constant">Scraper</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;http://www.propublica.org&quot;</span>, <span class="ruby-node">&quot;section#river section h1 a&quot;</span>, :<span class="ruby-identifier">css</span>).<span class="ruby-identifier">scrape</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">article_string</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;here is the full text of the ProPublica article: \n #{article_string}&quot;</span>
+    <span class="ruby-comment">#or, do other stuff here.</span>
+  <span class="ruby-keyword">end</span>
+</pre>
+
+<h2 id="label-Why+%22Upton%22">Why “Upton”</h2>
+
+<p>Upton Sinclair was a pioneering, muckraking journalist who is most famous
+for <em>The Jungle</em>, a novel portraying the reality of immigrant labor
+struggles in Chicago meatpacking plants at the start of the 1900s. Upton,
+the gem, sprang out of a ProPublica project pertaining to labor issues.</p>
+
+<h2 id="label-License+%28MIT%29">License (MIT)</h2>
+
+<p>Copyright © 2013 ProPublica</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the “Software”),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.</p>
+</div></div>
+
+    <div id="footer">
+  Generated on Thu Jun  6 14:55:17 2013 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.6.1 (ruby-2.0.0).
 </div>
-</body>
+
+  </body>
+</html>
