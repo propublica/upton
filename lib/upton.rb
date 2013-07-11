@@ -116,13 +116,13 @@ module Upton
           sleep @nice_sleep_time
           resp = RestClient.get(url, {:accept=> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
         rescue RestClient::ResourceNotFound
-          puts "404 error, skipping: #{uri}" if @verbose
+          puts "404 error, skipping: #{url}" if @verbose
           resp = ""
         rescue RestClient::InternalServerError
-          puts "500 Error, skipping: #{uri}" if @verbose
+          puts "500 Error, skipping: #{url}" if @verbose
           resp = ""
         rescue URI::InvalidURIError
-          puts "Invalid URI: #{uri}" if @verbose
+          puts "Invalid URI: #{url}" if @verbose
           resp = ""
         end
         if stash
