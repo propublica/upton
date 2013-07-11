@@ -37,6 +37,13 @@ If you want to scrape ProPublica's website with Upton, this is how you'd do it. 
         #or, do other stuff here.
       end
 
+Contributing
+----------------------
+I'd love to hear from you and see your suggestions/complaints/bug reports/pull requests. If you're interested, check out the issues tab or [drop me a note](http://github.com/jeremybmerrill).
+
+In particular, if you have a common, *abstract* use case, please add them to [lib/utils.rb](https://github.com/propublica/upton/blob/master/lib/utils.rb). Check out the `table_to_csv` and `list_to_csv` methods for examples.
+
+(The pull request process is pretty easy. Fork the project in Github (or via the `git` CLI), make your changes, then submit a pull request on Github.) 
 
 Why "Upton"
 ----------------------
