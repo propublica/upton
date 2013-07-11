@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.version     = '0.1.1'
   s.date        = '2013-06-25'
   s.summary     = "A simple web-scraping framework"
-  s.description = "Don't re-write web scrapers every time. Skrapojan gives you a scraper template that's easy to use for debugging and doesn't hammer servers by default"
+  s.description = "Don't re-write web scrapers every time. Upton gives you a scraper template that's easy to use for debugging and doesn't hammer servers by default"
   s.authors     = ["Jeremy B. Merrill"]
   s.email       = 'jeremy.merrill@propublica.org'
   s.files       = ["lib/upton.rb"]
