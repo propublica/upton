@@ -12,13 +12,16 @@
 # 2. Instance pages, which represent the goal of your scraping, e.g.
 #     job listings or news articles.
 
+require 'nokogiri'
+require './lib/utils'
+
 module Upton
 
   # Upton::Scraper can be used as-is for basic use-cases, or can be subclassed
   # in more complicated cases; e.g. +MyScraper < Upton::Scraper+
   class Scraper
 
-    attr_accessor :verbose, :debug, :nice_sleep_time, :stash_folder
+    attr_accessor :verbose, :debug, :nice_sleep_time, :stash_folder, :url_array
 
     # == Basic use-case methods.
 
@@ -27,7 +30,10 @@ module Upton
     # the text of each instance page, (and optionally, its URL and its index
     # in the list of instance URLs returned by +get_index+).
     def scrape &blk
-      self.scrape_from_list(self.get_index, blk)
+      unless self.url_array
+        self.url_array = self.get_index
+      end
+      self.scrape_from_list(self.url_array, blk)
     end
 
 
@@ -40,11 +46,22 @@ module Upton
     #
     # These options are a shortcut. If you plant to override +get_index+, you
     # do not need to set them.
-    def initialize(index_url="", selector="", selector_method=:xpath)
-      @index_url = index_url
-      @index_selector = selector
-      @index_selector_method = selector_method
+    def initialize(index_url_or_array, selector="", selector_method=:xpath)
 
+      #if first arg is a valid URL, do already-written stuff;
+      #if it's not (or if it's a list?) don't bother with get_index, etc.
+      #e.g. Scraper.new(["http://jeremybmerrill.com"])
+
+      #TODO: rewrite this, because it's a little silly. (i.e. should be a more sensical division of how these arguments work)
+      if selector.empty?
+        @url_array = index_url_or_array
+      elsif index_url_or_array =~ URI::ABS_URI
+        @index_url = index_url_or_array
+        @index_selector = selector
+        @index_selector_method = selector_method
+      else
+        raise ArgumentError
+      end
       # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
       @verbose = false
@@ -98,6 +115,15 @@ module Upton
       ""
     end
 
+    def scrape_to_csv filename, &blk
+      require 'csv'
+      unless self.url_array
+        self.url_array = self.get_index
+      end
+      CSV.open filename, 'wb' do |csv|
+        self.scrape_from_list(self.url_array, blk).each{|document| document.each{|line| csv << line }}
+      end
+    end
 
     protected
 
@@ -109,12 +135,27 @@ module Upton
       #the filename for each stashed version is a cleaned version of the URL.
       if stash && File.exists?( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") ) )
         puts "usin' a stashed copy of " + url if @verbose
-        resp = open( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "")), 'r:UTF-8').read
+        resp = open( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "")), 'r:UTF-8').read .encode("UTF-8", :invalid => :replace, :undef => :replace )
       else
         begin
           puts "getting " + url if @verbose
           sleep @nice_sleep_time
           resp = RestClient.get(url, {:accept=> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
+
+          #this is silly, but rest-client needs to get on their game.
+          #cf https://github.com/jcoyne/rest-client/blob/fb80f2c320687943bc4fae1503ed15f9dff4ce64/lib/restclient/response.rb#L26
+          if ((200..207).include?(resp.net_http_res.code.to_i) && content_type = resp.net_http_res.content_type)
+            charset = if set = resp.net_http_res.type_params['charset'] 
+              set
+            elsif content_type == 'text/xml'
+              'us-ascii'
+            elsif content_type.split('/').first == 'text'
+              'iso-8859-1'
+            end
+            puts charset
+            resp.force_encoding(charset) if charset
+          end
+
         rescue RestClient::ResourceNotFound
           puts "404 error, skipping: #{url}" if @verbose
           resp = ""
@@ -127,7 +168,7 @@ module Upton
         end
         if stash
           puts "I just stashed (#{resp.code if resp.respond_to?(:code)}): #{url}" if @verbose
-          open( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") ), 'w:UTF-8'){|f| f.write(resp.encode("UTF-8", :invalid => :replace, :undef => :replace ))}
+          open( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") ), 'w:UTF-8'){|f| f.write(resp.encode("UTF-8", :invalid => :replace, :undef => :replace ) )}
         end
       end
       resp

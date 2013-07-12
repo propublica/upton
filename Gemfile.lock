@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    upton (0.1.0)
+    upton (0.1.1)
       nokogiri
       rest-client (~> 1.6.7)
 

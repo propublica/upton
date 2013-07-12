@@ -37,6 +37,13 @@ If you want to scrape ProPublica's website with Upton, this is how you'd do it. 
         #or, do other stuff here.
       end
 
+Contributing
+----------------------
+I'd love to hear from you and see your suggestions/complaints/bug reports/pull requests. If you're interested, check out the issues tab or [drop me a note](http://github.com/jeremybmerrill).
+
+In particular, if you have a common, *abstract* use case, please add them to [lib/utils.rb](https://github.com/propublica/upton/blob/master/lib/utils.rb). Check out the `table_to_csv` and `list_to_csv` methods for examples.
+
+(The pull request process is pretty easy. Fork the project in Github (or via the `git` CLI), make your changes, then submit a pull request on Github.) 
 
 Why "Upton"
 ----------------------
@@ -53,3 +60,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+Notes
+------------------------
+Test data is copyrighted by either ProPublica or various Wikipedia contributors.
+In either case, it's reproduced here under a Creative Commons license. In ProPublica's case, it's BY-NC-ND; in Wikipedia's it's BY-SA.
