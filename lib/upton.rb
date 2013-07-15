@@ -39,13 +39,16 @@ module Upton
 
     # == Configuration Options
 
-    # +index_url+: The URL of the page containing the list of instances.
+    # +index_url+: The URL of the page containing the list of instances, OR
+    #              a list of string URLs.
     # +selector+: The XPath or CSS that specifies the anchor elements within 
-    # the page.
+    #              the page.
     # +selector_method+: +:xpath+ or +:css+. By default, +:xpath+.
     #
     # These options are a shortcut. If you plant to override +get_index+, you
     # do not need to set them.
+    # If you don't specify a selector, the first argument will be treated as a
+    # list of URLs.
     def initialize(index_url_or_array, selector="", selector_method=:xpath)
 
       #if first arg is a valid URL, do already-written stuff;

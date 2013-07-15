@@ -5,20 +5,19 @@ Upton is a framework for easy web-scraping with a useful debug mode that doesn't
 Documentation
 ----------------------
 
-With Upton, you can scrape complex sites in just one line of code.
+With Upton, you can scrape complex sites to a CSV in just one line of code.
 
-    Upton::Scraper.new("http://www.whatever.com", "section#links a", :css).scrape do |article_str|
-      #do stuff.
-    end
+    Upton::Scraper.new("http://website.com/list_of_stories.html").
+        scrape_to_csv("output.csv", &Upton::Utils.list("#comments li a.commenter-name", :css))
 
-Just specify a URL to a list of links, an XPath or CSS selector for the links and a block of what to do with the content of the pages you've scraped.
+Just specify a URL to a list of links -- or simply a list of links --, an XPath or CSS selector for the links and a block of what to do with the content of the pages you've scraped. Upton comes with some pre-written blocks (Procs, technically) for scraping simple lists and tables, like the `list` function above.
 
 Upton operates on the theory that, for most scraping projects, you need to scrape two types of pages:
 
+1. Instance pages, which are the goal of your scraping, e.g. job listings or news articles.
 1. Index pages, which list instance pages. For example, a job search site's search page or a newspaper's homepage.
-2. Instance pages, which represent the goal of your scraping, e.g. job listings or news articles.
 
-For more complex use cases, subclass `Upton::Scraper` and override the relevant methods. If you're scraping links from an API, you would override `get_index`; if you needed to set a cookie or log in before scraping a site, you would override `get_instance`.
+For more complex use cases, subclass `Upton::Scraper` and override the relevant methods. If you're scraping links from an API, you would override `get_index`; if you need to log in before scraping a site or do something special with the scraped instance page, you would override `get_instance`.
 
 The `get_instance` and `get_index` methods use a protected method `get_page(url)` which, well, gets a page. That's not very special. The more interesting part is that `get_page(url, stash)` transparently stashes the response of each request if the second parameter, `stash`, is true. Whenever you repeat a request (with `true` as the second parameter), the stashed HTML is returned without going to the server. This is helpful in the development stages of a project when you're testing some aspect of the code and don't want to hit a server each time. If you are using `get_instance` and `get_index`, this can be en/disabled per instance of `Upton::Scraper` or its subclasses with the `@debug` option. Setting the `stash` parameter of the `get_page` method should only be used if you've overridden `get_instance` or `get_index` in a subclass.
 
@@ -39,7 +38,7 @@ If you want to scrape ProPublica's website with Upton, this is how you'd do it. 
 
 Contributing
 ----------------------
-I'd love to hear from you and see your suggestions/complaints/bug reports/pull requests. If you're interested, check out the issues tab or [drop me a note](http://github.com/jeremybmerrill).
+I'd love to hear from you if you're using Upton. I also appreciate your suggestions/complaints/bug reports/pull requests. If you're interested, check out the issues tab or [drop me a note](http://github.com/jeremybmerrill).
 
 In particular, if you have a common, *abstract* use case, please add them to [lib/utils.rb](https://github.com/propublica/upton/blob/master/lib/utils.rb). Check out the `table_to_csv` and `list_to_csv` methods for examples.
 
