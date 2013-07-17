@@ -126,7 +126,7 @@ module Upton
         self.url_array = self.get_index
       end
       CSV.open filename, 'wb' do |csv|
-        self.scrape_from_list(self.url_array, blk).each{|document| document.each{|line| csv << line }}
+        self.scrape_from_list(self.url_array, blk).each{|document| csv << document }
       end
     end
 
