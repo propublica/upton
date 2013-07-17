@@ -13,6 +13,8 @@
 #     job listings or news articles.
 
 require 'nokogiri'
+require 'uri'
+require 'restclient'
 require './lib/utils'
 
 module Upton
@@ -21,7 +23,7 @@ module Upton
   # in more complicated cases; e.g. +MyScraper < Upton::Scraper+
   class Scraper
 
-    attr_accessor :verbose, :debug, :nice_sleep_time, :stash_folder, :url_array
+    attr_accessor :verbose, :debug, :sleep_time_between_requests, :stash_folder, :url_array
 
     # == Basic use-case methods.
 
@@ -58,7 +60,7 @@ module Upton
       #TODO: rewrite this, because it's a little silly. (i.e. should be a more sensical division of how these arguments work)
       if selector.empty?
         @url_array = index_url_or_array
-      elsif index_url_or_array =~ URI::ABS_URI
+      elsif index_url_or_array =~ ::URI::ABS_URI
         @index_url = index_url_or_array
         @index_selector = selector
         @index_selector_method = selector_method
@@ -82,7 +84,7 @@ module Upton
 
       # In order to not hammer servers, Upton waits for, by default, 30  
       # seconds between requests to the remote server.
-      @nice_sleep_time = 30 #seconds
+      @sleep_time_between_requests = 30 #seconds
 
       # Folder name for stashes, if you want them to be stored somewhere else,
       # e.g. under /tmp.
@@ -142,7 +144,7 @@ module Upton
       else
         begin
           puts "getting " + url if @verbose
-          sleep @nice_sleep_time
+          sleep @sleep_time_between_requests
           resp = RestClient.get(url, {:accept=> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
 
           #this is silly, but rest-client needs to get on their game.
@@ -155,7 +157,6 @@ module Upton
             elsif content_type.split('/').first == 'text'
               'iso-8859-1'
             end
-            puts charset
             resp.force_encoding(charset) if charset
           end
 
