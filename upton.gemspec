@@ -1,12 +1,12 @@
 Gem::Specification.new do |s|
   s.name        = 'upton'
-  s.version     = '0.2.1'
+  s.version     = '0.2.3'
   s.date        = '2013-07-17'
   s.summary     = "A simple web-scraping framework"
   s.description = "Don't re-write web scrapers every time. Upton gives you a scraper template that's easy to use for debugging and doesn't hammer servers by default"
   s.authors     = ["Jeremy B. Merrill"]
   s.email       = 'jeremy.merrill@propublica.org'
-  s.files       = ["lib/upton.rb"]
+  s.files       = ["lib/upton.rb", "lib/utils.rb"]
   s.has_rdoc    = true
   s.test_files  = Dir.glob('test/data/*.html') + ['test/test_upton.rb']
   s.required_ruby_version = ">= 1.8.7" #not tested with 1.8.6, but it might work
