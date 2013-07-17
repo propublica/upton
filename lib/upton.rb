@@ -11,6 +11,7 @@
 #     site's search page or a newspaper's homepage.
 # 2. Instance pages, which represent the goal of your scraping, e.g.
 #     job listings or news articles.
+#
 
 require 'nokogiri'
 require 'uri'
@@ -38,13 +39,10 @@ module Upton
       self.scrape_from_list(self.url_array, blk)
     end
 
-
-    # == Configuration Options
-
-    # +index_url+: The URL of the page containing the list of instances, OR
-    #              a list of string URLs.
+    # +index_url_or_array+: A list of string URLs, OR
+    #              the URL of the page containing the list of instances.
     # +selector+: The XPath or CSS that specifies the anchor elements within 
-    #              the page.
+    #              the page, if a url is specified for the previous argument.
     # +selector_method+: +:xpath+ or +:css+. By default, +:xpath+.
     #
     # These options are a shortcut. If you plant to override +get_index+, you
@@ -95,13 +93,15 @@ module Upton
     end
 
 
+    # == Configuration Options
 
     # If instance pages are paginated, <b>you must override</b> 
     # this method to return the next URL, given the current URL and its index.
     #
     # If instance pages aren't paginated, there's no need to override this.
     #
-    # Return URLs that are empty strings are ignored (and recursion stops.)
+    # Recursion stops if the fetching URL returns an empty string or an error.
+    #
     # e.g. next_instance_page_url("http://whatever.com/article/upton-sinclairs-the-jungle?page=1", 2)
     # ought to return "http://whatever.com/article/upton-sinclairs-the-jungle?page=2"
     def next_instance_page_url(url, index)
@@ -113,7 +113,8 @@ module Upton
     #
     # If index pages aren't paginated, there's no need to override this.
     #
-    # Return URLs that are empty strings are ignored (and recursion stops.)
+    # Recursion stops if the fetching URL returns an empty string or an error.
+    #
     # e.g. +next_index_page_url("http://whatever.com/articles?page=1", 2)+
     # ought to return "http://whatever.com/articles?page=2"
     def next_index_page_url(url, index)
@@ -205,8 +206,12 @@ module Upton
       resp
     end
 
-    # Returns the concatenated output of each member of a paginated instance,
-    # e.g. a news article with 2 pages.
+    # Returns the article at `url`.
+    # 
+    # If the page is stashed, returns that, otherwise, fetches it from the web.
+    #
+    # If an instance is paginated, returns the concatenated output of each 
+    # page, e.g. if a news article has two pages.
     def get_instance(url, index=0)
       resp = self.get_page(url, @debug)
       if !resp.empty? 
