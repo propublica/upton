@@ -1,8 +1,19 @@
 # encoding: UTF-8
 
 module Upton
+
+  ##
+  # This class contains a collection of helpers for Upton
+  #
+  # Each method returns a Proc that (with an & ) can be used as the final
+  # argument to Upton's `scrape` and `scrape_to_csv`
+  ##
   module Utils
-    #instance_html, instance_url, index
+
+    ##
+    # Scrapes an HTML <table> element into an Array of Arrays. The header, if
+    # present, is returned as the first row.
+    ##
     def self.table(table_selector, selector_method=:xpath)
       require 'csv'
       return Proc.new do |instance_html|
@@ -16,6 +27,9 @@ module Upton
       end
     end
 
+    ##
+    # Scrapes any set of HTML elements into an Array. 
+    ##
     def self.list(list_selector, selector_method=:xpath)
       require 'csv'
       return Proc.new do |instance_html|

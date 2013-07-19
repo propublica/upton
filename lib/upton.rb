@@ -1,17 +1,5 @@
 # encoding: UTF-8
 
-# *Upton* is a framework for easy web-scraping with a useful debug mode 
-# that doesn't hammer your target's servers. It does the repetitive parts of 
-# writing scrapers, so you only have to write the unique parts for each site.
-#
-# Upton operates on the theory that, for most scraping projects, you need to
-# scrape two types of pages:
-# 
-# 1. Index pages, which list instance pages. For example, a job search 
-#     site's search page or a newspaper's homepage.
-# 2. Instance pages, which represent the goal of your scraping, e.g.
-#     job listings or news articles.
-#
 
 require 'nokogiri'
 require 'uri'
@@ -19,19 +7,35 @@ require 'restclient'
 require './lib/utils'
 
 module Upton
-
+  ##
+  # *Upton* is a framework for easy web-scraping with a useful debug mode 
+  # that doesn't hammer your target's servers. It does the repetitive parts of 
+  # writing scrapers, so you only have to write the unique parts for each site.
+  #
+  # Upton operates on the theory that, for most scraping projects, you need to
+  # scrape two types of pages:
+  # 
+  # 1. Index pages, which list instance pages. For example, a job search 
+  #     site's search page or a newspaper's homepage.
+  # 2. Instance pages, which represent the goal of your scraping, e.g.
+  #     job listings or news articles.
+  #
   # Upton::Scraper can be used as-is for basic use-cases, or can be subclassed
   # in more complicated cases; e.g. +MyScraper < Upton::Scraper+
+  #
+  # In basic use cases, stick to using `scrape`, `scrape_to_csv` and the
+  # initializer (`.new`). Override the others in a subclass for advanced cases.
+  ##
   class Scraper
 
     attr_accessor :verbose, :debug, :sleep_time_between_requests, :stash_folder, :url_array
 
-    # == Basic use-case methods.
-
+    ##
     # This is the main user-facing method for a basic scraper.
     # Call +scrape+ with a block; this block will be called on 
     # the text of each instance page, (and optionally, its URL and its index
     # in the list of instance URLs returned by +get_index+).
+    ##
     def scrape &blk
       unless self.url_array
         self.url_array = self.get_index
@@ -39,6 +43,7 @@ module Upton
       self.scrape_from_list(self.url_array, blk)
     end
 
+    ##
     # +index_url_or_array+: A list of string URLs, OR
     #              the URL of the page containing the list of instances.
     # +selector+: The XPath or CSS that specifies the anchor elements within 
@@ -49,6 +54,7 @@ module Upton
     # do not need to set them.
     # If you don't specify a selector, the first argument will be treated as a
     # list of URLs.
+    ##
     def initialize(index_url_or_array, selector="", selector_method=:xpath)
 
       #if first arg is a valid URL, do already-written stuff;
@@ -92,9 +98,7 @@ module Upton
       end
     end
 
-
-    # == Configuration Options
-
+    ##
     # If instance pages are paginated, <b>you must override</b> 
     # this method to return the next URL, given the current URL and its index.
     #
@@ -104,10 +108,12 @@ module Upton
     #
     # e.g. next_instance_page_url("http://whatever.com/article/upton-sinclairs-the-jungle?page=1", 2)
     # ought to return "http://whatever.com/article/upton-sinclairs-the-jungle?page=2"
+    ##
     def next_instance_page_url(url, index)
       ""
     end
 
+    ##
     # If index pages are paginated, <b>you must override</b>
     # this method to return the next URL, given the current URL and its index.
     #
@@ -117,10 +123,14 @@ module Upton
     #
     # e.g. +next_index_page_url("http://whatever.com/articles?page=1", 2)+
     # ought to return "http://whatever.com/articles?page=2"
+    ##
     def next_index_page_url(url, index)
       ""
     end
 
+    ##
+    # Writes the scraped result to a CSV at the given filename.
+    ##
     def scrape_to_csv filename, &blk
       require 'csv'
       unless self.url_array
@@ -133,8 +143,11 @@ module Upton
 
     protected
 
-
-    #Handles getting pages with RestClient or getting them from the local stash
+    ##
+    # Handles getting pages with RestClient or getting them from the local stash.
+    #
+    # Uses a kludge (because rest-client is outdated) to handle encoding.
+    ##
     def get_page(url, stash=false)
       return "" if url.empty?
 
@@ -179,21 +192,27 @@ module Upton
       resp
     end
 
+    ##
     # Return a list of URLs for the instances you want to scrape.
     # This can optionally be overridden if, for example, the list of instances
     # comes from an API.
+    ##
     def get_index
       parse_index(get_index_pages(@index_url, 1), @index_selector, @index_selector_method)
     end
 
-    # Using the XPath or CSS selector and selector_method that uniquely locates
-    # the links in the index, return those links as strings.
+    ##
+    # Using the XPath expression or CSS selector and selector_method that 
+    # uniquely identifies the links in the index, return those links as strings.
+    ##
     def parse_index(text, selector, selector_method=:xpath)
       Nokogiri::HTML(text).send(selector_method, selector).to_a.map{|l| l["href"] }
     end
 
+    ##
     # Returns the concatenated output of each member of a paginated index,
     # e.g. a site listing links with 2+ pages.
+    ##
     def get_index_pages(url, index)
       resp = self.get_page(url, @index_debug)
       if !resp.empty? 
@@ -206,12 +225,14 @@ module Upton
       resp
     end
 
+    ##
     # Returns the article at `url`.
     # 
     # If the page is stashed, returns that, otherwise, fetches it from the web.
     #
     # If an instance is paginated, returns the concatenated output of each 
     # page, e.g. if a news article has two pages.
+    ##
     def get_instance(url, index=0)
       resp = self.get_page(url, @debug)
       if !resp.empty? 
