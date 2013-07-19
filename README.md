@@ -54,13 +54,6 @@ A `table` block also exists in `Upton::Utils` to scrape tables to an array of ar
     [["Jeremy", "$8.00"], ["John Doe", "$15.00"]]
 
 
-Shortcuts
-----------
-Upton includes a handful of "shortcut" methods to scrape a table or a list certain elements on a series of pages into a CSV. See `lib/utils.rb` for these, but they include:
-
-Utils::table("#article table", :css) and
-Utils::list("a#byline", :css)
-
 Contributing
 ----------------------
 I'd love to hear from you if you're using Upton. I also appreciate your suggestions/complaints/bug reports/pull requests. If you're interested, check out the issues tab or [drop me a note](http://github.com/jeremybmerrill).
