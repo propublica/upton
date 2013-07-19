@@ -8,3 +8,6 @@ gem "thin"
 gem "nokogiri"
 gem "yard"
 gem "upton", :path => "."
+gem "rake"
+gem "redcarpet"
+

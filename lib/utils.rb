@@ -1,5 +1,8 @@
 # encoding: UTF-8
 
+##
+# This module contains a collection of helpers for Upton
+##
 module Upton
 
   ##

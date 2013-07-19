@@ -6,6 +6,9 @@ require 'uri'
 require 'restclient'
 require './lib/utils'
 
+##
+# This module contains a scraper called Upton
+##
 module Upton
   ##
   # *Upton* is a framework for easy web-scraping with a useful debug mode 

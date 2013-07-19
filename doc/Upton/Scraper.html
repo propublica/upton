@@ -1,0 +1,1003 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: Upton::Scraper
+  
+    &mdash; Documentation by YARD 0.8.6.1
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '../';
+  framesUrl = "../frames.html#!" + escape(window.location.href);
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="../_index.html">Index (S)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Upton.html" title="Upton (module)">Upton</a></span></span>
+     &raquo; 
+    <span class="title">Scraper</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="../method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="../file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: Upton::Scraper
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Upton::Scraper</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">lib/upton.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p><b>Upton</b> is a framework for easy web-scraping with a useful debug mode 
+that doesn't hammer your target's servers. It does the repetitive parts of 
+writing scrapers, so you only have to write the unique parts for each site.</p>
+
+<p>Upton operates on the theory that, for most scraping projects, you need to
+scrape two types of pages:</p>
+<ol><li>
+<p>Index pages, which list instance pages. For example, a job search</p>
+
+<pre class="code ruby"><code class="ruby">site's search page or a newspaper's homepage.</code></pre>
+</li><li>
+<p>Instance pages, which represent the goal of your scraping, e.g.</p>
+
+<pre class="code ruby"><code class="ruby">job listings or news articles.</code></pre>
+</li></ol>
+
+<p>Upton::Scraper can be used as-is for basic use-cases by:</p>
+<ol><li>
+<p>specifying the pages to be scraped in `new` as an index page</p>
+
+<pre class="code ruby"><code class="ruby">or as an Array of URLs.</code></pre>
+</li><li>
+<p>supplying a block to `scrape` or `scrape_to_csv` or using a pre-build</p>
+
+<pre class="code ruby"><code class="ruby">block from Upton::Utils.</code></pre>
+</li></ol>
+
+<p>For more complicated cases; subclass Upton::Scraper</p>
+
+<pre class="code ruby"><code class="ruby">e.g. +MyScraper &lt; Upton::Scraper+ and overrdie various methods.</code></pre>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+  <h2>Instance Attribute Summary <small>(<a href="#" class="summary_toggle">collapse</a>)</small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#debug-instance_method" title="#debug (instance method)">- (Object) <strong>debug</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute debug.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#sleep_time_between_requests-instance_method" title="#sleep_time_between_requests (instance method)">- (Object) <strong>sleep_time_between_requests</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute sleep_time_between_requests.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#stash_folder-instance_method" title="#stash_folder (instance method)">- (Object) <strong>stash_folder</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute stash_folder.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#url_array-instance_method" title="#url_array (instance method)">- (Object) <strong>url_array</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute url_array.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#verbose-instance_method" title="#verbose (instance method)">- (Object) <strong>verbose</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute verbose.</p>
+</div></span>
+  
+</li>
+
+    
+  </ul>
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">- (Scraper) <strong>initialize</strong>(index_url_or_array, selector = &quot;&quot;, selector_method = :xpath) </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p><tt>index_url_or_array</tt>: A list of string URLs, OR.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#next_index_page_url-instance_method" title="#next_index_page_url (instance method)">- (Object) <strong>next_index_page_url</strong>(url, index) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>If index pages are paginated, you must override this method to return the
+next URL, given the current URL and its index.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#next_instance_page_url-instance_method" title="#next_instance_page_url (instance method)">- (Object) <strong>next_instance_page_url</strong>(url, index) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>If instance pages are paginated, you must override  this method to return
+the next URL, given the current URL and its index.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#scrape-instance_method" title="#scrape (instance method)">- (Object) <strong>scrape</strong>(&amp;blk) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>This is the main user-facing method for a basic scraper.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#scrape_to_csv-instance_method" title="#scrape_to_csv (instance method)">- (Object) <strong>scrape_to_csv</strong>(filename, &amp;blk) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Writes the scraped result to a CSV at the given filename.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    - (<tt><span class='object_link'><a href="" title="Upton::Scraper (class)">Scraper</a></span></tt>) <strong>initialize</strong>(index_url_or_array, selector = &quot;&quot;, selector_method = :xpath) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p><tt>index_url_or_array</tt>: A list of string URLs, OR</p>
+
+<pre class="code ruby"><code class="ruby">the URL of the page containing the list of instances.</code></pre>
+
+<p><tt>selector</tt>: The XPath or CSS that specifies the anchor elements
+within</p>
+
+<pre class="code ruby"><code class="ruby">the page, if a url is specified for the previous argument.</code></pre>
+
+<p><tt>selector_method</tt>: <tt>:xpath</tt> or <tt>:css</tt>. By default,
+<tt>:xpath</tt>.</p>
+
+<p>These options are a shortcut. If you plant to override <tt>get_index</tt>,
+you do not need to set them. If you don't specify a selector, the first
+argument will be treated as a list of URLs.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/upton.rb', line 63</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_index_url_or_array'>index_url_or_array</span><span class='comma'>,</span> <span class='id identifier rubyid_selector'>selector</span><span class='op'>=</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_selector_method'>selector_method</span><span class='op'>=</span><span class='symbol'>:xpath</span><span class='rparen'>)</span>
+
+  <span class='comment'>#if first arg is a valid URL, do already-written stuff;
+</span>  <span class='comment'>#if it's not (or if it's a list?) don't bother with get_index, etc.
+</span>  <span class='comment'>#e.g. Scraper.new([&quot;http://jeremybmerrill.com&quot;])
+</span>
+  <span class='comment'>#TODO: rewrite this, because it's a little silly. (i.e. should be a more sensical division of how these arguments work)
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_selector'>selector</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='ivar'>@url_array</span> <span class='op'>=</span> <span class='id identifier rubyid_index_url_or_array'>index_url_or_array</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_index_url_or_array'>index_url_or_array</span> <span class='op'>=~</span> <span class='op'>::</span><span class='const'>URI</span><span class='op'>::</span><span class='const'>ABS_URI</span>
+    <span class='ivar'>@index_url</span> <span class='op'>=</span> <span class='id identifier rubyid_index_url_or_array'>index_url_or_array</span>
+    <span class='ivar'>@index_selector</span> <span class='op'>=</span> <span class='id identifier rubyid_selector'>selector</span>
+    <span class='ivar'>@index_selector_method</span> <span class='op'>=</span> <span class='id identifier rubyid_selector_method'>selector_method</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span>
+  <span class='kw'>end</span>
+  <span class='comment'># If true, then Upton prints information about when it gets
+</span>  <span class='comment'># files from the internet and when it gets them from its stash.
+</span>  <span class='ivar'>@verbose</span> <span class='op'>=</span> <span class='kw'>false</span>
+
+  <span class='comment'># If true, then Upton fetches each instance page only once
+</span>  <span class='comment'># future requests for that file are responded to with the locally stashed
+</span>  <span class='comment'># version.
+</span>  <span class='comment'># You may want to set @debug to false for production (but maybe not).
+</span>  <span class='comment'># You can also control stashing behavior on a per-call basis with the
+</span>  <span class='comment'># optional second argument to get_page, if, for instance, you want to 
+</span>  <span class='comment'># stash certain instance pages, e.g. based on their modification date.
+</span>  <span class='ivar'>@debug</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='comment'># Index debug does the same, but for index pages.
+</span>  <span class='ivar'>@index_debug</span> <span class='op'>=</span> <span class='kw'>false</span>
+
+  <span class='comment'># In order to not hammer servers, Upton waits for, by default, 30  
+</span>  <span class='comment'># seconds between requests to the remote server.
+</span>  <span class='ivar'>@sleep_time_between_requests</span> <span class='op'>=</span> <span class='int'>30</span> <span class='comment'>#seconds
+</span>
+  <span class='comment'># Folder name for stashes, if you want them to be stored somewhere else,
+</span>  <span class='comment'># e.g. under /tmp.
+</span>  <span class='ivar'>@stash_folder</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>stashes</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>unless</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_exists?'>exists?</span><span class='lparen'>(</span><span class='ivar'>@stash_folder</span><span class='rparen'>)</span>
+    <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_mkdir'>mkdir</span><span class='lparen'>(</span><span class='ivar'>@stash_folder</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id="debug=-instance_method"></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="debug-instance_method">
+  
+    - (<tt>Object</tt>) <strong>debug</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute debug</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/upton.rb', line 36</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_debug'>debug</span>
+  <span class='ivar'>@debug</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="sleep_time_between_requests=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="sleep_time_between_requests-instance_method">
+  
+    - (<tt>Object</tt>) <strong>sleep_time_between_requests</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute sleep_time_between_requests</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/upton.rb', line 36</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_sleep_time_between_requests'>sleep_time_between_requests</span>
+  <span class='ivar'>@sleep_time_between_requests</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="stash_folder=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="stash_folder-instance_method">
+  
+    - (<tt>Object</tt>) <strong>stash_folder</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute stash_folder</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/upton.rb', line 36</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_stash_folder'>stash_folder</span>
+  <span class='ivar'>@stash_folder</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="url_array=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="url_array-instance_method">
+  
+    - (<tt>Object</tt>) <strong>url_array</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute url_array</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/upton.rb', line 36</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_url_array'>url_array</span>
+  <span class='ivar'>@url_array</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="verbose=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="verbose-instance_method">
+  
+    - (<tt>Object</tt>) <strong>verbose</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute verbose</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/upton.rb', line 36</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_verbose'>verbose</span>
+  <span class='ivar'>@verbose</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="next_index_page_url-instance_method">
+  
+    - (<tt>Object</tt>) <strong>next_index_page_url</strong>(url, index) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>If index pages are paginated, <b>you must override</b> this method to
+return the next URL, given the current URL and its index.</p>
+
+<p>If index pages aren't paginated, there's no need to override this.</p>
+
+<p>Recursion stops if the fetching URL returns an empty string or an error.</p>
+
+<p>e.g. +next_index_page_url("<a
+href="http://whatever.com/articles?page=1">whatever.com/articles?page=1</a>",
+2)+ ought to return "<a
+href="http://whatever.com/articles?page=2">whatever.com/articles?page=2</a>"</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+132
+133
+134</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/upton.rb', line 132</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_next_index_page_url'>next_index_page_url</span><span class='lparen'>(</span><span class='id identifier rubyid_url'>url</span><span class='comma'>,</span> <span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="next_instance_page_url-instance_method">
+  
+    - (<tt>Object</tt>) <strong>next_instance_page_url</strong>(url, index) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>If instance pages are paginated, <b>you must override</b>  this method to
+return the next URL, given the current URL and its index.</p>
+
+<p>If instance pages aren't paginated, there's no need to override this.</p>
+
+<p>Recursion stops if the fetching URL returns an empty string or an error.</p>
+
+<p>e.g. next_instance_page_url("<a
+href="http://whatever.com/article/upton-sinclairs-the-jungle?page=1">whatever.com/article/upton-sinclairs-the-jungle?page=1</a>",
+2) ought to return "<a
+href="http://whatever.com/article/upton-sinclairs-the-jungle?page=2">whatever.com/article/upton-sinclairs-the-jungle?page=2</a>"</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+117
+118
+119</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/upton.rb', line 117</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_next_instance_page_url'>next_instance_page_url</span><span class='lparen'>(</span><span class='id identifier rubyid_url'>url</span><span class='comma'>,</span> <span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="scrape-instance_method">
+  
+    - (<tt>Object</tt>) <strong>scrape</strong>(&amp;blk) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>This is the main user-facing method for a basic scraper. Call
+<tt>scrape</tt> with a block; this block will be called on  the text of
+each instance page, (and optionally, its URL and its index in the list of
+instance URLs returned by <tt>get_index</tt>).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+44
+45
+46
+47
+48
+49</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/upton.rb', line 44</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_scrape'>scrape</span> <span class='op'>&amp;</span><span class='id identifier rubyid_blk'>blk</span>
+  <span class='kw'>unless</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_url_array'>url_array</span>
+    <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_url_array'>url_array</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_get_index'>get_index</span>
+  <span class='kw'>end</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_scrape_from_list'>scrape_from_list</span><span class='lparen'>(</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_url_array'>url_array</span><span class='comma'>,</span> <span class='id identifier rubyid_blk'>blk</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="scrape_to_csv-instance_method">
+  
+    - (<tt>Object</tt>) <strong>scrape_to_csv</strong>(filename, &amp;blk) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Writes the scraped result to a CSV at the given filename.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+139
+140
+141
+142
+143
+144
+145
+146
+147</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/upton.rb', line 139</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_scrape_to_csv'>scrape_to_csv</span> <span class='id identifier rubyid_filename'>filename</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_blk'>blk</span>
+  <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>csv</span><span class='tstring_end'>'</span></span>
+  <span class='kw'>unless</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_url_array'>url_array</span>
+    <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_url_array'>url_array</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_get_index'>get_index</span>
+  <span class='kw'>end</span>
+  <span class='const'>CSV</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span> <span class='id identifier rubyid_filename'>filename</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>wb</span><span class='tstring_end'>'</span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_csv'>csv</span><span class='op'>|</span>
+    <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_scrape_from_list'>scrape_from_list</span><span class='lparen'>(</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_url_array'>url_array</span><span class='comma'>,</span> <span class='id identifier rubyid_blk'>blk</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_document'>document</span><span class='op'>|</span> <span class='id identifier rubyid_csv'>csv</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_document'>document</span> <span class='rbrace'>}</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Fri Jul 19 17:39:35 2013 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.6.1 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>
