@@ -1,6 +1,5 @@
 # encoding: UTF-8
 
-
 require 'nokogiri'
 require 'uri'
 require 'restclient'

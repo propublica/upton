@@ -1,3 +1,7 @@
+# @markup markdown
+# @title README | Upton, an easy scraping framework.
+# @author Jeremy B. Merrill, ProPublica
+
 Upton
 ==========
 Upton is a framework for easy web-scraping with a useful debug mode that doesn't hammer your target's servers. It does the repetitive parts of writing scrapers, so you only have to write the unique parts for each site.
