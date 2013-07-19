@@ -20,11 +20,13 @@ module Upton
   # 2. Instance pages, which represent the goal of your scraping, e.g.
   #     job listings or news articles.
   #
-  # Upton::Scraper can be used as-is for basic use-cases, or can be subclassed
-  # in more complicated cases; e.g. +MyScraper < Upton::Scraper+
-  #
-  # In basic use cases, stick to using `scrape`, `scrape_to_csv` and the
-  # initializer (`.new`). Override the others in a subclass for advanced cases.
+  # Upton::Scraper can be used as-is for basic use-cases by:
+  # 1. specifying the pages to be scraped in `new` as an index page 
+  #      or as an Array of URLs.
+  # 2.  supplying a block to `scrape` or `scrape_to_csv` or using a pre-build 
+  #      block from Upton::Utils.
+  # For more complicated cases; subclass Upton::Scraper 
+  #    e.g. +MyScraper < Upton::Scraper+ and overrdie various methods.
   ##
   class Scraper
 
