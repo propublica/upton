@@ -14,7 +14,7 @@ With Upton, you can scrape complex sites to a CSV in just one line of code.
     Upton::Scraper.new("http://website.com/list_of_stories.html").
         scrape_to_csv("output.csv", &Upton::Utils.list("#comments li a.commenter-name", :css))
 
-Just specify a URL to a list of links -- or simply a list of links --, an XPath or CSS selector for the links and a block of what to do with the content of the pages you've scraped. Upton comes with some pre-written blocks (Procs, technically) for scraping simple lists and tables, like the `list` function above.
+Just specify a URL to a list of links -- or simply a list of links --, an XPath expression or CSS selector for the links and a block of what to do with the content of the pages you've scraped. Upton comes with some pre-written blocks (Procs, technically) for scraping simple lists and tables, like the `list` function above.
 
 Upton operates on the theory that, for most scraping projects, you need to scrape two types of pages:
 
@@ -27,18 +27,32 @@ The `get_instance` and `get_index` methods use a protected method `get_page(url)
 
 Upton also sleeps (by default) 30 seconds between non-stashed requests, to reduce load on the server you're scraping. This is configurable with the `@sleep_time_between_requests` option.
 
+Upton can handle pagination too. You can override the `next_index_page_url` and `next_instance_page_url` methods; Upton will get each page's URL returned by these functions and return their contents.
+
 <b>For more complete documentation</b>, see [the RDoc](http://propublica.github.io/upton).
 
 <b>Important Note:</b> Upton is alpha software. The API may change at any time. 
 
-Example
+Examples
 ----------------------
 If you want to scrape ProPublica's website with Upton, this is how you'd do it. (Scraping our [RSS feed](http://feeds.propublica.org/propublica/main) would be smarter, but not every site has a full-text RSS feed...)
 
-      Upton::Scraper.new("http://www.propublica.org", "section#river section h1 a", :css).scrape do |article_string|
-        puts "here is the full text of the ProPublica article: \n #{article_string}"
-        #or, do other stuff here.
-      end
+    Upton::Scraper.new("http://www.propublica.org", "section#river section h1 a", :css).scrape do |article_string|
+      puts "here is the full text of the ProPublica article: \n #{article_string}"
+      #or, do other stuff here.
+    end
+
+Simple sites can be scraped with pre-written `list` block in `Upton::Utils', as below:
+
+    > u = Upton::Scraper.new("http://nytimes.com", "ul.headlinesOnly a", :css)
+    > u.scrape_to_csv("output.csv", &Upton::Utils.list("h6.byline", :css))
+
+A `table` block also exists in `Upton::Utils` to scrape tables to an array of arrays, as below:
+
+    > u = Upton::Scraper.new(["http://website.com/story.html"])
+    > u.scrape(&Upton::Utils.table("//table[2]", :xpath))
+    [["Jeremy", "$8.00"], ["John Doe", "$15.00"]]
+
 
 Shortcuts
 ----------

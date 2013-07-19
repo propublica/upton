@@ -50,8 +50,9 @@ module Upton
     ##
     # +index_url_or_array+: A list of string URLs, OR
     #              the URL of the page containing the list of instances.
-    # +selector+: The XPath or CSS that specifies the anchor elements within 
-    #              the page, if a url is specified for the previous argument.
+    # +selector+: The XPath expression or CSS selector that specifies the 
+    #              anchor elements within the page, if a url is specified for 
+    #              the previous argument.
     # +selector_method+: +:xpath+ or +:css+. By default, +:xpath+.
     #
     # These options are a shortcut. If you plant to override +get_index+, you
