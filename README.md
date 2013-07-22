@@ -25,7 +25,7 @@ Upton also sleeps (by default) 30 seconds between non-stashed requests, to reduc
 
 Upton can handle pagination too. You can override the `next_index_page_url` and `next_instance_page_url` methods; Upton will get each page's URL returned by these functions and return their contents.
 
-<b>For more complete documentation</b>, see [the RDoc](http://propublica.github.io/upton).
+<b>For more complete documentation</b>, see [the RDoc](http://rubydoc.info/gems/upton/frames/index).
 
 <b>Important Note:</b> Upton is alpha software. The API may change at any time. 
 
