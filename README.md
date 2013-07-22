@@ -7,8 +7,10 @@ Documentation
 
 With Upton, you can scrape complex sites to a CSV in just one line of code.
 
-    Upton::Scraper.new("http://website.com/list_of_stories.html").
-        scrape_to_csv("output.csv", &Upton::Utils.list("#comments li a.commenter-name", :css))
+```ruby
+Upton::Scraper.new("http://website.com/list_of_stories.html").
+    scrape_to_csv("output.csv", &Upton::Utils.list("#comments li a.commenter-name", :css))
+```
 
 Just specify a URL to a list of links -- or simply a list of links --, an XPath expression or CSS selector for the links and a block of what to do with the content of the pages you've scraped. Upton comes with some pre-written blocks (Procs, technically) for scraping simple lists and tables, like the `list` function above.
 
@@ -33,21 +35,27 @@ Examples
 ----------------------
 If you want to scrape ProPublica's website with Upton, this is how you'd do it. (Scraping our [RSS feed](http://feeds.propublica.org/propublica/main) would be smarter, but not every site has a full-text RSS feed...)
 
-    Upton::Scraper.new("http://www.propublica.org", "section#river section h1 a", :css).scrape do |article_string|
-      puts "here is the full text of the ProPublica article: \n #{article_string}"
-      #or, do other stuff here.
-    end
+```ruby
+Upton::Scraper.new("http://www.propublica.org", "section#river section h1 a", :css).scrape do |article_string|
+  puts "here is the full text of the ProPublica article: \n #{article_string}"
+  #or, do other stuff here.
+end
+```
 
 Simple sites can be scraped with pre-written `list` block in `Upton::Utils', as below:
 
-    > u = Upton::Scraper.new("http://nytimes.com", "ul.headlinesOnly a", :css)
-    > u.scrape_to_csv("output.csv", &Upton::Utils.list("h6.byline", :css))
+```ruby
+> u = Upton::Scraper.new("http://nytimes.com", "ul.headlinesOnly a", :css)
+> u.scrape_to_csv("output.csv", &Upton::Utils.list("h6.byline", :css))
+```
 
 A `table` block also exists in `Upton::Utils` to scrape tables to an array of arrays, as below:
 
-    > u = Upton::Scraper.new(["http://website.com/story.html"])
-    > u.scrape(&Upton::Utils.table("//table[2]", :xpath))
-    [["Jeremy", "$8.00"], ["John Doe", "$15.00"]]
+```ruby
+> u = Upton::Scraper.new(["http://website.com/story.html"])
+> u.scrape(&Upton::Utils.table("//table[2]", :xpath))
+[["Jeremy", "$8.00"], ["John Doe", "$15.00"]]
+```
 
 
 Contributing
