@@ -3,7 +3,7 @@
 require 'nokogiri'
 require 'uri'
 require 'restclient'
-require 'utils'
+require_relative './utils'
 
 ##
 # This module contains a scraper called Upton
