@@ -67,14 +67,12 @@ module Upton
       #e.g. Scraper.new(["http://jeremybmerrill.com"])
 
       #TODO: rewrite this, because it's a little silly. (i.e. should be a more sensical division of how these arguments work)
-      if selector.empty?
+      if index_url_or_array.respond_to? :each_with_index
         @url_array = index_url_or_array
-      elsif index_url_or_array =~ ::URI::ABS_URI
+      else
         @index_url = index_url_or_array
         @index_selector = selector
         @index_selector_method = selector_method
-      else
-        raise ArgumentError
       end
       # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
