@@ -8,7 +8,7 @@ Documentation
 With Upton, you can scrape complex sites to a CSV in just one line of code.
 
 ```ruby
-Upton::Scraper.new("http://website.com/list_of_stories.html").
+Upton::Scraper.new("http://website.com/list_of_stories.html", "a#article-link").
     scrape_to_csv("output.csv", &Upton::Utils.list("#comments li a.commenter-name", :css))
 ```
 
