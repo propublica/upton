@@ -57,6 +57,17 @@ A `table` block also exists in `Upton::Utils` to scrape tables to an array of ar
 [["Jeremy", "$8.00"], ["John Doe", "$15.00"]]
 ```
 
+How is this different than Nokogiri?
+-------------------------------------
+Upton is, in essence, sugar around RestClient and Nokogiri. If you just used those tools by themselves to write scrapers, you'd be responsible for writing code to fetch, save (maybe), debug and sew together all the pieces in a slightly different way for each scraper. Upton does most of that work for you, so you can skip the boilerplate.
+
+Upton doesn't quite fit your needs?
+------------------------------------
+Here are some similar libraries to check out. I've never used them, but they seem similar and were [recommended by various HN commenters](https://news.ycombinator.com/item?id=6086031):  
+
+- [Pismo](https://github.com/peterc/pismo)
+- [Spidey](https://github.com/joeyAghion/spidey)
+- [Anemone](http://anemone.rubyforge.org/)
 
 Contributing
 ----------------------
