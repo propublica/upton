@@ -28,7 +28,7 @@ module Upton
   # 2.  supplying a block to `scrape` or `scrape_to_csv` or using a pre-build 
   #      block from Upton::Utils.
   # For more complicated cases; subclass Upton::Scraper 
-  #    e.g. +MyScraper < Upton::Scraper+ and overrdie various methods.
+  #    e.g. +MyScraper < Upton::Scraper+ and override various methods.
   ##
   class Scraper
 
@@ -55,7 +55,7 @@ module Upton
     #              the previous argument.
     # +selector_method+: +:xpath+ or +:css+. By default, +:xpath+.
     #
-    # These options are a shortcut. If you plant to override +get_index+, you
+    # These options are a shortcut. If you plan to override +get_index+, you
     # do not need to set them.
     # If you don't specify a selector, the first argument will be treated as a
     # list of URLs.
