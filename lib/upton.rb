@@ -95,9 +95,9 @@ module Upton
 
       # Folder name for stashes, if you want them to be stored somewhere else,
       # e.g. under /tmp.
-      @stash_folder = "stashes"
+      @stash_folder ||= "stashes"
       unless Dir.exists?(@stash_folder)
-        Dir.mkdir(@stash_folder)
+        FileUtils.mkdir_p(@stash_folder)
       end
     end
 
@@ -140,7 +140,7 @@ module Upton
         self.url_array = self.get_index
       end
       CSV.open filename, 'wb' do |csv|
-        self.scrape_from_list(self.url_array, blk).each{|document| csv << document }
+        self.scrape_from_list(self.url_array, blk).compact.each{|document| csv << document }
       end
     end
 
@@ -155,9 +155,9 @@ module Upton
       return "" if url.empty?
 
       #the filename for each stashed version is a cleaned version of the URL.
-      if stash && File.exists?( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") ) )
+      if stash && File.exists?( url_to_filename(url) )
         puts "usin' a stashed copy of " + url if @verbose
-        resp = open( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "")), 'r:UTF-8').read .encode("UTF-8", :invalid => :replace, :undef => :replace )
+        resp = open( url_to_filename(url), 'r:UTF-8').read .encode("UTF-8", :invalid => :replace, :undef => :replace )
       else
         begin
           puts "getting " + url if @verbose
@@ -189,10 +189,14 @@ module Upton
         end
         if stash
           puts "I just stashed (#{resp.code if resp.respond_to?(:code)}): #{url}" if @verbose
-          open( File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") ), 'w:UTF-8'){|f| f.write(resp.encode("UTF-8", :invalid => :replace, :undef => :replace ) )}
+          open( url_to_filename(url), 'w:UTF-8'){|f| f.write(resp.encode("UTF-8", :invalid => :replace, :undef => :replace ) )}
         end
       end
       resp
+    end
+
+    def url_to_filename(url)
+      File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") )
     end
 
     ##
@@ -252,7 +256,8 @@ module Upton
     def scrape_from_list(list, blk)
       puts "Scraping #{list.size} instances" if @verbose
       list.each_with_index.map do |instance_url, index|
-        blk.call(get_instance(instance_url), instance_url, index)
+        instance_resp = get_instance instance_url
+        blk.call(instance_resp, instance_url, index)
       end
     end
 
