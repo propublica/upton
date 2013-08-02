@@ -10,5 +10,6 @@ group :development do
   gem "upton", :path => "."
   gem "rake"
   gem "redcarpet"
+  gem "rspec"
 end
 
