@@ -140,7 +140,16 @@ module Upton
         self.url_array = self.get_index
       end
       CSV.open filename, 'wb' do |csv|
-        self.scrape_from_list(self.url_array, blk).compact.each{|document| csv << document }
+        #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
+        self.scrape_from_list(self.url_array, blk).compact.each do |document| 
+          puts document.inspect
+          if document[0].respond_to? :map
+            document.each{|row| csv << row }
+          else
+            csv << document
+          end
+        end
+        #self.scrape_from_list(self.url_array, blk).compact.each{|document| csv << document }
       end
     end
 
@@ -233,7 +242,7 @@ module Upton
     end
 
     ##
-    # Returns the article at `url`.
+    # Returns the instance at `url`.
     # 
     # If the page is stashed, returns that, otherwise, fetches it from the web.
     #
