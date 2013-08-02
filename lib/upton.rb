@@ -156,6 +156,13 @@ module Upton
     protected
 
     ##
+    # Actually fetches the page
+    ##
+    def fetch_page(url)
+      RestClient.get(url, {:accept=> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
+    end
+
+    ##
     # Handles getting pages with RestClient or getting them from the local stash.
     #
     # Uses a kludge (because rest-client is outdated) to handle encoding.
@@ -171,7 +178,7 @@ module Upton
         begin
           puts "getting " + url if @verbose
           sleep @sleep_time_between_requests
-          resp = RestClient.get(url, {:accept=> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
+          resp = fetch_page(url)
 
           #this is silly, but rest-client needs to get on their game.
           #cf https://github.com/jcoyne/rest-client/blob/fb80f2c320687943bc4fae1503ed15f9dff4ce64/lib/restclient/response.rb#L26
