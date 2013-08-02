@@ -171,9 +171,9 @@ module Upton
       return "" if url.empty?
 
       #the filename for each stashed version is a cleaned version of the URL.
-      if stash && File.exists?( url_to_filename(url) )
+      if stash && File.exists?( url_to_filename(url, options) )
         puts "usin' a stashed copy of " + url if @verbose
-        resp = open( url_to_filename(url), 'r:UTF-8').read .encode("UTF-8", :invalid => :replace, :undef => :replace )
+        resp = open( url_to_filename(url, options), 'r:UTF-8').read .encode("UTF-8", :invalid => :replace, :undef => :replace )
       else
         begin
           puts "getting " + url if @verbose
@@ -202,16 +202,19 @@ module Upton
         rescue URI::InvalidURIError
           puts "Invalid URI: #{url}" if @verbose
           resp = ""
+        rescue RestClient::RequestTimeout
+          "Timeout: #{url}" if @verbose
+          retry
         end
         if stash
           puts "I just stashed (#{resp.code if resp.respond_to?(:code)}): #{url}" if @verbose
-          open( url_to_filename(url), 'w:UTF-8'){|f| f.write(resp.encode("UTF-8", :invalid => :replace, :undef => :replace ) )}
+          open( url_to_filename(url, options), 'w:UTF-8'){|f| f.write(resp.encode("UTF-8", :invalid => :replace, :undef => :replace ) )}
         end
       end
       resp
     end
 
-    def url_to_filename(url)
+    def url_to_filename(url, options={})
       File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") )
     end
 
