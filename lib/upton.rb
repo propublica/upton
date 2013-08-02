@@ -112,7 +112,7 @@ module Upton
     # e.g. next_instance_page_url("http://whatever.com/article/upton-sinclairs-the-jungle?page=1", 2)
     # ought to return "http://whatever.com/article/upton-sinclairs-the-jungle?page=2"
     ##
-    def next_instance_page_url(url, index)
+    def next_instance_page_url(url, pagination_index)
       ""
     end
 
@@ -127,7 +127,7 @@ module Upton
     # e.g. +next_index_page_url("http://whatever.com/articles?page=1", 2)+
     # ought to return "http://whatever.com/articles?page=2"
     ##
-    def next_index_page_url(url, index)
+    def next_index_page_url(url, pagination_index)
       ""
     end
 
@@ -158,7 +158,7 @@ module Upton
     ##
     # Actually fetches the page
     ##
-    def fetch_page(url)
+    def fetch_page(url, options={})
       RestClient.get(url, {:accept=> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
     end
 
@@ -167,7 +167,7 @@ module Upton
     #
     # Uses a kludge (because rest-client is outdated) to handle encoding.
     ##
-    def get_page(url, stash=false)
+    def get_page(url, stash=false, options={})
       return "" if url.empty?
 
       #the filename for each stashed version is a cleaned version of the URL.
@@ -178,7 +178,7 @@ module Upton
         begin
           puts "getting " + url if @verbose
           sleep @sleep_time_between_requests
-          resp = fetch_page(url)
+          resp = fetch_page(url, options)
 
           #this is silly, but rest-client needs to get on their game.
           #cf https://github.com/jcoyne/rest-client/blob/fb80f2c320687943bc4fae1503ed15f9dff4ce64/lib/restclient/response.rb#L26
@@ -236,12 +236,12 @@ module Upton
     # Returns the concatenated output of each member of a paginated index,
     # e.g. a site listing links with 2+ pages.
     ##
-    def get_index_pages(url, index)
-      resp = self.get_page(url, @index_debug)
+    def get_index_pages(url, pagination_index, options={})
+      resp = self.get_page(url, @index_debug, options)
       if !resp.empty? 
-        next_url = self.next_index_page_url(url, index + 1)
+        next_url = self.next_index_page_url(url, pagination_index + 1)
         unless next_url == url
-          next_resp = self.get_index_pages(next_url, index + 1).to_s 
+          next_resp = self.get_index_pages(next_url, pagination_index + 1).to_s 
           resp += next_resp
         end
       end
@@ -256,12 +256,12 @@ module Upton
     # If an instance is paginated, returns the concatenated output of each 
     # page, e.g. if a news article has two pages.
     ##
-    def get_instance(url, index=0)
-      resp = self.get_page(url, @debug)
+    def get_instance(url, pagination_index=0, options={})
+      resp = self.get_page(url, @debug, options)
       if !resp.empty? 
-        next_url = self.next_instance_page_url(url, index + 1)
+        next_url = self.next_instance_page_url(url, pagination_index.to_i + 1)
         unless next_url == url
-          next_resp = self.get_instance(next_url, index + 1).to_s 
+          next_resp = self.get_instance(next_url, pagination_index.to_i + 1).to_s 
           resp += next_resp
         end
       end
@@ -271,9 +271,9 @@ module Upton
     # Just a helper for +scrape+.
     def scrape_from_list(list, blk)
       puts "Scraping #{list.size} instances" if @verbose
-      list.each_with_index.map do |instance_url, index|
-        instance_resp = get_instance instance_url
-        blk.call(instance_resp, instance_url, index)
+      list.each_with_index.map do |instance_url, instance_index|
+        instance_resp = get_instance instance_url, nil, :instance_index => instance_index
+        blk.call(instance_resp, instance_url, instance_index)
       end
     end
 
