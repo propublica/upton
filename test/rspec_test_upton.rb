@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'rspec'
 require 'rack'
 require 'thin'
@@ -36,22 +38,66 @@ describe Upton do
     start_test_server()
 
     @headlines = ["Webinar: How to Use Prescriber Checkup to Power Your Reporting", 
-                 "asd",
+                 "",
                  "A Prosecutor, a Wrongful Conviction and a Question of Justice",
                  "Six Facts Lost in the IRS Scandal"]
-
+    @most_commented_heds = [["Six Facts Lost in the IRS Scandal", 
+                        "How the IRS’s Nonprofit Division Got So Dysfunctional", 
+                        "Sound, Fury and the IRS Mess", 
+                        "The Most Important #Muckreads on Rape in the Military", 
+                        "Congressmen to Hagel: Where Are the Missing War Records?", 
+                        "As Need for New Flood Maps Rises, Congress and Obama Cut Funding", 
+                        "A Prosecutor, a Wrongful Conviction and a Question of Justice", 
+                        "A Prolonged Stay: The Reasons Behind the Slow Pace of Executions", 
+                        "The Story Behind Our Hospital Interactive",
+                        "irs-test-charts-for-embedding"]]
+    @east_timor_prime_ministers = [[ 
+                                    ["#", "Portrait", "Name(Birth–Death)", "Term of Office", "Party", 
+                                      "1", "2", "3", "4",],
+                                    [],
+                                    ["", "Mari Alkatiri(b. 1949)", "20 May 2002", "26 June 2006[1]", "FRETILIN"],
+                                    ["", "José Ramos-Horta(b. 1949)", "26 June 2006", "19 May 2007", "Independent"],
+                                    ["", "Estanislau da Silva(b. 1952)", "19 May 2007", "8 August 2007", "FRETILIN"],
+                                    ["", "Xanana Gusmão(b. 1946)", "8 August 2007", "Incumbent", "CNRT"],
+                                  ]]
   end
 
   it "should scrape in the basic case" do
-      propubscraper = Upton::Scraper.new("http://127.0.0.1:9876/propublica.html", "section#river section h1 a", :css)
-      propubscraper.debug = true
-      propubscraper.verbose = true
+    propubscraper = Upton::Scraper.new("http://127.0.0.1:9876/propublica.html", "section#river section h1 a", :css)
+    propubscraper.debug = true
+    propubscraper.verbose = true
 
-      heds = propubscraper.scrape do |article_str|
-        doc = Nokogiri::HTML(article_str)
-        hed = doc.css('h1.article-title').text
-      end
-      FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
-      heds.should eql @headlines
+    heds = propubscraper.scrape do |article_str|
+      doc = Nokogiri::HTML(article_str)
+      hed = doc.css('h1.article-title').text
+    end
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+    heds.should eql @headlines
+  end
+  
+  it "should scrape a list properly with the list helper" do
+    propubscraper = Upton::Scraper.new(["http://127.0.0.1:9876/propublica.html"])
+    propubscraper.debug = true
+    propubscraper.verbose = true
+    list = propubscraper.scrape(&Upton::Utils.list("#jamb.wNarrow #most-commented li a", :css))
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+    list.should eql @most_commented_heds
+  end
+
+  it "should scrape a table properly with the table helper" do
+    propubscraper = Upton::Scraper.new(["http://127.0.0.1:9876/easttimor.html"])
+    propubscraper.debug = true
+    propubscraper.verbose = true
+    table = propubscraper.scrape(&Upton::Utils.table('//table[contains(concat(" ", normalize-space(@class), " "), " wikitable ")][2]'))
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+    table.should eql @east_timor_prime_ministers
+  end
+
+  it "should test saving files with the right encoding" do
+    false.should eql true
+  end
+
+  it "should test stashing to make sure pages are stashed at the right times, but not at the wrong ones" do
+    false.should eql true
   end
 end
