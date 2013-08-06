@@ -1,6 +1,5 @@
 # encoding: UTF-8
 
-require 'rspec'
 require 'rack'
 require 'thin'
 require 'nokogiri'
