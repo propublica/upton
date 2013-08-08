@@ -153,6 +153,25 @@ module Upton
       end
     end
 
+    def scrape_to_tsv filename, &blk
+      require 'csv'
+      unless self.url_array
+        self.url_array = self.get_index
+      end
+      CSV.open filename, 'wb', :col_sep => "\t" do |csv|
+        #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
+        self.scrape_from_list(self.url_array, blk).compact.each do |document| 
+          puts document.inspect
+          if document[0].respond_to? :map
+            document.each{|row| csv << row }
+          else
+            csv << document
+          end
+        end
+        #self.scrape_from_list(self.url_array, blk).compact.each{|document| csv << document }
+      end
+    end
+
     protected
 
     ##
