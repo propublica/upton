@@ -79,7 +79,6 @@ module Upton
       else
         @index_url = index_url_or_array
         @index_selector = selector
-        @index_selector_method = selector_method # TODO: Deprecate in next minor release.
       end
       # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
@@ -251,7 +250,7 @@ module Upton
     ##
     def get_index
       # TODO: Deprecate @index_Selector_method in next minor release
-      parse_index(get_index_pages(@index_url, 1), @index_selector, @index_selector_method)
+      parse_index(get_index_pages(@index_url, 1), @index_selector)
     end
 
     ##
