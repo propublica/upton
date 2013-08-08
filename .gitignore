@@ -1,3 +1,4 @@
 .ruby-version
 Gemfile.lock
 stashes/
+.DS_Store
