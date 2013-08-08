@@ -18,7 +18,6 @@ module Upton
     # present, is returned as the first row.
     ##
     def self.table(table_selector, selector_method=:xpath)
-      require 'csv'
       return Proc.new do |instance_html|
         html = ::Nokogiri::HTML(instance_html)
         output = []
@@ -34,7 +33,6 @@ module Upton
     # Scrapes any set of HTML elements into an Array. 
     ##
     def self.list(list_selector, selector_method=:xpath)
-      require 'csv'
       return Proc.new do |instance_html|
         html = ::Nokogiri::HTML(instance_html)
         html.send(selector_method, list_selector).map{|list_element| list_element.text }
