@@ -31,6 +31,17 @@ Upton can handle pagination too. You can override the `next_index_page_url` and 
 
 <b>Important Note:</b> Upton is alpha software. The API may change at any time. 
 
+####How is this different than Nokogiri?
+Upton is, in essence, sugar around RestClient and Nokogiri. If you just used those tools by themselves to write scrapers, you'd be responsible for writing code to fetch, save (maybe), debug and sew together all the pieces in a slightly different way for each scraper. Upton does most of that work for you, so you can skip the boilerplate.
+
+####Upton doesn't quite fit your needs?
+Here are some similar libraries to check out. No promises, since I've never used them, but they seem similar and were [recommended by various HN commenters](https://news.ycombinator.com/item?id=6086031): 
+
+- [Pismo](https://github.com/peterc/pismo)
+- [Spidey](https://github.com/joeyAghion/spidey)
+- [Anemone](http://anemone.rubyforge.org/)
+
+
 Examples
 ----------------------
 If you want to scrape ProPublica's website with Upton, this is how you'd do it. (Scraping our [RSS feed](http://feeds.propublica.org/propublica/main) would be smarter, but not every site has a full-text RSS feed...)
@@ -57,17 +68,6 @@ A `table` block also exists in `Upton::Utils` to scrape tables to an array of ar
 [["Jeremy", "$8.00"], ["John Doe", "$15.00"]]
 ```
 
-How is this different than Nokogiri?
--------------------------------------
-Upton is, in essence, sugar around RestClient and Nokogiri. If you just used those tools by themselves to write scrapers, you'd be responsible for writing code to fetch, save (maybe), debug and sew together all the pieces in a slightly different way for each scraper. Upton does most of that work for you, so you can skip the boilerplate.
-
-Upton doesn't quite fit your needs?
-------------------------------------
-Here are some similar libraries to check out. I've never used them, but they seem similar and were [recommended by various HN commenters](https://news.ycombinator.com/item?id=6086031):  
-
-- [Pismo](https://github.com/peterc/pismo)
-- [Spidey](https://github.com/joeyAghion/spidey)
-- [Anemone](http://anemone.rubyforge.org/)
 
 Contributing
 ----------------------
@@ -80,17 +80,6 @@ In particular, if you have a common, *abstract* use case, please add them to [li
 Why "Upton"
 ----------------------
 Upton Sinclair was a pioneering, muckraking journalist who is most famous for _The Jungle_, a novel portraying the reality of immigrant labor struggles in Chicago meatpacking plants at the start of the 1900s. Upton, the gem, sprang out of a ProPublica project pertaining to labor issues.
-
-License (MIT)
-------------------------
-
-Copyright (c) 2013 ProPublica
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Notes
 ------------------------

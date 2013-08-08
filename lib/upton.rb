@@ -53,7 +53,8 @@ module Upton
     # +selector+: The XPath expression or CSS selector that specifies the 
     #              anchor elements within the page, if a url is specified for 
     #              the previous argument.
-    # +selector_method+: +:xpath+ or +:css+. By default, +:xpath+.
+    # +selector_method+: Deprecated and ignored. Next breaking release will
+    #                      remove this option.x
     #
     # These options are a shortcut. If you plan to override +get_index+, you
     # do not need to set them.
@@ -65,10 +66,8 @@ module Upton
       # the selector_method parameter is unneeded, as Nokogiri provides the
       #  #search method, which picks a selector depending on whether
       #  the String passed is of CSS/XPath notation
-      #  Leave it in for now, but probably want to make the second parameter to
-      #   initialize() be an options hash
 
-    def initialize(index_url_or_array, selector="", selector_method=:xpath)
+    def initialize(index_url_or_array, selector="", selector_method=:deprecated)
       
       #if first arg is a valid URL, do already-written stuff;
       #if it's not (or if it's a list?) don't bother with get_index, etc.
@@ -80,7 +79,7 @@ module Upton
       else
         @index_url = index_url_or_array
         @index_selector = selector
-        @index_selector_method = selector_method # TODO: Deprecate
+        @index_selector_method = selector_method # TODO: Deprecate in next minor release.
       end
       # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
@@ -251,7 +250,7 @@ module Upton
     # comes from an API.
     ##
     def get_index
-      # TODO: Deprecate @index_Selector_method
+      # TODO: Deprecate @index_Selector_method in next minor release
       parse_index(get_index_pages(@index_url, 1), @index_selector, @index_selector_method)
     end
 
@@ -259,10 +258,9 @@ module Upton
     # Using the XPath expression or CSS selector and selector_method that 
     # uniquely identifies the links in the index, return those links as strings.
     ##
-    def parse_index(text, selector, selector_method=:xpath) # TODO: Deprecate selector_method
+    def parse_index(text, selector, selector_method=:deprecated) # TODO: Deprecate selector_method in next minor release.
       # for now, override selector_method with :search, which will work with either CSS or XPath
-      selector_method = :search
-      Nokogiri::HTML(text).send(selector_method, selector).to_a.map{|l| l["href"] }
+      Nokogiri::HTML(text).search(selector).to_a.map{|l| l["href"] }
     end
 
     ##
