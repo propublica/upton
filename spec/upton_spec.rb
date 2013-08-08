@@ -92,11 +92,4 @@ describe Upton do
     table.should eql @east_timor_prime_ministers
   end
 
-  it "should test saving files with the right encoding" do
-    false.should eql true
-  end
-
-  it "should test stashing to make sure pages are stashed at the right times, but not at the wrong ones" do
-    false.should eql true
-  end
 end
