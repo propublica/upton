@@ -78,8 +78,12 @@ describe Upton do
 # uses a modified page from the previous test in which the target
 # href, http://127.0.0.1:9876/prosecutors.html, has been changed
 # to a relative url
+#
+# Note: this test is a bit quirky, because it passes on the fact that 
+# the resolve_url creates a url identical to one that is already stashed ("prosecutors.html").
+# So it works, but because of a coupling to how Upton handles caching in the file system
 
-    propubscraper = Upton::Scraper.new("http://127.0.0.1:9876/propublica-relative.html", "section#river section h1 a", :css)
+    propubscraper = Upton::Scraper.new("http://127.0.0.1:9876/propublica-relative.html", "section#river h1 a", :css)
     propubscraper.debug = true
     propubscraper.verbose = true
 
@@ -88,7 +92,7 @@ describe Upton do
       hed = doc.css('h1.article-title').text
     end
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
-    heds.should eql @headlines
+    heds.should eql ["A Prosecutor, a Wrongful Conviction and a Question of Justice"]
   end
 
   it "should scrape a list properly with the list helper" do
