@@ -6,6 +6,7 @@ group :development do
   gem "rack"
   gem "thin"
   gem "nokogiri"
+  gem "mechanize"
   gem "yard"
   gem "upton", :path => "."
   gem "rake"

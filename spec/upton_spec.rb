@@ -73,7 +73,24 @@ describe Upton do
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
     heds.should eql @headlines
   end
-  
+
+  it 'should properly handle relative urls'  do 
+# uses a modified page from the previous test in which the target
+# href, http://127.0.0.1:9876/prosecutors.html, has been changed
+# to a relative url
+
+    propubscraper = Upton::Scraper.new("http://127.0.0.1:9876/propublica-relative.html", "section#river section h1 a", :css)
+    propubscraper.debug = true
+    propubscraper.verbose = true
+
+    heds = propubscraper.scrape do |article_str|
+      doc = Nokogiri::HTML(article_str)
+      hed = doc.css('h1.article-title').text
+    end
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+    heds.should eql @headlines
+  end
+
   it "should scrape a list properly with the list helper" do
     propubscraper = Upton::Scraper.new(["http://127.0.0.1:9876/propublica.html"])
     propubscraper.debug = true
@@ -92,11 +109,6 @@ describe Upton do
     table.should eql @east_timor_prime_ministers
   end
 
-  it "should test saving files with the right encoding" do
-    false.should eql true
-  end
-
-  it "should test stashing to make sure pages are stashed at the right times, but not at the wrong ones" do
-    false.should eql true
-  end
+  it "should test saving files with the right encoding"
+  it "should test stashing to make sure pages are stashed at the right times, but not at the wrong ones"
 end

@@ -255,12 +255,32 @@ module Upton
 
     ##
     # Using the XPath expression or CSS selector and selector_method that 
-    # uniquely identifies the links in the index, return those links as strings.
-    ##
-    def parse_index(text, selector, selector_method=:deprecated) # TODO: Deprecate selector_method in next minor release.
+    # uniquely identifies the links in the index, return those links as strings.    ##
+    def old_parse_index(text, selector, selector_method=:deprecated) # TODO: Deprecate selector_method in next minor release.
       # for now, override selector_method with :search, which will work with either CSS or XPath
       Nokogiri::HTML(text).search(selector).to_a.map{|l| l["href"] }
     end
+
+    # TODO: Not sure the best way to handle this
+    # Currently, #parse_index is called upon #get_index_pages,
+    #  which itself is dependent on @index_url
+    # Does @index_url stay unaltered for the lifetime of the Upton instance?
+    # It seems to at this point, but that may be something that gets
+    #  deprecated later
+    # 
+    # So for now, @index_url is used in conjunction with Utils.resolve_url 
+    # to make sure that this method returns absolute urls
+    # i.e. this method expects @index_url to always have an absolute address
+    # for the lifetime of an Upton instance
+    def parse_index(text, selector, selector_method=:deprecated) # TODO: Deprecate selector_method in next minor release.
+      # for now, override selector_method with :search, which will work with either CSS or XPath
+      Nokogiri::HTML(text).search(selector).to_a.map{|x| 
+        href = x["href"]
+      
+        Upton::Utils.resolve_url( href, @index_url) unless href.nil?
+      }
+    end
+
 
     ##
     # Returns the concatenated output of each member of a paginated index,
@@ -270,6 +290,9 @@ module Upton
       resp = self.get_page(url, @index_debug, options)
       if !resp.empty? 
         next_url = self.next_index_page_url(url, pagination_index + 1)
+        # resolve to absolute url
+        #
+        next_url = Upton::Utils.resolve_url(next_url, url)
         unless next_url == url
           next_resp = self.get_index_pages(next_url, pagination_index + 1).to_s 
           resp += next_resp
@@ -290,6 +313,8 @@ module Upton
       resp = self.get_page(url, @debug, options)
       if !resp.empty? 
         next_url = self.next_instance_page_url(url, pagination_index.to_i + 1)
+        
+#        next_url = Upton::Utils.resolve_url(next_url, url)
         unless next_url == url
           next_resp = self.get_instance(next_url, pagination_index.to_i + 1).to_s 
           resp += next_resp
