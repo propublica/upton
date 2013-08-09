@@ -4,7 +4,7 @@ describe 'Upton' do
     context 'parsing' do 
 
       before(:all) do 
-        @scraper = Upton::Scraper.new '', ''
+        @scraper = Upton::Scraper.new 'http://an.absolute.url.com/', ''
         @html = %q{
                 <!doctype html><html lang="en"><head><meta charset="UTF-8"><title>Document</title></head>
                 <body>
