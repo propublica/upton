@@ -3,7 +3,8 @@
 require 'nokogiri'
 require 'uri'
 require 'restclient'
-require_relative './utils'
+require_relative 'upton/utils'
+require_relative 'upton/downloader'
 
 ##
 # This module contains a scraper called Upton
@@ -181,66 +182,13 @@ module Upton
     protected
 
     ##
-    # Actually fetches the page
-    ##
-    def fetch_page(url, options={})
-      RestClient.get(url, {:accept=> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
-    end
-
-    ##
     # Handles getting pages with RestClient or getting them from the local stash.
     #
     # Uses a kludge (because rest-client is outdated) to handle encoding.
     ##
     def get_page(url, stash=false, options={})
       return "" if url.empty?
-
-      #the filename for each stashed version is a cleaned version of the URL.
-      if stash && File.exists?( url_to_filename(url, options) )
-        puts "usin' a stashed copy of " + url if @verbose
-        resp = open( url_to_filename(url, options), 'r:UTF-8').read .encode("UTF-8", :invalid => :replace, :undef => :replace )
-      else
-        begin
-          puts "getting " + url if @verbose
-          sleep @sleep_time_between_requests
-          resp = fetch_page(url, options)
-
-          #this is silly, but rest-client needs to get on their game.
-          #cf https://github.com/jcoyne/rest-client/blob/fb80f2c320687943bc4fae1503ed15f9dff4ce64/lib/restclient/response.rb#L26
-          if ((200..207).include?(resp.net_http_res.code.to_i) && content_type = resp.net_http_res.content_type)
-            charset = if set = resp.net_http_res.type_params['charset'] 
-              set
-            elsif content_type == 'text/xml'
-              'us-ascii'
-            elsif content_type.split('/').first == 'text'
-              'iso-8859-1'
-            end
-            resp.force_encoding(charset) if charset
-          end
-
-        rescue RestClient::ResourceNotFound
-          puts "404 error, skipping: #{url}" if @verbose
-          resp = ""
-        rescue RestClient::InternalServerError
-          puts "500 Error, skipping: #{url}" if @verbose
-          resp = ""
-        rescue URI::InvalidURIError
-          puts "Invalid URI: #{url}" if @verbose
-          resp = ""
-        rescue RestClient::RequestTimeout
-          "Timeout: #{url}" if @verbose
-          retry
-        end
-        if stash
-          puts "I just stashed (#{resp.code if resp.respond_to?(:code)}): #{url}" if @verbose
-          open( url_to_filename(url, options), 'w:UTF-8'){|f| f.write(resp.encode("UTF-8", :invalid => :replace, :undef => :replace ) )}
-        end
-      end
-      resp
-    end
-
-    def url_to_filename(url, options={})
-      File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") )
+      Downloader.new(url, :cache => stash).get
     end
 
 
