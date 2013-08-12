@@ -1,6 +1,7 @@
 require "fileutils"
 require "open-uri"
 require "tmpdir"
+require "restclient"
 
 module Upton
 
@@ -60,8 +61,8 @@ module Upton
              end
       unless cached_file_exists?
         puts "Writing #{uri} data to the cache"
+        File.write(cached_file, file)
       end
-      File.write(cached_file, file) unless cached_file_exists?
       file
     end
 
