@@ -243,6 +243,24 @@ module Upton
       File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") )
     end
 
+
+    ## 
+    # sometimes URLs are relative, e.g. "index.html" as opposed to "http://site.com/index.html"
+    # resolve_url resolves them to absolute urls.
+    # absolute_url_str must be a URL, as a string, that is absolute.
+    ##
+    def resolve_url(href_str, absolute_url_str)
+      absolute_url = URI(absolute_url_str).dup
+      raise ArgumentError, "#{absolute_url} must be absolute" unless absolute_url.absolute?
+      href = URI(href_str).dup
+
+      # return :href if :href is already absolute
+      return href.to_s if href.absolute?
+
+      #TODO: edge cases, see [issue #8](https://github.com/propublica/upton/issues/8)
+      URI.join(absolute_url, href).to_s    
+    end
+
     ##
     # Return a list of URLs for the instances you want to scrape.
     # This can optionally be overridden if, for example, the list of instances
@@ -268,17 +286,20 @@ module Upton
     # It seems to at this point, but that may be something that gets
     #  deprecated later
     # 
-    # So for now, @index_url is used in conjunction with Utils.resolve_url 
+    # So for now, @index_url is used in conjunction with resolve_url 
     # to make sure that this method returns absolute urls
     # i.e. this method expects @index_url to always have an absolute address
     # for the lifetime of an Upton instance
     def parse_index(text, selector, selector_method=:deprecated) # TODO: Deprecate selector_method in next minor release.
       # for now, override selector_method with :search, which will work with either CSS or XPath
-      Nokogiri::HTML(text).search(selector).to_a.map{|x| 
-        href = x["href"]
-      
-        Upton::Utils.resolve_url( href, @index_url) unless href.nil?
-      }
+      Nokogiri::HTML(text).search(selector).to_a.map do |a_element| 
+        href = a_element["href"]
+        u = resolve_url( href, @index_url) unless href.nil?
+        unless u == href
+          puts "resolved #{href} to #{u}"
+        end
+        u
+      end
     end
 
 
@@ -292,7 +313,7 @@ module Upton
         next_url = self.next_index_page_url(url, pagination_index + 1)
         # resolve to absolute url
         #
-        next_url = Upton::Utils.resolve_url(next_url, url)
+        next_url = resolve_url(next_url, url)
         unless next_url == url
           next_resp = self.get_index_pages(next_url, pagination_index + 1).to_s 
           resp += next_resp
@@ -314,7 +335,7 @@ module Upton
       if !resp.empty? 
         next_url = self.next_instance_page_url(url, pagination_index.to_i + 1)
         
-#        next_url = Upton::Utils.resolve_url(next_url, url)
+#        next_url = resolve_url(next_url, url)
         unless next_url == url
           next_resp = self.get_instance(next_url, pagination_index.to_i + 1).to_s 
           resp += next_resp
