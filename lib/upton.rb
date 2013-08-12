@@ -97,7 +97,7 @@ module Upton
 
       # In order to not hammer servers, Upton waits for, by default, 30  
       # seconds between requests to the remote server.
-      @sleep_time_between_requests = 1 #seconds
+      @sleep_time_between_requests = 30 #seconds
 
       # Folder name for stashes, if you want them to be stored somewhere else,
       # e.g. under /tmp.
