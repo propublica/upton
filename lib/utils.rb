@@ -17,14 +17,14 @@ module Upton
     # Scrapes an HTML <table> element into an Array of Arrays. The header, if
     # present, is returned as the first row.
     ##
-    def self.table(table_selector, selector_method=:xpath)
+    def self.table(table_selector, deprecated=nil)
       return Proc.new do |instance_html|
         html = ::Nokogiri::HTML(instance_html)
         output = []
-        headers = html.send(selector_method, table_selector).css("th").map &:text
+        headers = html.search(table_selector).css("th").map &:text
         output << headers
 
-        table = html.send(selector_method, table_selector).css("tr").each{|tr| output << tr.css("td").map(&:text) }
+        table = html.search(table_selector).css("tr").each{|tr| output << tr.css("td").map(&:text) }
         output
       end
     end
@@ -32,10 +32,10 @@ module Upton
     ##
     # Scrapes any set of HTML elements into an Array. 
     ##
-    def self.list(list_selector, selector_method=:xpath)
+    def self.list(list_selector, deprecated=nilh)
       return Proc.new do |instance_html|
         html = ::Nokogiri::HTML(instance_html)
-        html.send(selector_method, list_selector).map{|list_element| list_element.text }
+        html.search(list_selector).map{|list_element| list_element.text }
       end
     end
 
