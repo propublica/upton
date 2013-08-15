@@ -10,7 +10,11 @@ module Upton
   #
   # By default, the cache location is the output of `Dir.tmpdir`/upton.
   # The Dir.tmpdir returns the temporary directory of the operating system.
+  # By default, the stashed files have a non-human-readable md5-based filename.
+  # If `readable_stash_filenames` is true, they will have human-readable names.
   class Downloader
+
+    MAX_FILENAME_LENGTH = 255 #for unixes, win xp+
 
     attr_reader :uri, :cache_location, :verbose
     def initialize(uri, options = {})
@@ -18,15 +22,16 @@ module Upton
       @cache = options.fetch(:cache) { true }
       @cache_location = options[:cache_location] || "#{Dir.tmpdir}/upton"
       @verbose = options[:verbose] || false
+      @readable_stash_filenames = options[:readable_filenames] || false
       initialize_cache!
     end
 
     def get
       if cache_enabled?
-        puts "Reading from cache enabled. Will try reading #{uri} data from cache"
+        puts "Stashing enabled. Will try reading #{uri} data from cache."
         download_from_cache
       else
-        puts "Reading from cache not enabled. Will download from the internet"
+        puts "Stashing disabled. Will download from the internet."
         download_from_resource
       end
     end
@@ -70,12 +75,27 @@ module Upton
       !!@cache
     end
 
-    def hashed_filename_based_on_uri
+    def filename_from_uri
+      if @readable_stash_filenames
+        readable_filename_from_uri
+      else
+        hashed_filename_from_uri
+      end
+    end
+
+    def hashed_filename_from_uri
       Digest::MD5.hexdigest(uri)
     end
 
+    def readable_filename_from_uri
+      time = "#{Time.now.utc.to_s.gsub(" ", "_")}.html"
+      clean_url_max_length = MAX_FILENAME_LENGTH - time.length
+      clean_url = url.gsub(/[^A-Za-z0-9\-_]/, "")[0...clean_url_max_length]
+      "#{clean_url}.#{time}"
+    end
+
     def cached_file
-      "#{cache_location}/#{hashed_filename_based_on_uri}"
+      "#{cache_location}/#{filename_from_uri}"
     end
 
     def cached_file_exists?
