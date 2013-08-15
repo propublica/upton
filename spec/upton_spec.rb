@@ -15,9 +15,15 @@ describe Upton do
         @root = File.expand_path(File.dirname(__FILE__))
         path = Rack::Utils.unescape(env['PATH_INFO'])
         path += 'index.html' if path == '/'
-        file = File.join(@root, "data", path)
 
         params = Rack::Utils.parse_nested_query(env['QUERY_STRING'])
+
+        # If the url includes ?p=, then treat like it's pagination
+        if params['p']
+          path = "propublica_search_page_#{params['p']}.html"
+        end
+
+        file = File.join(@root, "data", path)
 
         if File.exists?(file)
           [ 200, {"Content-Type" => "text/html; charset=utf-8"}, File.read(file) ]
@@ -59,6 +65,9 @@ describe Upton do
                                     ["", "Estanislau da Silva(b. 1952)", "19 May 2007", "8 August 2007", "FRETILIN"],
                                     ["", "Xanana Gusmão(b. 1946)", "8 August 2007", "Incumbent", "CNRT"],
                                   ]]
+    @searchResults = ["Webinar: How to Use Prescriber Checkup to Power Your Reporting", 
+                 "A Prosecutor, a Wrongful Conviction and a Question of Justice",
+                 "Six Facts Lost in the IRS Scandal"]
   end
 
   it "should scrape in the basic case" do
@@ -115,4 +124,19 @@ describe Upton do
 
   it "should test saving files with the right encoding"
   it "should test stashing to make sure pages are stashed at the right times, but not at the wrong ones"
+
+  it "should scrape paginated pages" do
+    propubscraper = Upton::Scraper.new("http://127.0.0.1:9876/propublica_search.html", '.compact-list a.title-link', :css)
+    propubscraper.debug = true
+    propubscraper.verbose = true
+    propubscraper.paginated = true
+    propubscraper.pagination_param = 'p'
+    propubscraper.pagination_max_pages = 3
+    results = propubscraper.scrape do |article_str|
+      doc = Nokogiri::HTML(article_str)
+      hed = doc.css('h1.article-title').text
+    end
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+    results.should eql @searchResults
+  end
 end
