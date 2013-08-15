@@ -33,7 +33,8 @@ module Upton
   ##
   class Scraper
 
-    attr_accessor :verbose, :debug, :sleep_time_between_requests, :stash_folder, :url_array
+    attr_accessor :verbose, :debug, :sleep_time_between_requests, :stash_folder, :url_array,
+      :paginated, :pagination_param, :pagination_max_pages
 
     ##
     # This is the main user-facing method for a basic scraper.
@@ -100,6 +101,14 @@ module Upton
       # seconds between requests to the remote server.
       @sleep_time_between_requests = 30 #seconds
 
+      # If true, then Upton will attempt to scrape paginated index pages
+      @paginated = false
+      # Default query string parameter used to specify the current page
+      @pagination_param = 'page'
+      # Default number of paginated pages to scrape
+      @pagination_max_pages = 2
+
+
       # Folder name for stashes, if you want them to be stored somewhere else,
       # e.g. under /tmp.
       @stash_folder ||= "stashes"
@@ -124,18 +133,38 @@ module Upton
     end
 
     ##
-    # If index pages are paginated, <b>you must override</b>
-    # this method to return the next URL, given the current URL and its index.
-    #
-    # If index pages aren't paginated, there's no need to override this.
+    # Return the next URL to scrape, given the current URL and its index.
     #
     # Recursion stops if the fetching URL returns an empty string or an error.
     #
-    # e.g. +next_index_page_url("http://whatever.com/articles?page=1", 2)+
+    # If @paginated is not set (the default), this method returns an empty string.
+    # 
+    # If @paginated is set, this method will return the next pagination URL
+    # to scrape using @pagination_param and the pagination_index.
+    #
+    # If the pagination_index is greater than @pagination_max_pages, then the
+    # method will return an empty string.
+    #
+    # Override this method to handle pagination is an alternative way
+    # e.g. next_index_page_url("http://whatever.com/articles?page=1", 2)
     # ought to return "http://whatever.com/articles?page=2"
+    #
     ##
     def next_index_page_url(url, pagination_index)
-      ""
+      return '' unless @paginated
+
+      if pagination_index > @pagination_max_pages
+        puts "Exceeded pagination limit of #{@pagination_max_pages}" if @verbose
+        ''
+      else
+        uri = URI.parse(url)
+        query = uri.query ? Hash[URI.decode_www_form(uri.query)] : {}
+        # update the pagination query string parameter
+        query[@pagination_param] = pagination_index
+        uri.query = URI.encode_www_form(query)
+        puts "Next index pagination url is #{uri}" if @verbose
+        uri.to_s
+      end
     end
 
     ##

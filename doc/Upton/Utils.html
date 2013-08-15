@@ -6,7 +6,7 @@
 <title>
   Module: Upton::Utils
   
-    &mdash; Documentation by YARD 0.8.6.1
+    &mdash; Documentation by YARD 0.8.7
   
 </title>
 
@@ -90,7 +90,7 @@
 <p>This class contains a collection of helpers for Upton</p>
 
 <p>Each method returns a Proc that (with an &amp; ) can be used as the final
-argument to Upton's `scrape` and `scrape_to_csv`</p>
+argument to Upton&#39;s `scrape` and `scrape_to_csv`</p>
 
 
   </div>
@@ -132,6 +132,31 @@ argument to Upton's `scrape` and `scrape_to_csv`</p>
   
     <span class="summary_desc"><div class='inline'>
 <p>Scrapes any set of HTML elements into an Array.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#resolve_url-class_method" title="resolve_url (class method)">+ (Object) <strong>resolve_url</strong>(_href, _page_url) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Takes :_href and resolves it to an absolute URL according to  the supplied
+:_page_url.</p>
 </div></span>
   
 </li>
@@ -196,23 +221,119 @@ argument to Upton's `scrape` and `scrape_to_csv`</p>
       <pre class="lines">
 
 
+35
 36
 37
 38
 39
-40
-41
-42</pre>
+40</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/utils.rb', line 36</span>
+      <pre class="code"><span class="info file"># File 'lib/utils.rb', line 35</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_list'>list</span><span class='lparen'>(</span><span class='id identifier rubyid_list_selector'>list_selector</span><span class='comma'>,</span> <span class='id identifier rubyid_selector_method'>selector_method</span><span class='op'>=</span><span class='symbol'>:xpath</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>csv</span><span class='tstring_end'>'</span></span>
   <span class='kw'>return</span> <span class='const'>Proc</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_instance_html'>instance_html</span><span class='op'>|</span>
     <span class='id identifier rubyid_html'>html</span> <span class='op'>=</span> <span class='op'>::</span><span class='const'>Nokogiri</span><span class='op'>::</span><span class='const'>HTML</span><span class='lparen'>(</span><span class='id identifier rubyid_instance_html'>instance_html</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_html'>html</span><span class='period'>.</span><span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='id identifier rubyid_selector_method'>selector_method</span><span class='comma'>,</span> <span class='id identifier rubyid_list_selector'>list_selector</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_list_element'>list_element</span><span class='op'>|</span> <span class='id identifier rubyid_list_element'>list_element</span><span class='period'>.</span><span class='id identifier rubyid_text'>text</span> <span class='rbrace'>}</span>
   <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="resolve_url-class_method">
+  
+    + (<tt>Object</tt>) <strong>resolve_url</strong>(_href, _page_url) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Takes :_href and resolves it to an absolute URL according to</p>
+
+<pre class="code ruby"><code class="ruby">the supplied :_page_url. They can be either Strings or URI
+instances.</code></pre>
+
+<p>raises ArgumentError if either href or page_url is nil raises ArgumentError
+if page_url is not absolute</p>
+
+<p>returns: a String with absolute URL</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>ArgumentError</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/utils.rb', line 51</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_resolve_url'>resolve_url</span><span class='lparen'>(</span><span class='id identifier rubyid__href'>_href</span><span class='comma'>,</span> <span class='id identifier rubyid__page_url'>_page_url</span><span class='rparen'>)</span>
+  
+  <span class='id identifier rubyid_page_url'>page_url</span> <span class='op'>=</span> <span class='const'>URI</span><span class='lparen'>(</span><span class='id identifier rubyid__page_url'>_page_url</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_page_url'>page_url</span><span class='embexpr_end'>}</span><span class='tstring_content'> must be absolute</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_page_url'>page_url</span><span class='period'>.</span><span class='id identifier rubyid_absolute?'>absolute?</span>
+
+  <span class='id identifier rubyid_href'>href</span> <span class='op'>=</span> <span class='const'>URI</span><span class='lparen'>(</span><span class='id identifier rubyid__href'>_href</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+
+  <span class='comment'># return :href if :href is already absolute
+</span>  <span class='kw'>return</span> <span class='id identifier rubyid_href'>href</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='kw'>if</span> <span class='id identifier rubyid_href'>href</span><span class='period'>.</span><span class='id identifier rubyid_absolute?'>absolute?</span>
+
+
+  <span class='comment'># TODO: There may be edge cases worth considering
+</span>  <span class='comment'># but this should handle the following non-absolute href possibilities:
+</span>  <span class='comment'># //anothersite.com (keeps scheme, too!)
+</span>  <span class='comment'># /root/dir
+</span>  <span class='comment'># relative/dir
+</span>  <span class='comment'># ?query=2
+</span>  <span class='comment'># #bang
+</span>
+  <span class='const'>URI</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_page_url'>page_url</span><span class='comma'>,</span> <span class='id identifier rubyid_href'>href</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>    
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -256,14 +377,12 @@ if present, is returned as the first row.</p>
 27
 28
 29
-30
-31</pre>
+30</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/utils.rb', line 20</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_table'>table</span><span class='lparen'>(</span><span class='id identifier rubyid_table_selector'>table_selector</span><span class='comma'>,</span> <span class='id identifier rubyid_selector_method'>selector_method</span><span class='op'>=</span><span class='symbol'>:xpath</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>csv</span><span class='tstring_end'>'</span></span>
   <span class='kw'>return</span> <span class='const'>Proc</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_instance_html'>instance_html</span><span class='op'>|</span>
     <span class='id identifier rubyid_html'>html</span> <span class='op'>=</span> <span class='op'>::</span><span class='const'>Nokogiri</span><span class='op'>::</span><span class='const'>HTML</span><span class='lparen'>(</span><span class='id identifier rubyid_instance_html'>instance_html</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_output'>output</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -284,9 +403,9 @@ if present, is returned as the first row.</p>
 </div>
 
     <div id="footer">
-  Generated on Fri Jul 19 18:14:39 2013 by
+  Generated on Thu Aug 15 00:25:44 2013 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.6.1 (ruby-1.9.3).
+  0.8.7 (ruby-2.0.0).
 </div>
 
   </body>
