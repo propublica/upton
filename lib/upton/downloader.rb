@@ -29,16 +29,18 @@ module Upton
     def get
       if cache_enabled?
         puts "Stashing enabled. Will try reading #{uri} data from cache."
-        download_from_cache
+        download_from_cache!
       else
         puts "Stashing disabled. Will download from the internet."
-        download_from_resource
+        from_resource = true
+        resp = download_from_resource!
+        {:resp => resp, :from_resource => from_resource }
       end
     end
 
     private
 
-    def download_from_resource
+    def download_from_resource!
       begin
         puts "Downloading from #{uri}" if verbose
         resp = RestClient.get(uri)
@@ -56,19 +58,21 @@ module Upton
       resp ||= ""
     end
 
-    def download_from_cache
-      file = if cached_file_exists?
+    def download_from_cache!
+      resp = if cached_file_exists?
                puts "Cache of #{uri} available"
+               from_resource = false
                open(cached_file).read
              else
                puts "Cache of #{uri} unavailable. Will download from the internet"
-               download_from_resource
+               from_resource = false
+               download_from_resource!
              end
       unless cached_file_exists?
         puts "Writing #{uri} data to the cache"
-        File.write(cached_file, file)
+        File.write(cached_file, resp)
       end
-      file
+      {:resp => resp, :from_resource => from_resource }
     end
 
     def cache_enabled?

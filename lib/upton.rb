@@ -211,13 +211,16 @@ module Upton
     protected
 
     ##
-    # Handles getting pages with RestClient or getting them from the local stash.
-    #
-    # Uses a kludge (because rest-client is outdated) to handle encoding.
+    # Handles getting pages with Downlader, which handles stashing.
     ##
     def get_page(url, stash=false, options={})
       return "" if url.empty?
-      Downloader.new(url, :cache => stash).get
+      resp_and_cache = Downloader.new(url, :cache => stash).get
+      if resp_and_cache[:from_resource]
+        puts "sleeping #{@sleep_time_between_requests} secs" if @verbose
+        sleep @sleep_time_between_requests
+      end
+      resp_and_cache[:resp]
     end
 
 
