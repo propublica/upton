@@ -32,7 +32,7 @@ module Upton
     ##
     # Scrapes any set of HTML elements into an Array. 
     ##
-    def self.list(list_selector, deprecated=nilh)
+    def self.list(list_selector, deprecated=nil)
       return Proc.new do |instance_html|
         html = ::Nokogiri::HTML(instance_html)
         html.search(list_selector).map{|list_element| list_element.text }

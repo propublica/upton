@@ -5,43 +5,13 @@ require 'thin'
 require 'nokogiri'
 require 'restclient'
 require 'fileutils'
+require "spec_helper.rb"
+
 require './lib/upton'
+
 
 describe Upton do
   before :all do
-    #start the server
-    class Server
-      def call(env)
-        @root = File.expand_path(File.dirname(__FILE__))
-        path = Rack::Utils.unescape(env['PATH_INFO'])
-        path += 'index.html' if path == '/'
-
-        params = Rack::Utils.parse_nested_query(env['QUERY_STRING'])
-
-        # If the url includes ?p=, then treat like it's pagination
-        if params['p']
-          path = "propublica_search_page_#{params['p']}.html"
-        end
-
-        file = File.join(@root, "data", path)
-
-        if File.exists?(file)
-          [ 200, {"Content-Type" => "text/html; charset=utf-8"}, File.read(file) ]
-        else
-          [ 404, {'Content-Type' => 'text/plain'}, 'file not found' ]
-        end
-      end
-    end
-
-    def start_test_server
-      @server_thread = Thread.new do
-        Rack::Handler::Thin.run ::Server.new, :Port => 9876
-      end
-      sleep(1) # wait a sec for the server to be booted
-    end
-
-    start_test_server()
-
     @headlines = ["Webinar: How to Use Prescriber Checkup to Power Your Reporting", 
                  "",
                  "A Prosecutor, a Wrongful Conviction and a Question of Justice",
@@ -71,9 +41,13 @@ describe Upton do
   end
 
   it "should scrape in the basic case" do
-    propubscraper = Upton::Scraper.new("http://127.0.0.1:9876/propublica.html", "section#river section h1 a", :css)
+    stub_request(:get, "www.example.com/propublica.html").
+      to_return(:body => File.new('./spec/data/propublica.html'), :status => 200)
+
+    propubscraper = Upton::Scraper.new("http://www.example.com/propublica.html", "section#river section h1 a")
     propubscraper.debug = true
     propubscraper.verbose = true
+    propubscraper.sleep_time_between_requests = 0
 
     heds = propubscraper.scrape do |article_str|
       doc = Nokogiri::HTML(article_str)
@@ -92,9 +66,22 @@ describe Upton do
 # the resolve_url creates a url identical to one that is already stashed ("prosecutors.html").
 # So it works, but because of a coupling to how Upton handles caching in the file system
 
-    propubscraper = Upton::Scraper.new("http://127.0.0.1:9876/propublica-relative.html", "section#river h1 a", :css)
+    stub_request(:get, "www.example.com/propublica-relative.html").
+      to_return(:body => File.new('./spec/data/propublica-relative.html'), :status => 200)
+    stub_request(:get, "www.example.com/prosecutor.html").
+      to_return(:body => File.new('./spec/data/prosecutor.html'), :status => 200)
+    stub_request(:get, "www.example.com/sixfacts.html").
+      to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
+    stub_request(:get, "www.example.com/webinar.html").
+      to_return(:body => File.new('./spec/data/webinar.html'), :status => 200)
+    stub_request(:get, "www.example.com/discussion.html").
+      to_return(:body => File.new('./spec/data/discussion.html'), :status => 200)
+
+
+    propubscraper = Upton::Scraper.new("http://www.example.com/propublica-relative.html", "section#river h1 a")
     propubscraper.debug = true
     propubscraper.verbose = true
+    propubscraper.sleep_time_between_requests = 0
 
     heds = propubscraper.scrape do |article_str|
       doc = Nokogiri::HTML(article_str)
@@ -105,38 +92,72 @@ describe Upton do
   end
 
   it "should scrape a list properly with the list helper" do
-    propubscraper = Upton::Scraper.new(["http://127.0.0.1:9876/propublica.html"])
+    stub_request(:get, "www.example.com/propublica.html").
+      to_return(:body => File.new('./spec/data/propublica.html'), :status => 200)
+
+    propubscraper = Upton::Scraper.new(["http://www.example.com/propublica.html"])
     propubscraper.debug = true
     propubscraper.verbose = true
-    list = propubscraper.scrape(&Upton::Utils.list("#jamb.wNarrow #most-commented li a", :css))
+    propubscraper.sleep_time_between_requests = 0
+
+    list = propubscraper.scrape(&Upton::Utils.list("#jamb.wNarrow #most-commented li a"))
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
     list.should eql @most_commented_heds
   end
 
   it "should scrape a table properly with the table helper" do
-    propubscraper = Upton::Scraper.new(["http://127.0.0.1:9876/easttimor.html"])
+    stub_request(:get, "www.example.com/easttimor.html").
+      to_return(:body => File.new('./spec/data/easttimor.html'), :status => 200)
+
+    propubscraper = Upton::Scraper.new(["http://www.example.com/easttimor.html"])
     propubscraper.debug = true
     propubscraper.verbose = true
+    propubscraper.sleep_time_between_requests = 0
+
     table = propubscraper.scrape(&Upton::Utils.table('//table[contains(concat(" ", normalize-space(@class), " "), " wikitable ")][2]'))
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
     table.should eql @east_timor_prime_ministers
   end
 
-  it "should test saving files with the right encoding"
-  it "should test stashing to make sure pages are stashed at the right times, but not at the wrong ones"
+  it "should test saving files with the right encoding" do
+    pending "finding a site that gives funny encodings"
+  end
 
   it "should scrape paginated pages" do
-    propubscraper = Upton::Scraper.new("http://127.0.0.1:9876/propublica_search.html", '.compact-list a.title-link', :css)
+    stub_request(:get, "www.example.com/propublica_search.html").
+      to_return(:body => File.new('./spec/data/propublica_search.html'), :status => 200)
+    stub_request(:get, "www.example.com/propublica_search.html?p=2").
+      to_return(:body => File.new('./spec/data/propublica_search_page_2.html'), :status => 200)
+    stub_request(:get, "www.example.com/propublica_search.html?p=3").
+      to_return(:body => '', :status => 200)
+
+
+    propubscraper = Upton::Scraper.new("http://www.example.com/propublica_search.html", '.compact-list a.title-link')
     propubscraper.debug = true
     propubscraper.verbose = true
     propubscraper.paginated = true
     propubscraper.pagination_param = 'p'
     propubscraper.pagination_max_pages = 3
+    propubscraper.sleep_time_between_requests = 0
+
     results = propubscraper.scrape do |article_str|
       doc = Nokogiri::HTML(article_str)
       hed = doc.css('h1.article-title').text
     end
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
     results.should eql @searchResults
+  end
+
+
+  before do
+    Upton::Scraper.stub(:sleep)
+  end
+
+  it "should sleep after uncached requests" do 
+    stub_request(:get, "www.example.com")
+    u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u.should_receive(:sleep)
+    stub = stub_request(:get, "http://www.example.com")
+    u.scrape
   end
 end
