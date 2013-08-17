@@ -160,4 +160,8 @@ describe Upton do
     stub = stub_request(:get, "http://www.example.com")
     u.scrape
   end
+
+  it "should be silent if verbose if false" do 
+    pending
+  end
 end
