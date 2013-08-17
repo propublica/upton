@@ -33,7 +33,7 @@ module Upton
   ##
   class Scraper
 
-    attr_accessor :verbose, :debug, :sleep_time_between_requests, :stash_folder, :url_array,
+    attr_accessor :verbose, :debug, :index_debug, :sleep_time_between_requests, :stash_folder, :url_array,
       :paginated, :pagination_param, :pagination_max_pages
 
     ##
