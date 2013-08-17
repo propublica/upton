@@ -178,7 +178,6 @@ module Upton
       CSV.open filename, 'wb' do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
         self.scrape_from_list(self.url_array, blk).compact.each do |document| 
-          puts document.inspect
           if document[0].respond_to? :map
             document.each{|row| csv << row }
           else
@@ -197,7 +196,6 @@ module Upton
       CSV.open filename, 'wb', :col_sep => "\t" do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
         self.scrape_from_list(self.url_array, blk).compact.each do |document| 
-          puts document.inspect
           if document[0].respond_to? :map
             document.each{|row| csv << row }
           else
@@ -276,7 +274,7 @@ module Upton
         href = a_element["href"]
         u = resolve_url( href, @index_url) unless href.nil?
         unless u == href
-          puts "resolved #{href} to #{u}"
+          puts "resolved #{href} to #{u}" if @verbose
         end
         u
       end

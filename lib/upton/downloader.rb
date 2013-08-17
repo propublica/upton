@@ -28,10 +28,10 @@ module Upton
 
     def get
       if cache_enabled?
-        puts "Stashing enabled. Will try reading #{uri} data from cache."
+        puts "Stashing enabled. Will try reading #{uri} data from cache." if @verbose
         download_from_cache!
       else
-        puts "Stashing disabled. Will download from the internet."
+        puts "Stashing disabled. Will download from the internet." if @verbose
         from_resource = true
         resp = download_from_resource!
         {:resp => resp, :from_resource => from_resource }
@@ -42,17 +42,17 @@ module Upton
 
     def download_from_resource!
       begin
-        puts "Downloading from #{uri}" if verbose
+        puts "Downloading from #{uri}" if @verbose
         resp = RestClient.get(uri)
-        puts "Downloaded #{uri}" if verbose
+        puts "Downloaded #{uri}" if @verbose
       rescue RestClient::ResourceNotFound
-        puts "404 error, skipping: #{uri}" if verbose
+        puts "404 error, skipping: #{uri}" if @verbose
       rescue RestClient::InternalServerError
-        puts "500 Error, skipping: #{uri}" if verbose
+        puts "500 Error, skipping: #{uri}" if @verbose
       rescue URI::InvalidURIError
-        puts "Invalid URI: #{uri}" if verbose
+        puts "Invalid URI: #{uri}" if @verbose
       rescue RestClient::RequestTimeout
-        puts "Timeout: #{uri}" if verbose
+        puts "Timeout: #{uri}" if @verbose
         retry
       end
       resp ||= ""
@@ -60,16 +60,16 @@ module Upton
 
     def download_from_cache!
       resp = if cached_file_exists?
-               puts "Cache of #{uri} available"
+               puts "Cache of #{uri} available" if @verbose
                from_resource = false
                open(cached_file).read
              else
-               puts "Cache of #{uri} unavailable. Will download from the internet"
+               puts "Cache of #{uri} unavailable. Will download from the internet" if @verbose
                from_resource = false
                download_from_resource!
              end
       unless cached_file_exists?
-        puts "Writing #{uri} data to the cache"
+        puts "Writing #{uri} data to the cache" if @verbose
         File.write(cached_file, resp)
       end
       {:resp => resp, :from_resource => from_resource }
