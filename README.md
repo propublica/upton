@@ -35,11 +35,16 @@ Upton can handle pagination too. You can override the `next_index_page_url` and 
 Upton is, in essence, sugar around RestClient and Nokogiri. If you just used those tools by themselves to write scrapers, you'd be responsible for writing code to fetch, save (maybe), debug and sew together all the pieces in a slightly different way for each scraper. Upton does most of that work for you, so you can skip the boilerplate.
 
 ####Upton doesn't quite fit your needs?
-Here are some similar libraries to check out. No promises, since I've never used them, but they seem similar and were [recommended by various HN commenters](https://news.ycombinator.com/item?id=6086031): 
+Here are some similar libraries to check out for inspiration. No promises, since I've never used them, but they seem similar and were [recommended by various HN commenters](https://news.ycombinator.com/item?id=6086031): 
 
 - [Pismo](https://github.com/peterc/pismo)
 - [Spidey](https://github.com/joeyAghion/spidey)
 - [Anemone](http://anemone.rubyforge.org/)
+
+And these are some libraries that do related things:
+
+- [SelectorGadget](http://selectorgadget.com/)
+- [HayStax](https://github.com/danhillreports/haystax)
 
 
 Examples
