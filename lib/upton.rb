@@ -3,7 +3,8 @@
 require 'nokogiri'
 require 'uri'
 require 'restclient'
-require_relative './utils'
+require_relative 'upton/utils'
+require_relative 'upton/downloader'
 
 ##
 # This module contains a scraper called Upton
@@ -32,7 +33,8 @@ module Upton
   ##
   class Scraper
 
-    attr_accessor :verbose, :debug, :sleep_time_between_requests, :stash_folder, :url_array
+    attr_accessor :verbose, :debug, :index_debug, :sleep_time_between_requests, :stash_folder, :url_array,
+      :paginated, :pagination_param, :pagination_max_pages
 
     ##
     # This is the main user-facing method for a basic scraper.
@@ -99,6 +101,14 @@ module Upton
       # seconds between requests to the remote server.
       @sleep_time_between_requests = 30 #seconds
 
+      # If true, then Upton will attempt to scrape paginated index pages
+      @paginated = false
+      # Default query string parameter used to specify the current page
+      @pagination_param = 'page'
+      # Default number of paginated pages to scrape
+      @pagination_max_pages = 2
+
+
       # Folder name for stashes, if you want them to be stored somewhere else,
       # e.g. under /tmp.
       @stash_folder ||= "stashes"
@@ -123,18 +133,38 @@ module Upton
     end
 
     ##
-    # If index pages are paginated, <b>you must override</b>
-    # this method to return the next URL, given the current URL and its index.
-    #
-    # If index pages aren't paginated, there's no need to override this.
+    # Return the next URL to scrape, given the current URL and its index.
     #
     # Recursion stops if the fetching URL returns an empty string or an error.
     #
-    # e.g. +next_index_page_url("http://whatever.com/articles?page=1", 2)+
+    # If @paginated is not set (the default), this method returns an empty string.
+    # 
+    # If @paginated is set, this method will return the next pagination URL
+    # to scrape using @pagination_param and the pagination_index.
+    #
+    # If the pagination_index is greater than @pagination_max_pages, then the
+    # method will return an empty string.
+    #
+    # Override this method to handle pagination is an alternative way
+    # e.g. next_index_page_url("http://whatever.com/articles?page=1", 2)
     # ought to return "http://whatever.com/articles?page=2"
+    #
     ##
     def next_index_page_url(url, pagination_index)
-      ""
+      return '' unless @paginated
+
+      if pagination_index > @pagination_max_pages
+        puts "Exceeded pagination limit of #{@pagination_max_pages}" if @verbose
+        ''
+      else
+        uri = URI.parse(url)
+        query = uri.query ? Hash[URI.decode_www_form(uri.query)] : {}
+        # update the pagination query string parameter
+        query[@pagination_param] = pagination_index
+        uri.query = URI.encode_www_form(query)
+        puts "Next index pagination url is #{uri}" if @verbose
+        uri.to_s
+      end
     end
 
     ##
@@ -148,7 +178,6 @@ module Upton
       CSV.open filename, 'wb' do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
         self.scrape_from_list(self.url_array, blk).compact.each do |document| 
-          puts document.inspect
           if document[0].respond_to? :map
             document.each{|row| csv << row }
           else
@@ -167,7 +196,6 @@ module Upton
       CSV.open filename, 'wb', :col_sep => "\t" do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
         self.scrape_from_list(self.url_array, blk).compact.each do |document| 
-          puts document.inspect
           if document[0].respond_to? :map
             document.each{|row| csv << row }
           else
@@ -181,66 +209,16 @@ module Upton
     protected
 
     ##
-    # Actually fetches the page
-    ##
-    def fetch_page(url, options={})
-      RestClient.get(url, {:accept=> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
-    end
-
-    ##
-    # Handles getting pages with RestClient or getting them from the local stash.
-    #
-    # Uses a kludge (because rest-client is outdated) to handle encoding.
+    # Handles getting pages with Downlader, which handles stashing.
     ##
     def get_page(url, stash=false, options={})
       return "" if url.empty?
-
-      #the filename for each stashed version is a cleaned version of the URL.
-      if stash && File.exists?( url_to_filename(url, options) )
-        puts "usin' a stashed copy of " + url if @verbose
-        resp = open( url_to_filename(url, options), 'r:UTF-8').read .encode("UTF-8", :invalid => :replace, :undef => :replace )
-      else
-        begin
-          puts "getting " + url if @verbose
-          sleep @sleep_time_between_requests
-          resp = fetch_page(url, options)
-
-          #this is silly, but rest-client needs to get on their game.
-          #cf https://github.com/jcoyne/rest-client/blob/fb80f2c320687943bc4fae1503ed15f9dff4ce64/lib/restclient/response.rb#L26
-          if ((200..207).include?(resp.net_http_res.code.to_i) && content_type = resp.net_http_res.content_type)
-            charset = if set = resp.net_http_res.type_params['charset'] 
-              set
-            elsif content_type == 'text/xml'
-              'us-ascii'
-            elsif content_type.split('/').first == 'text'
-              'iso-8859-1'
-            end
-            resp.force_encoding(charset) if charset
-          end
-
-        rescue RestClient::ResourceNotFound
-          puts "404 error, skipping: #{url}" if @verbose
-          resp = ""
-        rescue RestClient::InternalServerError
-          puts "500 Error, skipping: #{url}" if @verbose
-          resp = ""
-        rescue URI::InvalidURIError
-          puts "Invalid URI: #{url}" if @verbose
-          resp = ""
-        rescue RestClient::RequestTimeout
-          "Timeout: #{url}" if @verbose
-          retry
-        end
-        if stash
-          puts "I just stashed (#{resp.code if resp.respond_to?(:code)}): #{url}" if @verbose
-          open( url_to_filename(url, options), 'w:UTF-8'){|f| f.write(resp.encode("UTF-8", :invalid => :replace, :undef => :replace ) )}
-        end
+      resp_and_cache = Downloader.new(url, :cache => stash).get
+      if resp_and_cache[:from_resource]
+        puts "sleeping #{@sleep_time_between_requests} secs" if @verbose
+        sleep @sleep_time_between_requests
       end
-      resp
-    end
-
-    def url_to_filename(url, options={})
-      File.join(@stash_folder, url.gsub(/[^A-Za-z0-9\-]/, "") )
+      resp_and_cache[:resp]
     end
 
 
@@ -296,7 +274,7 @@ module Upton
         href = a_element["href"]
         u = resolve_url( href, @index_url) unless href.nil?
         unless u == href
-          puts "resolved #{href} to #{u}"
+          puts "resolved #{href} to #{u}" if @verbose
         end
         u
       end
