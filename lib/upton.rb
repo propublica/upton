@@ -213,7 +213,7 @@ module Upton
     ##
     def get_page(url, stash=false, options={})
       return "" if url.empty?
-      resp_and_cache = Downloader.new(url, :cache => stash).get
+      resp_and_cache = Downloader.new(url, {:cache => stash, :verbose => @verbose}.merge(options)).get
       if resp_and_cache[:from_resource]
         puts "sleeping #{@sleep_time_between_requests} secs" if @verbose
         sleep @sleep_time_between_requests
