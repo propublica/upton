@@ -69,7 +69,13 @@ module Upton
                download_from_resource!
              end
       unless cached_file_exists?
-        puts "Writing #{uri} data to the cache" if @verbose
+        if @verbose
+          if @readable_stash_filenames
+            puts "Writing #{uri} data to the cache at #{cached_file}" 
+          else
+            puts "Writing #{uri} data to the cache"
+          end
+        end
         File.write(cached_file, resp)
       end
       {:resp => resp, :from_resource => from_resource }
@@ -94,7 +100,7 @@ module Upton
     def readable_filename_from_uri
       time = "#{Time.now.utc.to_s.gsub(" ", "_")}.html"
       clean_url_max_length = MAX_FILENAME_LENGTH - time.length
-      clean_url = url.gsub(/[^A-Za-z0-9\-_]/, "")[0...clean_url_max_length]
+      clean_url = uri.gsub(/[^A-Za-z0-9\-_]/, "")[0...clean_url_max_length]
       "#{clean_url}.#{time}"
     end
 
