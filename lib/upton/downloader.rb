@@ -14,13 +14,13 @@ module Upton
   # If `readable_stash_filenames` is true, they will have human-readable names.
   class Downloader
 
-    MAX_FILENAME_LENGTH = 255 #for unixes, win xp+
+    MAX_FILENAME_LENGTH = 130 #for unixes, win xp+
 
     attr_reader :uri, :cache_location, :verbose
     def initialize(uri, options = {})
       @uri = uri
       @cache = options.fetch(:cache) { true }
-      @cache_location = options[:cache_location] || "#{Dir.tmpdir}/upton"
+      @cache_location = File.absolute_path(options[:cache_location] || "#{Dir.tmpdir}/upton")
       @verbose = options[:verbose] || false
       @readable_stash_filenames = options[:readable_filenames] || false
       initialize_cache!
@@ -60,14 +60,20 @@ module Upton
 
     def download_from_cache!
       resp = if cached_file_exists?
-               puts "Cache of #{uri} available" if @verbose
-               from_resource = false
-               open(cached_file).read
-             else
-               puts "Cache of #{uri} unavailable. Will download from the internet" if @verbose
-               from_resource = false
-               download_from_resource!
-             end
+              puts "Cache of #{uri} available" if @verbose
+              from_resource = false
+              open(cached_file).read
+            else
+              if @verbose
+                if @readable_stash_filenames
+                  puts "Cache of #{uri} unavailable at #{filename_from_uri}. Will download from the internet"
+                else
+                  puts "Cache of #{uri} unavailable. Will download from the internet"
+                end
+              end
+              from_resource = false
+              download_from_resource!
+            end
       unless cached_file_exists?
         if @verbose
           if @readable_stash_filenames
@@ -98,10 +104,10 @@ module Upton
     end
 
     def readable_filename_from_uri
-      time = "#{Time.now.utc.to_s.gsub(" ", "_")}.html"
-      clean_url_max_length = MAX_FILENAME_LENGTH - time.length
+      html = "html"
+      clean_url_max_length = MAX_FILENAME_LENGTH - html.length - cache_location.size
       clean_url = uri.gsub(/[^A-Za-z0-9\-_]/, "")[0...clean_url_max_length]
-      "#{clean_url}.#{time}"
+      "#{clean_url}.#{html}"
     end
 
     def cached_file
