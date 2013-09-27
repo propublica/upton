@@ -32,6 +32,7 @@ module Upton
   #    e.g. +MyScraper < Upton::Scraper+ and override various methods.
   ##
   class Scraper
+    EMPTY_STRING = ''
 
     attr_accessor :verbose, :debug, :index_debug, :sleep_time_between_requests, :stash_folder, :url_array,
       :paginated, :pagination_param, :pagination_max_pages
@@ -42,10 +43,8 @@ module Upton
     # the text of each instance page, (and optionally, its URL and its index
     # in the list of instance URLs returned by +get_index+).
     ##
-    def scrape &blk
-      unless self.url_array
-        self.url_array = self.get_index
-      end
+    def scrape(&blk)
+      self.url_array = self.get_index unless self.url_array
       self.scrape_from_list(self.url_array, blk)
     end
 
@@ -75,13 +74,9 @@ module Upton
       #if it's not (or if it's a list?) don't bother with get_index, etc.
       #e.g. Scraper.new(["http://jeremybmerrill.com"])
 
-      #TODO: rewrite this, because it's a little silly. (i.e. should be a more sensical division of how these arguments work)
-      if index_url_or_array.respond_to? :each_with_index
-        @url_array = index_url_or_array
-      else
-        @index_url = index_url_or_array
-        @index_selector = selector
-      end
+      @url_array = index_url_or_array
+      @index_selector = selector if index_url_or_array.respond_to?(:each_with_index)
+
       # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
       @verbose = false
@@ -112,9 +107,7 @@ module Upton
       # Folder name for stashes, if you want them to be stored somewhere else,
       # e.g. under /tmp.
       @stash_folder ||= "stashes"
-      unless Dir.exists?(@stash_folder)
-        FileUtils.mkdir_p(@stash_folder)
-      end
+      FileUtils.mkdir_p(@stash_folder) unless Dir.exists?(@stash_folder)
     end
 
     ##
@@ -129,7 +122,7 @@ module Upton
     # ought to return "http://whatever.com/article/upton-sinclairs-the-jungle?page=2"
     ##
     def next_instance_page_url(url, pagination_index)
-      ""
+      EMPTY_STRING
     end
 
     ##
@@ -151,11 +144,11 @@ module Upton
     #
     ##
     def next_index_page_url(url, pagination_index)
-      return '' unless @paginated
+      return EMPTY_STRING unless @paginated
 
       if pagination_index > @pagination_max_pages
         puts "Exceeded pagination limit of #{@pagination_max_pages}" if @verbose
-        ''
+        EMPTY_STRING
       else
         uri = URI.parse(url)
         query = uri.query ? Hash[URI.decode_www_form(uri.query)] : {}
@@ -172,9 +165,7 @@ module Upton
     ##
     def scrape_to_csv filename, &blk
       require 'csv'
-      unless self.url_array
-        self.url_array = self.get_index
-      end
+      self.url_array = self.get_index unless self.url_array
       CSV.open filename, 'wb' do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
         self.scrape_from_list(self.url_array, blk).compact.each do |document| 
@@ -190,9 +181,7 @@ module Upton
 
     def scrape_to_tsv filename, &blk
       require 'csv'
-      unless self.url_array
-        self.url_array = self.get_index
-      end
+      self.url_array = self.get_index unless self.url_array
       CSV.open filename, 'wb', :col_sep => "\t" do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
         self.scrape_from_list(self.url_array, blk).compact.each do |document| 
@@ -212,7 +201,7 @@ module Upton
     # Handles getting pages with Downlader, which handles stashing.
     ##
     def get_page(url, stash=false, options={})
-      return "" if url.empty?
+      return EMPTY_STRING if url.empty?
       resp_and_cache = Downloader.new(url, {:cache => stash, :verbose => @verbose}.merge(options)).get
       if resp_and_cache[:from_resource]
         puts "sleeping #{@sleep_time_between_requests} secs" if @verbose
@@ -272,11 +261,9 @@ module Upton
       # for now, override selector_method with :search, which will work with either CSS or XPath
       Nokogiri::HTML(text).search(selector).to_a.map do |a_element| 
         href = a_element["href"]
-        u = resolve_url( href, @index_url) unless href.nil?
-        unless u == href
-          puts "resolved #{href} to #{u}" if @verbose
-        end
-        u
+        resolved_url = resolve_url( href, @index_url) unless href.nil?
+        puts "resolved #{href} to #{resolved_url}" if @verbose && resolved_url != href
+        resolved_url
       end
     end
 
@@ -287,7 +274,7 @@ module Upton
     ##
     def get_index_pages(url, pagination_index, options={})
       resp = self.get_page(url, @index_debug, options)
-      if !resp.empty? 
+      unless resp.empty? 
         next_url = self.next_index_page_url(url, pagination_index + 1)
         # resolve to absolute url
         #
@@ -313,7 +300,7 @@ module Upton
       if !resp.empty? 
         next_url = self.next_instance_page_url(url, pagination_index.to_i + 1)
         
-#        next_url = resolve_url(next_url, url)
+        #next_url = resolve_url(next_url, url)
         unless next_url == url
           next_resp = self.get_instance(next_url, pagination_index.to_i + 1).to_s 
           resp += next_resp

@@ -15,6 +15,7 @@ module Upton
   class Downloader
 
     MAX_FILENAME_LENGTH = 130 #for unixes, win xp+
+    EMPTY_STRING = ''
 
     attr_reader :uri, :cache_location, :verbose
     def initialize(uri, options = {})
@@ -55,7 +56,7 @@ module Upton
         puts "Timeout: #{uri}" if @verbose
         retry
       end
-      resp ||= ""
+      resp ||= EMPTY_STRING
     end
 
     def download_from_cache!
@@ -92,11 +93,7 @@ module Upton
     end
 
     def filename_from_uri
-      if @readable_stash_filenames
-        readable_filename_from_uri
-      else
-        hashed_filename_from_uri
-      end
+      @readable_stash_filenames ? readable_filename_from_uri : hashed_filename_from_uri
     end
 
     def hashed_filename_from_uri
