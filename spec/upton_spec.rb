@@ -140,6 +140,10 @@ describe Upton do
       to_return(:body => '', :status => 200)
     stub_request(:get, "www.example.com/webinar.html").
       to_return(:body => File.new('./spec/data/webinar.html'), :status => 200)
+    stub_request(:get, "www.example.com/prosecutor.html").
+      to_return(:body => File.new('./spec/data/prosecutor.html'), :status => 200)
+    stub_request(:get, "www.example.com/sixfacts.html").
+      to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
 
 
     propubscraper = Upton::Scraper.new("http://www.example.com/propublica_search.html", '.compact-list a.title-link')
