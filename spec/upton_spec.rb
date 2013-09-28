@@ -12,22 +12,22 @@ require './lib/upton'
 
 describe Upton do
   before :all do
-    @headlines = ["Webinar: How to Use Prescriber Checkup to Power Your Reporting", 
+    @headlines = ["Webinar: How to Use Prescriber Checkup to Power Your Reporting",
                  "",
                  "A Prosecutor, a Wrongful Conviction and a Question of Justice",
                  "Six Facts Lost in the IRS Scandal"]
-    @most_commented_heds = [["Six Facts Lost in the IRS Scandal", 
-                        "How the IRS’s Nonprofit Division Got So Dysfunctional", 
-                        "Sound, Fury and the IRS Mess", 
-                        "The Most Important #Muckreads on Rape in the Military", 
-                        "Congressmen to Hagel: Where Are the Missing War Records?", 
-                        "As Need for New Flood Maps Rises, Congress and Obama Cut Funding", 
-                        "A Prosecutor, a Wrongful Conviction and a Question of Justice", 
-                        "A Prolonged Stay: The Reasons Behind the Slow Pace of Executions", 
+    @most_commented_heds = [["Six Facts Lost in the IRS Scandal",
+                        "How the IRS’s Nonprofit Division Got So Dysfunctional",
+                        "Sound, Fury and the IRS Mess",
+                        "The Most Important #Muckreads on Rape in the Military",
+                        "Congressmen to Hagel: Where Are the Missing War Records?",
+                        "As Need for New Flood Maps Rises, Congress and Obama Cut Funding",
+                        "A Prosecutor, a Wrongful Conviction and a Question of Justice",
+                        "A Prolonged Stay: The Reasons Behind the Slow Pace of Executions",
                         "The Story Behind Our Hospital Interactive",
                         "irs-test-charts-for-embedding"]]
-    @east_timor_prime_ministers = [[ 
-                                    ["#", "Portrait", "Name(Birth–Death)", "Term of Office", "Party", 
+    @east_timor_prime_ministers = [[
+                                    ["#", "Portrait", "Name(Birth–Death)", "Term of Office", "Party",
                                       "1", "2", "3", "4",],
                                     [],
                                     ["", "Mari Alkatiri(b. 1949)", "20 May 2002", "26 June 2006[1]", "FRETILIN"],
@@ -35,7 +35,7 @@ describe Upton do
                                     ["", "Estanislau da Silva(b. 1952)", "19 May 2007", "8 August 2007", "FRETILIN"],
                                     ["", "Xanana Gusmão(b. 1946)", "8 August 2007", "Incumbent", "CNRT"],
                                   ]]
-    @searchResults = ["Webinar: How to Use Prescriber Checkup to Power Your Reporting", 
+    @searchResults = ["Webinar: How to Use Prescriber Checkup to Power Your Reporting",
                  "A Prosecutor, a Wrongful Conviction and a Question of Justice",
                  "Six Facts Lost in the IRS Scandal"]
   end
@@ -43,6 +43,14 @@ describe Upton do
   it "should scrape in the basic case" do
     stub_request(:get, "www.example.com/propublica.html").
       to_return(:body => File.new('./spec/data/propublica.html'), :status => 200)
+    stub_request(:get, "www.example.com/discussion.html").
+      to_return(:body => File.new('./spec/data/discussion.html'), :status => 200)
+    stub_request(:get, "www.example.com/prosecutor.html").
+      to_return(:body => File.new('./spec/data/prosecutor.html'), :status => 200)
+    stub_request(:get, "www.example.com/webinar.html").
+      to_return(:body => File.new('./spec/data/webinar.html'), :status => 200)
+    stub_request(:get, "www.example.com/sixfacts.html").
+      to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
 
     propubscraper = Upton::Scraper.new("http://www.example.com/propublica.html", "section#river section h1 a")
     propubscraper.debug = true
@@ -57,12 +65,12 @@ describe Upton do
     heds.should eql @headlines
   end
 
-  it 'should properly handle relative urls'  do 
+  it 'should properly handle relative urls'  do
 # uses a modified page from the previous test in which the target
 # href, http://127.0.0.1:9876/prosecutors.html, has been changed
 # to a relative url
 #
-# Note: this test is a bit quirky, because it passes on the fact that 
+# Note: this test is a bit quirky, because it passes on the fact that
 # the resolve_url creates a url identical to one that is already stashed ("prosecutors.html").
 # So it works, but because of a coupling to how Upton handles caching in the file system
 
@@ -130,6 +138,12 @@ describe Upton do
       to_return(:body => File.new('./spec/data/propublica_search_page_2.html'), :status => 200)
     stub_request(:get, "www.example.com/propublica_search.html?p=3").
       to_return(:body => '', :status => 200)
+    stub_request(:get, "www.example.com/webinar.html").
+      to_return(:body => File.new('./spec/data/webinar.html'), :status => 200)
+    stub_request(:get, "www.example.com/prosecutor.html").
+      to_return(:body => File.new('./spec/data/prosecutor.html'), :status => 200)
+    stub_request(:get, "www.example.com/sixfacts.html").
+      to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
 
 
     propubscraper = Upton::Scraper.new("http://www.example.com/propublica_search.html", '.compact-list a.title-link')
@@ -153,7 +167,7 @@ describe Upton do
     Upton::Scraper.stub(:sleep)
   end
 
-  it "should sleep after uncached requests" do 
+  it "should sleep after uncached requests" do
     stub_request(:get, "www.example.com")
     u = Upton::Scraper.new("http://www.example.com", '.whatever')
     u.should_receive(:sleep)
@@ -161,7 +175,7 @@ describe Upton do
     u.scrape
   end
 
-  it "should be silent if verbose if false" do 
+  it "should be silent if verbose if false" do
     pending
   end
 end
