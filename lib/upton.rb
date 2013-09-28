@@ -11,24 +11,24 @@ require_relative 'upton/downloader'
 ##
 module Upton
   ##
-  # *Upton* is a framework for easy web-scraping with a useful debug mode 
-  # that doesn't hammer your target's servers. It does the repetitive parts of 
+  # *Upton* is a framework for easy web-scraping with a useful debug mode
+  # that doesn't hammer your target's servers. It does the repetitive parts of
   # writing scrapers, so you only have to write the unique parts for each site.
   #
   # Upton operates on the theory that, for most scraping projects, you need to
   # scrape two types of pages:
-  # 
-  # 1. Index pages, which list instance pages. For example, a job search 
+  #
+  # 1. Index pages, which list instance pages. For example, a job search
   #     site's search page or a newspaper's homepage.
   # 2. Instance pages, which represent the goal of your scraping, e.g.
   #     job listings or news articles.
   #
   # Upton::Scraper can be used as-is for basic use-cases by:
-  # 1. specifying the pages to be scraped in `new` as an index page 
+  # 1. specifying the pages to be scraped in `new` as an index page
   #      or as an Array of URLs.
-  # 2.  supplying a block to `scrape` or `scrape_to_csv` or using a pre-build 
+  # 2.  supplying a block to `scrape` or `scrape_to_csv` or using a pre-build
   #      block from Upton::Utils.
-  # For more complicated cases; subclass Upton::Scraper 
+  # For more complicated cases; subclass Upton::Scraper
   #    e.g. +MyScraper < Upton::Scraper+ and override various methods.
   ##
   class Scraper
@@ -39,7 +39,7 @@ module Upton
 
     ##
     # This is the main user-facing method for a basic scraper.
-    # Call +scrape+ with a block; this block will be called on 
+    # Call +scrape+ with a block; this block will be called on
     # the text of each instance page, (and optionally, its URL and its index
     # in the list of instance URLs returned by +get_index+).
     ##
@@ -51,8 +51,8 @@ module Upton
     ##
     # +index_url_or_array+: A list of string URLs, OR
     #              the URL of the page containing the list of instances.
-    # +selector+: The XPath expression or CSS selector that specifies the 
-    #              anchor elements within the page, if a url is specified for 
+    # +selector+: The XPath expression or CSS selector that specifies the
+    #              anchor elements within the page, if a url is specified for
     #              the previous argument.
     # +selector_method+: Deprecated and ignored. Next breaking release will
     #                      remove this option.x
@@ -69,13 +69,18 @@ module Upton
       #  the String passed is of CSS/XPath notation
 
     def initialize(index_url_or_array, selector="", selector_method=:deprecated)
-      
+
       #if first arg is a valid URL, do already-written stuff;
       #if it's not (or if it's a list?) don't bother with get_index, etc.
       #e.g. Scraper.new(["http://jeremybmerrill.com"])
 
-      @url_array = index_url_or_array
-      @index_selector = selector if index_url_or_array.respond_to?(:each_with_index)
+      #TODO: rewrite this, because it's a little silly. (i.e. should be a more sensical division of how these arguments work)
+      if index_url_or_array.respond_to? :each_with_index
+        @url_array = index_url_or_array
+      else
+        @index_url = index_url_or_array
+        @index_selector = selector
+      end
 
       # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
@@ -86,13 +91,13 @@ module Upton
       # version.
       # You may want to set @debug to false for production (but maybe not).
       # You can also control stashing behavior on a per-call basis with the
-      # optional second argument to get_page, if, for instance, you want to 
+      # optional second argument to get_page, if, for instance, you want to
       # stash certain instance pages, e.g. based on their modification date.
       @debug = true
       # Index debug does the same, but for index pages.
       @index_debug = false
 
-      # In order to not hammer servers, Upton waits for, by default, 30  
+      # In order to not hammer servers, Upton waits for, by default, 30
       # seconds between requests to the remote server.
       @sleep_time_between_requests = 30 #seconds
 
@@ -111,7 +116,7 @@ module Upton
     end
 
     ##
-    # If instance pages are paginated, <b>you must override</b> 
+    # If instance pages are paginated, <b>you must override</b>
     # this method to return the next URL, given the current URL and its index.
     #
     # If instance pages aren't paginated, there's no need to override this.
@@ -131,7 +136,7 @@ module Upton
     # Recursion stops if the fetching URL returns an empty string or an error.
     #
     # If @paginated is not set (the default), this method returns an empty string.
-    # 
+    #
     # If @paginated is set, this method will return the next pagination URL
     # to scrape using @pagination_param and the pagination_index.
     #
@@ -168,7 +173,7 @@ module Upton
       self.url_array = self.get_index unless self.url_array
       CSV.open filename, 'wb' do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
-        self.scrape_from_list(self.url_array, blk).compact.each do |document| 
+        self.scrape_from_list(self.url_array, blk).compact.each do |document|
           if document[0].respond_to? :map
             document.each{|row| csv << row }
           else
@@ -184,7 +189,7 @@ module Upton
       self.url_array = self.get_index unless self.url_array
       CSV.open filename, 'wb', :col_sep => "\t" do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
-        self.scrape_from_list(self.url_array, blk).compact.each do |document| 
+        self.scrape_from_list(self.url_array, blk).compact.each do |document|
           if document[0].respond_to? :map
             document.each{|row| csv << row }
           else
@@ -211,7 +216,7 @@ module Upton
     end
 
 
-    ## 
+    ##
     # sometimes URLs are relative, e.g. "index.html" as opposed to "http://site.com/index.html"
     # resolve_url resolves them to absolute urls.
     # absolute_url_str must be a URL, as a string, that is absolute.
@@ -225,7 +230,7 @@ module Upton
       return href.to_s if href.absolute?
 
       #TODO: edge cases, see [issue #8](https://github.com/propublica/upton/issues/8)
-      URI.join(absolute_url, href).to_s    
+      URI.join(absolute_url, href).to_s
     end
 
     ##
@@ -239,7 +244,7 @@ module Upton
     end
 
     ##
-    # Using the XPath expression or CSS selector and selector_method that 
+    # Using the XPath expression or CSS selector and selector_method that
     # uniquely identifies the links in the index, return those links as strings.    ##
     def old_parse_index(text, selector, selector_method=:deprecated) # TODO: Deprecate selector_method in next minor release.
       # for now, override selector_method with :search, which will work with either CSS or XPath
@@ -252,14 +257,14 @@ module Upton
     # Does @index_url stay unaltered for the lifetime of the Upton instance?
     # It seems to at this point, but that may be something that gets
     #  deprecated later
-    # 
-    # So for now, @index_url is used in conjunction with resolve_url 
+    #
+    # So for now, @index_url is used in conjunction with resolve_url
     # to make sure that this method returns absolute urls
     # i.e. this method expects @index_url to always have an absolute address
     # for the lifetime of an Upton instance
     def parse_index(text, selector, selector_method=:deprecated) # TODO: Deprecate selector_method in next minor release.
       # for now, override selector_method with :search, which will work with either CSS or XPath
-      Nokogiri::HTML(text).search(selector).to_a.map do |a_element| 
+      Nokogiri::HTML(text).search(selector).to_a.map do |a_element|
         href = a_element["href"]
         resolved_url = resolve_url( href, @index_url) unless href.nil?
         puts "resolved #{href} to #{resolved_url}" if @verbose && resolved_url != href
@@ -274,13 +279,13 @@ module Upton
     ##
     def get_index_pages(url, pagination_index, options={})
       resp = self.get_page(url, @index_debug, options)
-      unless resp.empty? 
+      unless resp.empty?
         next_url = self.next_index_page_url(url, pagination_index + 1)
         # resolve to absolute url
         #
         next_url = resolve_url(next_url, url)
         unless next_url == url
-          next_resp = self.get_index_pages(next_url, pagination_index + 1).to_s 
+          next_resp = self.get_index_pages(next_url, pagination_index + 1).to_s
           resp += next_resp
         end
       end
@@ -289,20 +294,20 @@ module Upton
 
     ##
     # Returns the instance at `url`.
-    # 
+    #
     # If the page is stashed, returns that, otherwise, fetches it from the web.
     #
-    # If an instance is paginated, returns the concatenated output of each 
+    # If an instance is paginated, returns the concatenated output of each
     # page, e.g. if a news article has two pages.
     ##
     def get_instance(url, pagination_index=0, options={})
       resp = self.get_page(url, @debug, options)
-      if !resp.empty? 
+      if !resp.empty?
         next_url = self.next_instance_page_url(url, pagination_index.to_i + 1)
-        
+
         #next_url = resolve_url(next_url, url)
         unless next_url == url
-          next_resp = self.get_instance(next_url, pagination_index.to_i + 1).to_s 
+          next_resp = self.get_instance(next_url, pagination_index.to_i + 1).to_s
           resp += next_resp
         end
       end
