@@ -170,9 +170,27 @@ describe Upton do
   it "should sleep after uncached requests" do
     stub_request(:get, "www.example.com")
     u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u.sleep_time_between_requests = 1 #don't sleep too long, that's annoying.
     u.should_receive(:sleep)
     stub = stub_request(:get, "http://www.example.com")
     u.scrape
+  end
+
+  it "should save to the designated stash folder" do
+    custom_cache_folder = "#{Dir.tmpdir}/upton/test"
+    FileUtils.rm_rf(custom_cache_folder)
+    stub_request(:get, "www.example.com").
+      to_return(:body => '', :status => 200)
+
+    u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u.stash_folder = custom_cache_folder
+    u.debug = true
+    u.scrape do
+      1+1
+    end
+    puts [custom_cache_folder, custom_cache_folder + "/*", Dir.glob(custom_cache_folder)].inspect
+    files = Dir.glob(custom_cache_folder)
+    expect(files).not_to be_empty
   end
 
   it "should be silent if verbose if false" do

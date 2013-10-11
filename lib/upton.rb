@@ -111,8 +111,9 @@ module Upton
 
       # Folder name for stashes, if you want them to be stored somewhere else,
       # e.g. under /tmp.
-      @stash_folder ||= "stashes"
-      FileUtils.mkdir_p(@stash_folder) unless Dir.exists?(@stash_folder)
+      if @stash_folder
+        FileUtils.mkdir_p(@stash_folder) unless Dir.exists?(@stash_folder)
+      end
     end
 
     ##
@@ -207,7 +208,17 @@ module Upton
     ##
     def get_page(url, stash=false, options={})
       return EMPTY_STRING if url.empty?
-      resp_and_cache = Downloader.new(url, {:cache => stash, :verbose => @verbose}.merge(options)).get
+      global_options = {
+        :cache => stash,
+        :verbose => @verbose
+      }
+      if @stash_folder
+        global_options.merge!({
+            :cache_location => @stash_folder,
+            :readable_filenames => true
+        })
+      end
+      resp_and_cache = Downloader.new(url, global_options.merge(options)).get
       if resp_and_cache[:from_resource]
         puts "sleeping #{@sleep_time_between_requests} secs" if @verbose
         sleep @sleep_time_between_requests
