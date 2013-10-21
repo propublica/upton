@@ -66,9 +66,9 @@ module Upton
         puts "Timeout: #{uri}" if @verbose
         retry
       end
-      # if resp.headers[:content_type] && !ACCEPTABLE_CONTENT_TYPES.include?(resp.headers[:content_type])
-      #   resp = EMPTY_STRING
-      # end
+      if resp.headers[:content_type] && !ACCEPTABLE_CONTENT_TYPES.include?(resp.headers[:content_type])
+        resp = EMPTY_STRING
+      end
       resp ||= EMPTY_STRING
     end
 
