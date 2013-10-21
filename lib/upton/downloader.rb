@@ -16,6 +16,16 @@ module Upton
 
     MAX_FILENAME_LENGTH = 130 #for unixes, win xp+
     EMPTY_STRING = ''
+    ACCEPTABLE_CONTENT_TYPES = ['text/cmd', 'text/css', 'text/csv', 'text/html',
+      'text/javascript', 'text/plain', 'text/vcard', 'text/xml',
+      'application/xhtml+xml', 'application/xml', 'application/xml-dtd',
+      'application/xop+xml', 'application/rdf+xml', 'application/rss+xml',
+      'application/soap+xml', 'application/atom+xml', 'application/ecmascript',
+      'application/json', 'application/javascript' ]
+    UNACCEPTABLE_CONTENT_TYPES = [ 'application/octet-stream', 'application/ogg',
+      'application/pdf', 'application/postscript','application/font-woff',
+      'application/zip', 'application/gzip', 'application/EDI-X12',
+                                   'application/EDIFACT',]
 
     attr_reader :uri, :cache_location, :verbose
     def initialize(uri, options = {})
@@ -56,6 +66,9 @@ module Upton
         puts "Timeout: #{uri}" if @verbose
         retry
       end
+      # if resp.headers[:content_type] && !ACCEPTABLE_CONTENT_TYPES.include?(resp.headers[:content_type])
+      #   resp = EMPTY_STRING
+      # end
       resp ||= EMPTY_STRING
     end
 
@@ -78,7 +91,7 @@ module Upton
       unless cached_file_exists?
         if @verbose
           if @readable_stash_filenames
-            puts "Writing #{uri} data to the cache at #{cached_file}" 
+            puts "Writing #{uri} data to the cache at #{cached_file}"
           else
             puts "Writing #{uri} data to the cache"
           end
