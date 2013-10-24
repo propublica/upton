@@ -42,6 +42,7 @@ Here are some similar libraries to check out for inspiration. No promises, since
 - [Pismo](https://github.com/peterc/pismo)
 - [Spidey](https://github.com/joeyAghion/spidey)
 - [Anemone](http://anemone.rubyforge.org/)
+- [Pupa.rb](https://github.com/opennorth/pupa-ruby) / [Pupa](https://github.com/opencivicdata/pupa)
 
 And these are some libraries that do related things:
 
