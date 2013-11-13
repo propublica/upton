@@ -20,6 +20,7 @@ module Upton
     attr_reader :uri, :cache_location, :verbose
     def initialize(uri, options = {})
       @uri = uri
+      @options = options
       @cache = options.fetch(:cache) { true }
       @cache_location = File.absolute_path(options[:cache_location] || "#{Dir.tmpdir}/upton")
       @verbose = options[:verbose] || false
@@ -78,7 +79,7 @@ module Upton
       unless cached_file_exists?
         if @verbose
           if @readable_stash_filenames
-            puts "Writing #{uri} data to the cache at #{cached_file}" 
+            puts "Writing #{uri} data to the cache at #{cached_file}"
           else
             puts "Writing #{uri} data to the cache"
           end

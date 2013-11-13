@@ -35,7 +35,7 @@ module Upton
     EMPTY_STRING = ''
 
     attr_accessor :verbose, :debug, :index_debug, :sleep_time_between_requests, :stash_folder, :url_array,
-      :paginated, :pagination_param, :pagination_max_pages
+      :paginated, :pagination_param, :pagination_max_pages, :readable_filenames
 
     ##
     # This is the main user-facing method for a basic scraper.
@@ -212,11 +212,12 @@ module Upton
         :cache => stash,
         :verbose => @verbose
       }
+      if @readable_filenames
+        global_options[:readable_filenames] = true
+      end
       if @stash_folder
-        global_options.merge!({
-            :cache_location => @stash_folder,
-            :readable_filenames => true
-        })
+        global_options[:readable_filenames] = true
+        global_options[:cache_location] = @stash_folder
       end
       resp_and_cache = Downloader.new(url, global_options.merge(options)).get
       if resp_and_cache[:from_resource]
