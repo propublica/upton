@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'upton'
-  s.version     = '0.2.9'
-  s.date        = '2013-10-12'
+  s.version     = '0.2.11'
+  s.date        = '2013-11-14'
   s.summary     = "A simple web-scraping framework"
   s.description = "Don't re-write web scrapers every time. Upton gives you a scraper template that's easy to use for debugging and doesn't hammer servers by default."
   s.authors     = ["Jeremy B. Merrill"]

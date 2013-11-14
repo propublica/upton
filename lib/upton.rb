@@ -207,7 +207,7 @@ module Upton
     # Handles getting pages with Downlader, which handles stashing.
     ##
     def get_page(url, stash=false, options={})
-      return EMPTY_STRING if url.empty?
+      return EMPTY_STRING if url.nil? || url.empty? #url is nil if the <a> lacks an `href` attribute.
       global_options = {
         :cache => stash,
         :verbose => @verbose
