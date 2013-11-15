@@ -5,11 +5,12 @@ Upton is a framework for easy web-scraping with a useful debug mode that doesn't
 Documentation
 ----------------------
 
-With Upton, you can scrape complex sites to a CSV in just one line of code.
+With Upton, you can scrape complex sites to a CSV in just a few lines of code:
 
 ```ruby
-Upton::Scraper.new("http://website.com/list_of_stories.html", "a#article-link").
-    scrape_to_csv("output.csv", &Upton::Utils.list("#comments li a.commenter-name"))
+Upton::Scraper.new("http://www.propublica.org", "section#river h1 a").scrape_to_csv "output.csv" do |article_html|
+  Nokogiri::HTML(article_html).search("#comments h2.title-link").to_a.map &:text
+end
 ```
 
 Just specify a URL to a list of links -- or simply a list of links --, an XPath expression or CSS selector for the links and a block of what to do with the content of the pages you've scraped. Upton comes with some pre-written blocks (Procs, technically) for scraping simple lists and tables, like the `list` function above.
