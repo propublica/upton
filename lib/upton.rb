@@ -314,14 +314,12 @@ module Upton
     ##
     def get_instance(url, pagination_index=0, options={})
       resp = self.get_page(url, @debug, options)
-      if !resp.empty?
-        next_url = self.next_instance_page_url(url, pagination_index.to_i + 1)
-
-        #next_url = resolve_url(next_url, url)
-        unless next_url == url
-          next_resp = self.get_instance(next_url, pagination_index.to_i + 1).to_s
-          resp += next_resp
-        end
+      i = pagination_index.to_i
+      while !resp.empty?
+        next_url = self.next_instance_page_url(url, i += 1)
+        next_resp = self.get_page(next_url, @debug, options)
+        break if next_url == url
+        resp += next_resp
       end
       resp
     end
