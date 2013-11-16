@@ -221,7 +221,7 @@ module Upton
       end
       resp_and_cache = Downloader.new(url, global_options.merge(options)).get
       if resp_and_cache[:from_resource]
-        puts "sleeping #{@sleep_time_between_requests} secs" if @verbose
+        puts "sleeping #{@sleep_time_between_requests} secs" #if @verbose
         sleep @sleep_time_between_requests
       end
       resp_and_cache[:resp]
@@ -314,8 +314,9 @@ module Upton
     ##
     def get_instance(url, pagination_index=0, options={})
       resp = self.get_page(url, @debug, options)
+      next_resp = resp
       i = pagination_index.to_i
-      while !resp.empty?
+      while !next_resp.empty?
         next_url = self.next_instance_page_url(url, i += 1)
         next_resp = self.get_page(next_url, @debug, options)
         break if next_url == url
