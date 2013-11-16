@@ -183,6 +183,7 @@ describe Upton do
       to_return(:body => '', :status => 200)
 
     u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u.sleep_time_between_requests = 0.0
     u.stash_folder = custom_cache_folder
     u.debug = true
     u.scrape do
