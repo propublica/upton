@@ -27,7 +27,7 @@ The `get_instance` and `get_index` methods use a protected method `get_page(url)
 
 Upton also sleeps (by default) 30 seconds between non-stashed requests, to reduce load on the server you're scraping. This is configurable with the `@sleep_time_between_requests` option.
 
-Upton can handle pagination too. Scraping paginated index pages that use a query string parameter to track the current page (e.g. `/search?q=test&page=2`) is possible by setting `@pagination` to true. Use `@pagination_param` to set the query string parameter used to specify the current page (the default value is `page`). Uses @pagination_max_pages to specify the number of pages to scrape (the default is two pages) See the Examples section below.
+Upton can handle pagination too. Scraping paginated index pages that use a query string parameter to track the current page (e.g. `/search?q=test&page=2`) is possible by setting `@paginated` to true. Use `@pagination_param` to set the query string parameter used to specify the current page (the default value is `page`). Uses @pagination_max_pages to specify the number of pages to scrape (the default is two pages) See the Examples section below.
 
 To handle non-standard pagination, you can override the `next_index_page_url` and `next_instance_page_url` methods; Upton will get each page's URL returned by these functions and return their contents.
 
