@@ -313,25 +313,30 @@ module Upton
     # page, e.g. if a news article has two pages.
     ##
     def get_instance(url, pagination_index=0, options={})
-      resp = self.get_page(url, @debug, options)
-      next_resp = resp
+      next_resp = self.get_page(url, @debug, options)
+      resps = [next_resp]
       i = pagination_index.to_i
-      while !next_resp.empty?
+      prev_url = url
+      while !resps.last.empty?
         next_url = self.next_instance_page_url(url, i += 1)
+        break if next_url == prev_url || next_url.empty?
+
         next_resp = self.get_page(next_url, @debug, options)
-        break if next_url == url
-        resp += next_resp
+        prev_url = next_url
+        resps << next_resp
       end
-      resp
+      resps
     end
 
     # Just a helper for +scrape+.
     def scrape_from_list(list, blk)
       puts "Scraping #{list.size} instances" if @verbose
       list.each_with_index.map do |instance_url, instance_index|
-        instance_resp = get_instance instance_url, nil, :instance_index => instance_index
-        blk.call(instance_resp, instance_url, instance_index)
-      end
+        instance_resps = get_instance instance_url, nil, :instance_index => instance_index
+        instance_resps.each_with_index.map do |instance_resp, pagination_index|
+          blk.call(instance_resp, instance_url, instance_index, pagination_index)
+        end
+      end.flatten(1)
     end
 
     # it's often useful to have this slug method for uniquely (almost certainly) identifying pages.

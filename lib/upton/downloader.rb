@@ -42,10 +42,14 @@ module Upton
 
     private
 
+    def make_request_for_resource!
+      RestClient.get(uri)
+    end
+
     def download_from_resource!
       begin
         puts "Downloading from #{uri}" if @verbose
-        resp = RestClient.get(uri)
+        resp = make_request_for_resource!
         puts "Downloaded #{uri}" if @verbose
       rescue RestClient::ResourceNotFound
         puts "404 error, skipping: #{uri}" if @verbose
