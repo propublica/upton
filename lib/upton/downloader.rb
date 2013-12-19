@@ -77,7 +77,7 @@ module Upton
                   puts "Cache of #{uri} unavailable. Will download from the internet"
                 end
               end
-              from_resource = false
+              from_resource = true
               download_from_resource!
             end
       unless cached_file_exists?

@@ -56,6 +56,7 @@ describe Upton do
     propubscraper.debug = true
     propubscraper.verbose = true
     propubscraper.sleep_time_between_requests = 0
+    propubscraper.stash_folder = "test_stashes"
 
     heds = propubscraper.scrape do |article_str|
       doc = Nokogiri::HTML(article_str)
@@ -90,6 +91,7 @@ describe Upton do
     propubscraper.debug = true
     propubscraper.verbose = true
     propubscraper.sleep_time_between_requests = 0
+    propubscraper.stash_folder = "test_stashes"
 
     heds = propubscraper.scrape do |article_str|
       doc = Nokogiri::HTML(article_str)
@@ -107,6 +109,7 @@ describe Upton do
     propubscraper.debug = true
     propubscraper.verbose = true
     propubscraper.sleep_time_between_requests = 0
+    propubscraper.stash_folder = "test_stashes"
 
     list = propubscraper.scrape(&Upton::Utils.list("#jamb.wNarrow #most-commented li a"))
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
@@ -121,6 +124,7 @@ describe Upton do
     propubscraper.debug = true
     propubscraper.verbose = true
     propubscraper.sleep_time_between_requests = 0
+    propubscraper.stash_folder = "test_stashes"
 
     table = propubscraper.scrape(&Upton::Utils.table('//table[contains(concat(" ", normalize-space(@class), " "), " wikitable ")][2]'))
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
@@ -153,6 +157,7 @@ describe Upton do
     propubscraper.pagination_param = 'p'
     propubscraper.pagination_max_pages = 3
     propubscraper.sleep_time_between_requests = 0
+    propubscraper.stash_folder = "test_stashes"
 
     results = propubscraper.scrape do |article_str|
       doc = Nokogiri::HTML(article_str)
@@ -167,14 +172,26 @@ describe Upton do
     Upton::Scraper.stub(:sleep)
   end
 
-  it "should sleep after uncached requests" do
+  it "should sleep after requests with caching disabled" do
     stub_request(:get, "www.example.com")
     u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u.index_debug = false
     u.sleep_time_between_requests = 1 #don't sleep too long, that's annoying.
     u.should_receive(:sleep)
-    stub = stub_request(:get, "http://www.example.com")
     u.scrape
   end
+
+  it "should sleep after uncached requests when caching is enabled" do
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+    stub_request(:get, "www.example.com")
+    u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u.index_debug = true
+    u.stash_folder = "test_stashes"
+    u.sleep_time_between_requests = 1 #don't sleep too long, that's annoying.
+    u.should_receive(:sleep)
+    u.scrape
+  end
+
 
   it "should save to the designated stash folder" do
     custom_cache_folder = "#{Dir.tmpdir}/upton/test"
@@ -194,7 +211,7 @@ describe Upton do
     expect(files).not_to be_empty
   end
 
-  it "should be silent if verbose if false" do
+  it "should be silent if verbose is false" do
     pending
   end
 end
