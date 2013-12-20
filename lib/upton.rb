@@ -35,7 +35,7 @@ module Upton
     EMPTY_STRING = ''
 
     attr_accessor :verbose, :debug, :index_debug, :sleep_time_between_requests, :stash_folder, :url_array,
-      :paginated, :pagination_param, :pagination_max_pages, :readable_filenames
+      :paginated, :pagination_param, :pagination_max_pages, :pagination_start_index, :readable_filenames
 
     ##
     # This is the main user-facing method for a basic scraper.
@@ -54,21 +54,13 @@ module Upton
     # +selector+: The XPath expression or CSS selector that specifies the
     #              anchor elements within the page, if a url is specified for
     #              the previous argument.
-    # +selector_method+: Deprecated and ignored. Next breaking release will
-    #                      remove this option.x
     #
     # These options are a shortcut. If you plan to override +get_index+, you
     # do not need to set them.
     # If you don't specify a selector, the first argument will be treated as a
     # list of URLs.
     ##
-
-    # DEPRECATION NOTE, re: selector_method
-      # the selector_method parameter is unneeded, as Nokogiri provides the
-      #  #search method, which picks a selector depending on whether
-      #  the String passed is of CSS/XPath notation
-
-    def initialize(index_url_or_array, selector="", selector_method=:deprecated)
+    def initialize(index_url_or_array, selector="")
 
       #if first arg is a valid URL, do already-written stuff;
       #if it's not (or if it's a list?) don't bother with get_index, etc.
@@ -107,8 +99,9 @@ module Upton
       @pagination_param = 'page'
       # Default number of paginated pages to scrape
       @pagination_max_pages = 2
-
-
+      # Default starting number for pagination (second page is this plus 1).
+      @pagination_start_index = 1
+ 
       # Folder name for stashes, if you want them to be stored somewhere else,
       # e.g. under /tmp.
       if @stash_folder
@@ -221,7 +214,7 @@ module Upton
       end
       resp_and_cache = Downloader.new(url, global_options.merge(options)).get
       if resp_and_cache[:from_resource]
-        puts "sleeping #{@sleep_time_between_requests} secs" #if @verbose
+        puts "sleeping #{@sleep_time_between_requests} secs" if @verbose
         sleep @sleep_time_between_requests
       end
       resp_and_cache[:resp]
@@ -251,16 +244,7 @@ module Upton
     # comes from an API.
     ##
     def get_index
-      # TODO: Deprecate @index_Selector_method in next minor release
-      parse_index(get_index_pages(@index_url, 1), @index_selector)
-    end
-
-    ##
-    # Using the XPath expression or CSS selector and selector_method that
-    # uniquely identifies the links in the index, return those links as strings.    ##
-    def old_parse_index(text, selector, selector_method=:deprecated) # TODO: Deprecate selector_method in next minor release.
-      # for now, override selector_method with :search, which will work with either CSS or XPath
-      Nokogiri::HTML(text).search(selector).to_a.map{|l| l["href"] }
+      index_pages = get_index_pages(@index_url, @pagination_start_index).map{|page| parse_index(page, @index_selector) }.flatten
     end
 
     # TODO: Not sure the best way to handle this
@@ -274,8 +258,7 @@ module Upton
     # to make sure that this method returns absolute urls
     # i.e. this method expects @index_url to always have an absolute address
     # for the lifetime of an Upton instance
-    def parse_index(text, selector, selector_method=:deprecated) # TODO: Deprecate selector_method in next minor release.
-      # for now, override selector_method with :search, which will work with either CSS or XPath
+    def parse_index(text, selector)
       Nokogiri::HTML(text).search(selector).to_a.map do |a_element|
         href = a_element["href"]
         resolved_url = resolve_url( href, @index_url) unless href.nil?
@@ -290,18 +273,19 @@ module Upton
     # e.g. a site listing links with 2+ pages.
     ##
     def get_index_pages(url, pagination_index, options={})
-      resp = self.get_page(url, @index_debug, options)
-      unless resp.empty?
-        next_url = self.next_index_page_url(url, pagination_index + 1)
-        # resolve to absolute url
-        #
+      resps = [self.get_page(url, @index_debug, options)]
+      prev_url = url
+      while !resps.last.empty?
+        pagination_index += 1
+        next_url = self.next_index_page_url(url, pagination_index)
         next_url = resolve_url(next_url, url)
-        unless next_url == url
-          next_resp = self.get_index_pages(next_url, pagination_index + 1).to_s
-          resp += next_resp
-        end
+        break if next_url == prev_url || next_url.empty?
+
+        next_resp = self.get_page(next_url, @index_debug, options).to_s
+        prev_url = next_url
+        resps << next_resp
       end
-      resp
+      resps
     end
 
     ##
@@ -313,12 +297,11 @@ module Upton
     # page, e.g. if a news article has two pages.
     ##
     def get_instance(url, pagination_index=0, options={})
-      next_resp = self.get_page(url, @debug, options)
-      resps = [next_resp]
-      i = pagination_index.to_i
+      resps = [self.get_page(url, @debug, options)]
+      pagination_index = pagination_index.to_i
       prev_url = url
       while !resps.last.empty?
-        next_url = self.next_instance_page_url(url, i += 1)
+        next_url = self.next_instance_page_url(url, pagination_index + 1)
         break if next_url == prev_url || next_url.empty?
 
         next_resp = self.get_page(next_url, @debug, options)

@@ -54,7 +54,7 @@ describe Upton do
 
     propubscraper = Upton::Scraper.new("http://www.example.com/propublica.html", "section#river section h1 a")
     propubscraper.debug = true
-    propubscraper.verbose = true
+    propubscraper.verbose = false
     propubscraper.sleep_time_between_requests = 0
     propubscraper.stash_folder = "test_stashes"
 
@@ -89,7 +89,7 @@ describe Upton do
 
     propubscraper = Upton::Scraper.new("http://www.example.com/propublica-relative.html", "section#river h1 a")
     propubscraper.debug = true
-    propubscraper.verbose = true
+    propubscraper.verbose = false
     propubscraper.sleep_time_between_requests = 0
     propubscraper.stash_folder = "test_stashes"
 
@@ -107,7 +107,7 @@ describe Upton do
 
     propubscraper = Upton::Scraper.new(["http://www.example.com/propublica.html"])
     propubscraper.debug = true
-    propubscraper.verbose = true
+    propubscraper.verbose = false
     propubscraper.sleep_time_between_requests = 0
     propubscraper.stash_folder = "test_stashes"
 
@@ -122,7 +122,7 @@ describe Upton do
 
     propubscraper = Upton::Scraper.new(["http://www.example.com/easttimor.html"])
     propubscraper.debug = true
-    propubscraper.verbose = true
+    propubscraper.verbose = false
     propubscraper.sleep_time_between_requests = 0
     propubscraper.stash_folder = "test_stashes"
 
@@ -152,7 +152,7 @@ describe Upton do
 
     propubscraper = Upton::Scraper.new("http://www.example.com/propublica_search.html", '.compact-list a.title-link')
     propubscraper.debug = true
-    propubscraper.verbose = true
+    propubscraper.verbose = false
     propubscraper.paginated = true
     propubscraper.pagination_param = 'p'
     propubscraper.pagination_max_pages = 3
@@ -192,6 +192,36 @@ describe Upton do
     u.scrape
   end
 
+  it "should sleep after paginated requests when caching is disabled" do
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+    stub_request(:get, "www.example.com/propublica_search.html").
+      to_return(:body => File.new('./spec/data/propublica_search.html'), :status => 200)
+    stub_request(:get, "www.example.com/propublica_search.html?p=2").
+      to_return(:body => File.new('./spec/data/propublica_search_page_2.html'), :status => 200)
+    stub_request(:get, "www.example.com/propublica_search.html?p=3").
+      to_return(:body => '', :status => 200)
+    stub_request(:get, "www.example.com/webinar.html").
+      to_return(:body => File.new('./spec/data/webinar.html'), :status => 200)
+    stub_request(:get, "www.example.com/prosecutor.html").
+      to_return(:body => File.new('./spec/data/prosecutor.html'), :status => 200)
+    stub_request(:get, "www.example.com/sixfacts.html").
+      to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
+
+
+    u = Upton::Scraper.new("http://www.example.com/propublica_search.html", '.nonexistent')
+    u.index_debug = false
+    u.debug = false
+    u.paginated = true
+    u.pagination_param = 'p'
+    u.pagination_max_pages = 3
+    u.sleep_time_between_requests = 1 #don't sleep too long, that's annoying.
+    u.stash_folder = "test_stashes"
+
+    u.should_receive(:sleep).exactly(3).times #once for each search page, so 3.
+    u.scrape
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+  end
+
 
   it "should save to the designated stash folder" do
     custom_cache_folder = "#{Dir.tmpdir}/upton/test"
@@ -206,7 +236,6 @@ describe Upton do
     u.scrape do
       1+1
     end
-    puts [custom_cache_folder, custom_cache_folder + "/*", Dir.glob(custom_cache_folder)].inspect
     files = Dir.glob(custom_cache_folder)
     expect(files).not_to be_empty
   end
