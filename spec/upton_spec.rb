@@ -240,7 +240,17 @@ describe Upton do
     expect(files).not_to be_empty
   end
 
-  it "should be silent if verbose is false" do
-    pending
+
+  before do
+    Upton::Scraper.stub(:puts)
   end
+
+  it "should be silent if verbose is false" do
+    stub_request(:get, "www.example.com")
+    u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u.verbose = false
+    u.should_not_receive(:puts)
+    u.scrape
+  end
+
 end
