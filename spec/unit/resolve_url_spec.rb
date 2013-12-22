@@ -69,7 +69,7 @@ describe 'Upton' do
         end
 
         it 'should append a subdir path to existing path' do 
-          expect(@u.send(:resolve_url, 'dir', URI.join(URI(@page_url), URI('/main/') ))
+          expect(@u.send(:resolve_url, 'dir', URI.join(URI(@page_url).to_s, URI('/main/').to_s ))
                   ).to eq 'http://www.propublica.org/main/dir'
         end
       end

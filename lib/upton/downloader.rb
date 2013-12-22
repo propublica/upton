@@ -88,7 +88,7 @@ module Upton
             puts "Writing #{uri} data to the cache"
           end
         end
-        File.write(cached_file, resp)
+        open(cached_file, 'w'){|f| f << resp}
       end
       {:resp => resp, :from_resource => from_resource }
     end

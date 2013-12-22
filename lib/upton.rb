@@ -224,18 +224,34 @@ module Upton
     ##
     # sometimes URLs are relative, e.g. "index.html" as opposed to "http://site.com/index.html"
     # resolve_url resolves them to absolute urls.
-    # absolute_url_str must be a URL, as a string, that is absolute.
+    # absolute_url_str must be a URL, as a string that represents an absolute URL or a URI
     ##
     def resolve_url(href_str, absolute_url_str)
-      absolute_url = URI(absolute_url_str).dup
+      if absolute_url_str.class <= URI::Generic
+        absolute_url = absolute_url_str.dup
+      else
+        begin
+          absolute_url = URI(absolute_url_str).dup
+        rescue URI::InvalidURIError
+          raise ArgumentError, "#{absolute_url_str} must be represent a valid relative or absolute URI" 
+        end
+      end
       raise ArgumentError, "#{absolute_url} must be absolute" unless absolute_url.absolute?
-      href = URI(href_str).dup
+      if href_str.class <= URI::Generic
+        href = href_str.dup
+      else
+        begin
+          href = URI(href_str).dup
+        rescue URI::InvalidURIError
+          raise ArgumentError, "#{href_str} must be represent a valid relative or absolute URI"
+        end
+      end
 
       # return :href if :href is already absolute
       return href.to_s if href.absolute?
 
       #TODO: edge cases, see [issue #8](https://github.com/propublica/upton/issues/8)
-      URI.join(absolute_url, href).to_s
+      URI.join(absolute_url.to_s, href.to_s).to_s
     end
 
     ##

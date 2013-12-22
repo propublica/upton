@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.files       = ["lib/upton.rb", "lib/upton/utils.rb", "lib/upton/downloader.rb", "lib/upton/version.rb"]
   s.has_rdoc    = true
   s.test_files  = Dir.glob('spec/data/*.html') + ['spec/upton_spec.rb', 'spec/spec_helper.rb', 'spec/upton_downloader_spec.rb']
-  s.required_ruby_version = ">= 1.8.7" #not tested with 1.8.6, but it might work
+  s.required_ruby_version = ">= 1.9.2" 
   s.license     = 'MIT'
   s.homepage    =
     'http://github.org/propublica/upton'
@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'webmock'
   s.add_development_dependency 'thin'
-  s.add_development_dependency 'nokogiri'
+  s.add_development_dependency 'nokogiri', ["~> 1.6.0"] #1.5 might work.
   s.add_development_dependency 'yard'
 
   s.add_runtime_dependency "rest-client", ["~> 1.6.7"]

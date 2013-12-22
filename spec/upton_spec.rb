@@ -127,6 +127,7 @@ describe Upton do
     propubscraper.stash_folder = "test_stashes"
 
     table = propubscraper.scrape(&Upton::Utils.table('//table[contains(concat(" ", normalize-space(@class), " "), " wikitable ")][2]'))
+    table.map{|outer| outer.map{|row| row.map{|cell| cell.gsub("\n", '') } }} # cope with diff nokogiri versions differing behavior.
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
     table.should eql @east_timor_prime_ministers
   end
@@ -248,6 +249,7 @@ describe Upton do
   it "should be silent if verbose is false" do
     stub_request(:get, "www.example.com")
     u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u.sleep_time_between_requests = 0.0
     u.verbose = false
     u.should_not_receive(:puts)
     u.scrape
