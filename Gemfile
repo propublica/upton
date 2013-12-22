@@ -5,7 +5,7 @@ gem "rest-client"
 group :development do
   gem "rack"
   gem "thin"
-  gem "nokogiri"
+  gem("nokogiri", ">= 1.5.1")
   gem "yard"
   gem "upton", :path => "."
   gem "rake"
