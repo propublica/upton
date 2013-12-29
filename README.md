@@ -58,8 +58,9 @@ If you want to scrape ProPublica's website with Upton, this is how you'd do it. 
 
 ```ruby
 scraper = Upton::Scraper.new("http://www.propublica.org", "section#river section h1 a")
-scraper.scrape do |article_string|
-  puts "here is the full text of the ProPublica article: \n #{article_string}"
+scraper.scrape do |article_html_string|
+  puts "here is the full html content of the ProPublica article listed on the homepage: "
+  puts "#{article_html_string}"
   #or, do other stuff here.
 end
 ```
