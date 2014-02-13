@@ -35,7 +35,8 @@ module Upton
     EMPTY_STRING = ''
 
     attr_accessor :verbose, :debug, :index_debug, :sleep_time_between_requests, :stash_folder, :url_array,
-      :paginated, :pagination_param, :pagination_max_pages, :pagination_start_index, :readable_filenames
+      :paginated, :pagination_param, :pagination_max_pages, :pagination_start_index, :readable_filenames,
+      :pagination_interval
 
     ##
     # This is the main user-facing method for a basic scraper.
@@ -101,6 +102,8 @@ module Upton
       @pagination_max_pages = 2
       # Default starting number for pagination (second page is this plus 1).
       @pagination_start_index = 1
+      # Default value to increment page number by
+      @pagination_interval = 1
  
       # Folder name for stashes, if you want them to be stored somewhere else,
       # e.g. under /tmp.
@@ -260,7 +263,7 @@ module Upton
     # comes from an API.
     ##
     def get_index
-      index_pages = get_index_pages(@index_url, @pagination_start_index).map{|page| parse_index(page, @index_selector) }.flatten
+      index_pages = get_index_pages(@index_url, @pagination_start_index, @pagination_interval).map{|page| parse_index(page, @index_selector) }.flatten
     end
 
     # TODO: Not sure the best way to handle this
@@ -288,11 +291,11 @@ module Upton
     # Returns the concatenated output of each member of a paginated index,
     # e.g. a site listing links with 2+ pages.
     ##
-    def get_index_pages(url, pagination_index, options={})
+    def get_index_pages(url, pagination_index, pagination_interval, options={})
       resps = [self.get_page(url, @index_debug, options)]
       prev_url = url
       while !resps.last.empty?
-        pagination_index += 1
+        pagination_index += pagination_interval
         next_url = self.next_index_page_url(url, pagination_index)
         next_url = resolve_url(next_url, url)
         break if next_url == prev_url || next_url.empty?
