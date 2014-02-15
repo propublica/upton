@@ -18,8 +18,7 @@ module Upton
     # present, is returned as the first row.
     ##
     def self.table(table_selector, deprecated=nil)
-      return Proc.new do |instance_html|
-        html = ::Nokogiri::HTML(instance_html)
+      return Proc.new do |html|
         output = []
         headers = html.search(table_selector).css("th").map &:text
         output << headers
@@ -33,8 +32,7 @@ module Upton
     # Scrapes any set of HTML elements into an Array. 
     ##
     def self.list(list_selector, deprecated=nil)
-      return Proc.new do |instance_html|
-        html = ::Nokogiri::HTML(instance_html)
+      return Proc.new do |html|
         html.search(list_selector).map{|list_element| list_element.text }
       end
     end

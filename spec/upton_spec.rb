@@ -58,9 +58,8 @@ describe Upton do
     propubscraper.sleep_time_between_requests = 0
     propubscraper.stash_folder = "test_stashes"
 
-    heds = propubscraper.scrape do |article_str|
-      doc = Nokogiri::HTML(article_str)
-      hed = doc.css('h1.article-title').text
+    heds = propubscraper.scrape do |doc|
+      doc.css('h1.article-title').text
     end
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
     heds.should eql @headlines
@@ -93,8 +92,7 @@ describe Upton do
     propubscraper.sleep_time_between_requests = 0
     propubscraper.stash_folder = "test_stashes"
 
-    heds = propubscraper.scrape do |article_str|
-      doc = Nokogiri::HTML(article_str)
+    heds = propubscraper.scrape do |doc|
       hed = doc.css('h1.article-title').text
     end
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
@@ -160,8 +158,7 @@ describe Upton do
     propubscraper.sleep_time_between_requests = 0
     propubscraper.stash_folder = "test_stashes"
 
-    results = propubscraper.scrape do |article_str|
-      doc = Nokogiri::HTML(article_str)
+    results = propubscraper.scrape do |doc|
       hed = doc.css('h1.article-title').text
     end
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
