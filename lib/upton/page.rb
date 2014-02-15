@@ -21,8 +21,8 @@ module Upton
 
     private
       #Strangely enough, having ScrapedPage inherit from Nokogiri::HTML::Document just doesn't work.
-      def method_missing(method, *args)
-        self.html.send(method, *args)
+      def method_missing(method, *args, &blk)
+        self.html.send(method, *args, &blk)
       end
   end
 end
