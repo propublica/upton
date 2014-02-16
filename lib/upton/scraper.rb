@@ -14,7 +14,7 @@ module Upton
   class Scraper
     EMPTY_STRING = ''
 
-    attr_accessor :verbose, :debug, :index_debug, :sleep_time_between_requests, :stash_folder, :url_array,
+    attr_accessor :verbose, :debug, :index_debug, :sleep_time_between_requests, :stash_folder, :instance_urls,
       :paginated, :pagination_param, :pagination_max_pages, :pagination_start_index, :readable_filenames,
       :pagination_interval
 
@@ -25,8 +25,8 @@ module Upton
     # in the list of instance URLs returned by +get_index+).
     ##
     def scrape(&blk)
-      self.url_array = self.get_index unless self.url_array
-      self.scrape_from_list(self.url_array, blk)
+      self.instance_urls = self.get_index unless self.instance_urls
+      self.scrape_from_list(self.instance_urls, blk)
     end
 
     ##
@@ -41,20 +41,7 @@ module Upton
     # If you don't specify a selector, the first argument will be treated as a
     # list of URLs.
     ##
-    def initialize(index_url_or_array, selector="")
-
-      #if first arg is a valid URL, do already-written stuff;
-      #if it's not (or if it's a list?) don't bother with get_index, etc.
-      #e.g. Scraper.new(["http://jeremybmerrill.com"])
-
-      #TODO: rewrite this, because it's a little silly. (i.e. should be a more sensical division of how these arguments work)
-      if index_url_or_array.respond_to? :each_with_index
-        @url_array = index_url_or_array
-      else
-        @index_url = index_url_or_array
-        @index_selector = selector
-      end
-
+    def initialize(index_url_or_array=nil, selector="")
       # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
       @verbose = false
@@ -90,6 +77,77 @@ module Upton
       if @stash_folder
         FileUtils.mkdir_p(@stash_folder) unless Dir.exists?(@stash_folder)
       end
+
+      # for 0.4.0 note semantic change that index page is scraped on #new
+      # not on #scrape.
+
+      #if first arg is a valid URL, do already-written stuff;
+      #if it's not (or if it's a list?) don't bother with get_index, etc.
+      #e.g. Scraper.new(["http://jeremybmerrill.com"])
+
+
+      # for future, i.e. 1.0.0:
+      # this bit will not be executed on #new, but instead in #index or #instances
+      #TODO: rewrite this, because it's a little silly. (i.e. should be a more sensical division of how these arguments work)
+      if index_url_or_array.nil?
+        return
+      elsif index_url_or_array.respond_to? :each_with_index
+        # @instance_urls = index_url_or_array
+        instances(index_url_or_array)
+      else
+        index(index_url_or_array, selector)
+        # @index_url = index_url_or_array
+        # @index_selector = selector
+      end
+    end
+
+    def index(index_url, selector)
+      # for future:
+      # @indexes << [index_url, selector]
+      # and actually go scrape the index page, populate @instances
+
+      @index_url = index_url
+      @index_selector = selector
+      self
+    end
+
+    # for future:
+    # def indexes=
+    #   @indexes = 
+    #   self.get_indexes
+    # end
+    # def indexes
+    #   @indexes
+    # end
+
+    def self.index(index_url, selector)
+      # for future:
+      # scraper = self.new
+      # scraper.index(index_url, selector)
+      # scraper.get_index
+      # scraper
+      self.new(index_url, selector)
+    end
+
+    def self.instances(instances)
+      s = self.new
+      s.instance_variable_set(:@instance_urls, instances)
+      s
+    end
+
+    def add_instances(urls)
+      #for future:
+      # @instances += urls
+      # @instances.uniq!
+      @instance_urls ||= []
+      @instance_urls += urls
+      @instance_urls.uniq!
+    end
+
+    def instances(urls)
+      #for future: @instances = urls
+      @instance_urls = urls
+      self
     end
 
     ##
@@ -147,33 +205,33 @@ module Upton
     ##
     def scrape_to_csv filename, &blk
       require 'csv'
-      self.url_array = self.get_index unless self.url_array
+      self.instance_urls = self.get_index unless self.instance_urls
       CSV.open filename, 'wb' do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
-        self.scrape_from_list(self.url_array, blk).compact.each do |document|
+        self.scrape_from_list(self.instance_urls, blk).compact.each do |document|
           if document[0].respond_to? :map
             document.each{|row| csv << row }
           else
             csv << document
           end
         end
-        #self.scrape_from_list(self.url_array, blk).compact.each{|document| csv << document }
+        #self.scrape_from_list(self.instance_urls, blk).compact.each{|document| csv << document }
       end
     end
 
     def scrape_to_tsv filename, &blk
       require 'csv'
-      self.url_array = self.get_index unless self.url_array
+      self.instance_urls = self.get_index unless self.instance_urls
       CSV.open filename, 'wb', :col_sep => "\t" do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
-        self.scrape_from_list(self.url_array, blk).compact.each do |document|
+        self.scrape_from_list(self.instance_urls, blk).compact.each do |document|
           if document[0].respond_to? :map
             document.each{|row| csv << row }
           else
             csv << document
           end
         end
-        #self.scrape_from_list(self.url_array, blk).compact.each{|document| csv << document }
+        #self.scrape_from_list(self.instance_urls, blk).compact.each{|document| csv << document }
       end
     end
 

@@ -162,7 +162,7 @@ describe Upton do
 
     results = propubscraper.scrape do |article_str|
       doc = Nokogiri::HTML(article_str)
-      hed = doc.css('h1.article-title').text
+      doc.css('h1.article-title').text
     end
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
     results.should eql @searchResults
@@ -241,6 +241,61 @@ describe Upton do
     expect(files).not_to be_empty
   end
 
+  it "should scrape in the basic case with the index method" do
+    stub_request(:get, "www.example.com/propublica.html").
+      to_return(:body => File.new('./spec/data/propublica.html'), :status => 200)
+    stub_request(:get, "www.example.com/discussion.html").
+      to_return(:body => File.new('./spec/data/discussion.html'), :status => 200)
+    stub_request(:get, "www.example.com/prosecutor.html").
+      to_return(:body => File.new('./spec/data/prosecutor.html'), :status => 200)
+    stub_request(:get, "www.example.com/webinar.html").
+      to_return(:body => File.new('./spec/data/webinar.html'), :status => 200)
+    stub_request(:get, "www.example.com/sixfacts.html").
+      to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
+
+    propubscraper = Upton::Scraper.index("http://www.example.com/propublica.html", "section#river section h1 a")
+    propubscraper.debug = true
+    propubscraper.verbose = false
+    propubscraper.sleep_time_between_requests = 0
+    propubscraper.stash_folder = "test_stashes"
+
+    heds = propubscraper.scrape do |article_str|
+      doc = Nokogiri::HTML(article_str)
+      hed = doc.css('h1.article-title').text
+    end
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+    heds.should eql @headlines
+  end
+
+  it "should allow instances to be set on a new Scraper" do
+    stub_request(:get, "www.example.com/propublica.html").
+      to_return(:body => File.new('./spec/data/propublica.html'), :status => 200)
+    stub_request(:get, "www.example.com/discussion.html").
+      to_return(:body => File.new('./spec/data/discussion.html'), :status => 200)
+    stub_request(:get, "www.example.com/prosecutor.html").
+      to_return(:body => File.new('./spec/data/prosecutor.html'), :status => 200)
+    stub_request(:get, "www.example.com/webinar.html").
+      to_return(:body => File.new('./spec/data/webinar.html'), :status => 200)
+    stub_request(:get, "www.example.com/sixfacts.html").
+      to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
+
+    propubscraper = Upton::Scraper.instances(["www.example.com/webinar.html",
+                                              "www.example.com/discussion.html", 
+                                              "www.example.com/prosecutor.html", 
+                                              "www.example.com/sixfacts.html"])
+
+    propubscraper.debug = true
+    propubscraper.verbose = false
+    propubscraper.sleep_time_between_requests = 0
+    propubscraper.stash_folder = "test_stashes"
+
+    heds = propubscraper.scrape do |article_str|
+      doc = Nokogiri::HTML(article_str)
+      hed = doc.css('h1.article-title').text
+    end
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+    heds.should eql @headlines
+  end
 
   before do
     Upton::Scraper.stub(:puts)
