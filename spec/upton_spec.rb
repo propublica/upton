@@ -300,6 +300,10 @@ describe Upton do
     heds.should eql @headlines
   end
 
+  it "should allow Scrapers to be added" do
+    pending
+  end
+
   before do
     Upton::Scraper.stub(:puts)
   end
