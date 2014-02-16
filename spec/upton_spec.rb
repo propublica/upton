@@ -149,12 +149,17 @@ describe Upton do
       to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
 
 
-    propubscraper = Upton::Scraper.index("http://www.example.com/propublica_search.html", '.compact-list a.title-link')
+    propubscraper = Upton::Scraper.index(
+        "http://www.example.com/propublica_search.html", 
+        '.compact-list a.title-link',
+        {
+          :paginated => true,
+          :pagination_param => 'p',
+          :pagination_max_pages => 3,
+        }
+      )
     propubscraper.debug = true
     propubscraper.verbose = false
-    propubscraper.paginated = true
-    propubscraper.pagination_param = 'p'
-    propubscraper.pagination_max_pages = 3
     propubscraper.sleep_time_between_requests = 0
     propubscraper.stash_folder = "test_stashes"
 
@@ -206,12 +211,15 @@ describe Upton do
       to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
 
 
-    u = Upton::Scraper.index("http://www.example.com/propublica_search.html", '.nonexistent')
+    u = Upton::Scraper.index("http://www.example.com/propublica_search.html", '.nonexistent',
+        {
+          :paginated => true,
+          :pagination_param => 'p',
+          :pagination_max_pages => 3,
+        }
+      )
     u.index_debug = false
     u.debug = false
-    u.paginated = true
-    u.pagination_param = 'p'
-    u.pagination_max_pages = 3
     u.sleep_time_between_requests = 1 #don't sleep too long, that's annoying.
     u.stash_folder = "test_stashes"
 
