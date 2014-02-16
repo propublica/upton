@@ -206,9 +206,13 @@ module Upton
     end
 
     def +(other_scraper)
-      raise ArgumentError, "#{other_scraper.class} can't be coerced into Upton::Scraper" unless other_scraper.class < Upton::Scraper
-      @indexes += other_scraper.instance_variable_get(:@indexes)
-      @instances += other_scraper.instance_variable_get(:@instance_urls)
+      raise ArgumentError, "#{other_scraper.class} can't be coerced into Upton::Scraper" unless other_scraper.class <= Upton::Scraper
+      new_scraper = Scraper.new
+      new_indexes = @indexes + other_scraper.instance_variable_get(:@indexes)
+      new_instances = @instance_urls + other_scraper.instance_variable_get(:@instance_urls)
+      new_scraper.instance_variable_set(:@indexes, new_indexes)
+      new_scraper.instance_variable_set(:@instance_urls, new_instances)
+      new_scraper
     end
 
     protected

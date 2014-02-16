@@ -300,9 +300,22 @@ describe Upton do
     heds.should eql @headlines
   end
 
-  it "should allow Scrapers to be added" do
-    pending
+  it "should allow Scrapers to be added (indexes)" do
+    u = Upton::Scraper.index("http://www.example1.com", '.link')
+    w = Upton::Scraper.index("http://www.example2.com", '.link')
+    new_scraper = u + w
+    new_scraper.instance_variable_get(:@indexes).map{|a| a[0]}.should eql ["http://www.example1.com", "http://www.example2.com"]
   end
+
+  it "should allow Scrapers to be added (instances)" do
+    pending
+    u = Upton::Scraper.instances(["http://www.example1.com"])
+    w = Upton::Scraper.instances(["http://www.example2.com"])
+    new_scraper = u + w
+    new_scraper.instance_variable_get(:@indexes).should eql []
+    new_scraper.instance_variable_get(:@instance_urls).map{|a| a[0]}.should eql ["http://www.example1.com", "http://www.example2.com"]
+  end
+
 
   before do
     Upton::Scraper.stub(:puts)
