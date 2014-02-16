@@ -103,7 +103,9 @@ module Upton
       msg = "Stashed file retrieved by Upton #{Upton::VERSION} from #{@uri} at #{Time.now}"
       resp_html = Nokogiri::HTML(resp)
       comment = Nokogiri::XML::Comment.new(resp_html, msg)
-      if resp_html.root.children.empty?
+      if resp_html.root.nil?
+        return resp
+      elsif resp_html.root.children.empty?
         resp_html.root.add_child(comment)
       else
         resp_html.root.children.before(comment)
