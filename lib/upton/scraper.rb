@@ -78,9 +78,6 @@ module Upton
         FileUtils.mkdir_p(@stash_folder) unless Dir.exists?(@stash_folder)
       end
 
-      # for 0.4.0 note semantic change that index page is scraped on #new
-      # not on #scrape.
-
       #if first arg is a valid URL, do already-written stuff;
       #if it's not (or if it's a list?) don't bother with get_index, etc.
       #e.g. Scraper.new(["http://jeremybmerrill.com"])
@@ -93,9 +90,9 @@ module Upton
         return
       elsif index_url_or_array.respond_to? :each_with_index
         # @instance_urls = index_url_or_array
-        instances = index_url_or_array
+        self.instances= index_url_or_array 
       else
-        index(index_url_or_array, selector)
+        self.index(index_url_or_array, selector)
         # @index_url = index_url_or_array
         # @index_selector = selector
       end
@@ -150,7 +147,6 @@ module Upton
     end
 
     def instances=(urls)
-      #for future: @instances = urls
       @instance_urls = urls
     end
 
@@ -305,7 +301,7 @@ module Upton
     # comes from an API.
     ##
     def get_index
-      index_pages = get_index_pages(@index_url, @pagination_start_index, @pagination_interval).map{|page| parse_index(page, @index_selector) }.flatten
+      instance_urls = get_index_pages(@index_url, @pagination_start_index, @pagination_interval).map{|page| parse_index(page, @index_selector) }.flatten
     end
 
     # TODO: Not sure the best way to handle this
