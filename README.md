@@ -8,18 +8,27 @@ Documentation
 With Upton, you can scrape complex sites to a CSV in just a few lines of code:
 
 ```ruby
-scraper = Upton::Scraper.new("http://www.propublica.org", "section#river h1 a")
+scraper = Upton::Scraper.index("http://www.propublica.org", "section#river h1 a")
 scraper.scrape_to_csv "output.csv" do |html|
   Nokogiri::HTML(html).search("#comments h2.title-link").map &:text
 end
 ```
 
-Just specify a URL to a list of links -- or simply a list of links --, an XPath expression or CSS selector for the links and a block of what to do with the content of the pages you've scraped. Upton comes with some pre-written blocks (Procs, technically) for scraping simple lists and tables, like the `list` function above.
+Just specify a URL to a list of links (an "index"), an XPath expression or CSS selector for the links and a block of what to do with the content of the pages you've scraped. Upton comes with some pre-written blocks (Procs, technically) for scraping simple lists and tables, like the `list` function above.
 
 Upton operates on the theory that, for most scraping projects, you need to scrape two types of pages:
 
 1. Instance pages, which are the goal of your scraping, e.g. job listings or news articles.
-1. Index pages, which list instance pages. For example, a job search site's search page or a newspaper's homepage.
+2. Index pages, which list instance pages. For example, a job search site's search page or a newspaper's homepage.
+
+You can also directly specify the list of instance page URLs to scrape:
+
+```ruby
+scraper = Upton::Scraper.instances(["http://www.propublica.org/article_1.html", "http://www.propublica.org/article_2.html"])
+scraper.scrape_to_csv "output.csv" do |html|
+  Nokogiri::HTML(html).search("#comments h2.title-link").map &:text
+end
+```
 
 For more complex use cases, subclass `Upton::Scraper` and override the relevant methods. If you're scraping links from an API, you would override `get_index`; if you need to log in before scraping a site or do something special with the scraped instance page, you would override `get_instance`.
 

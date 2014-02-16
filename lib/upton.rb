@@ -3,6 +3,8 @@
 require_relative 'upton/scraper'
 require_relative 'upton/utils'
 require_relative 'upton/version'
+require_relative 'upton/downloader'
+require_relative 'upton/scraper'
 
 ##
 # This module contains a scraper called Upton
@@ -20,5 +22,6 @@ module Upton
   #     site's search page or a newspaper's homepage.
   # 2. Instance pages, which represent the goal of your scraping, e.g.
   #     job listings or news articles.
-  #
+  ##
+
 end

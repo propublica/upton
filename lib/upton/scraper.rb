@@ -15,8 +15,9 @@ module Upton
   class Scraper
     EMPTY_STRING = ''
 
-    attr_accessor :verbose, :debug, :index_debug, :sleep_time_between_requests, :stash_folder, :url_array,
-      :paginated, :pagination_param, :pagination_max_pages, :pagination_start_index, :readable_filenames
+    attr_accessor :verbose, :debug, :index_debug, :sleep_time_between_requests,
+     :stash_folder, :paginated, :pagination_param, :pagination_max_pages, 
+     :pagination_start_index, :readable_filenames, :pagination_interval
 
     ##
     # This is the main user-facing method for a basic scraper.
@@ -25,8 +26,8 @@ module Upton
     # in the list of instance URLs returned by +get_index+).
     ##
     def scrape(&blk)
-      self.url_array = self.get_index unless self.url_array
-      self.scrape_from_list(self.url_array, blk)
+      get_indexes!
+      self.scrape_from_list(@instance_urls, blk)
     end
 
     ##
@@ -41,20 +42,7 @@ module Upton
     # If you don't specify a selector, the first argument will be treated as a
     # list of URLs.
     ##
-    def initialize(index_url_or_array, selector="")
-
-      #if first arg is a valid URL, do already-written stuff;
-      #if it's not (or if it's a list?) don't bother with get_index, etc.
-      #e.g. Scraper.new(["http://jeremybmerrill.com"])
-
-      #TODO: rewrite this, because it's a little silly. (i.e. should be a more sensical division of how these arguments work)
-      if index_url_or_array.respond_to? :each_with_index
-        @url_array = index_url_or_array
-      else
-        @index_url = index_url_or_array
-        @index_selector = selector
-      end
-
+    def initialize(options={})
       # If true, then Upton prints information about when it gets
       # files from the internet and when it gets them from its stash.
       @verbose = false
@@ -82,11 +70,56 @@ module Upton
       @pagination_max_pages = 2
       # Default starting number for pagination (second page is this plus 1).
       @pagination_start_index = 1
+      # Default value to increment page number by
+      @pagination_interval = 1
  
       # Folder name for stashes, if you want them to be stored somewhere else,
       # e.g. under /tmp.
       if @stash_folder
         FileUtils.mkdir_p(@stash_folder) unless Dir.exists?(@stash_folder)
+      end
+
+      @indexes = []
+      @instance_urls = []
+    end
+
+    def index(index_url, selector)
+      # for future:
+      @indexes ||= []
+      @indexes << [index_url, selector]
+      # and actually go scrape the index page, populate @instances
+      self
+    end
+
+    def self.index(index_url, selector, options={})
+      scraper = self.new
+      scraper.index(index_url, selector)
+      scraper
+    end
+
+    def self.instances(instances, options={})
+      s = self.new
+      s.instance_variable_set(:@instance_urls, instances)
+      s
+    end
+
+    # does 
+    # def add_instances(urls)
+    #   #for future:
+    #   # @instances += urls
+    #   # @instances.uniq!
+    #   @instance_urls ||= []
+    #   @instance_urls += urls
+    #   @instance_urls.uniq!
+    # end
+
+    def instances(urls=nil)
+      if urls.nil?
+        @instance_urls
+      else
+        @instance_urls ||= []
+        @instance_urls += urls
+        self
       end
     end
 
@@ -145,33 +178,33 @@ module Upton
     ##
     def scrape_to_csv filename, &blk
       require 'csv'
-      self.url_array = self.get_index unless self.url_array
+      @instance_urls = self.get_index unless @instance_urls
       CSV.open filename, 'wb' do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
-        self.scrape_from_list(self.url_array, blk).compact.each do |document|
+        self.scrape_from_list(@instance_urls, blk).compact.each do |document|
           if document[0].respond_to? :map
             document.each{|row| csv << row }
           else
             csv << document
           end
         end
-        #self.scrape_from_list(self.url_array, blk).compact.each{|document| csv << document }
+        #self.scrape_from_list(@instance_urls, blk).compact.each{|document| csv << document }
       end
     end
 
     def scrape_to_tsv filename, &blk
       require 'csv'
-      self.url_array = self.get_index unless self.url_array
+      @instance_urls = self.get_index unless @instance_urls
       CSV.open filename, 'wb', :col_sep => "\t" do |csv|
         #this is a conscious choice: each document is a list of things, either single elements or rows (as lists).
-        self.scrape_from_list(self.url_array, blk).compact.each do |document|
+        self.scrape_from_list(@instance_urls, blk).compact.each do |document|
           if document[0].respond_to? :map
             document.each{|row| csv << row }
           else
             csv << document
           end
         end
-        #self.scrape_from_list(self.url_array, blk).compact.each{|document| csv << document }
+        #self.scrape_from_list(@instance_urls, blk).compact.each{|document| csv << document }
       end
     end
 
@@ -215,6 +248,8 @@ module Upton
           absolute_url = URI(absolute_url_str).dup
         rescue URI::InvalidURIError
           raise ArgumentError, "#{absolute_url_str} must be represent a valid relative or absolute URI" 
+        rescue ArgumentError
+          raise ArgumentError, "#{absolute_url_str} must be represent a valid relative or absolute URI" 
         end
       end
       raise ArgumentError, "#{absolute_url} must be absolute" unless absolute_url.absolute?
@@ -235,15 +270,6 @@ module Upton
       URI.join(absolute_url.to_s, href.to_s).to_s
     end
 
-    ##
-    # Return a list of URLs for the instances you want to scrape.
-    # This can optionally be overridden if, for example, the list of instances
-    # comes from an API.
-    ##
-    def get_index
-      index_pages = get_index_pages(@index_url, @pagination_start_index).map{|page| parse_index(page, @index_selector) }.flatten
-    end
-
     # TODO: Not sure the best way to handle this
     # Currently, #parse_index is called upon #get_index_pages,
     #  which itself is dependent on @index_url
@@ -251,29 +277,26 @@ module Upton
     # It seems to at this point, but that may be something that gets
     #  deprecated later
     #
-    # So for now, @index_url is used in conjunction with resolve_url
+    # So for now, index_url is used in conjunction with resolve_url
     # to make sure that this method returns absolute urls
-    # i.e. this method expects @index_url to always have an absolute address
-    # for the lifetime of an Upton instance
-    def parse_index(text, selector)
-      Nokogiri::HTML(text).search(selector).to_a.map do |a_element|
-        href = a_element["href"]
-        resolved_url = resolve_url( href, @index_url) unless href.nil?
+    def parse_index(text, selector, index_url)
+      Nokogiri::HTML(text).search(selector).to_a.map do |anchor|
+        href = anchor["href"]
+        resolved_url = resolve_url( href, index_url) unless href.nil?
         puts "resolved #{href} to #{resolved_url}" if @verbose && resolved_url != href
         resolved_url
       end
     end
 
-
     ##
     # Returns the concatenated output of each member of a paginated index,
     # e.g. a site listing links with 2+ pages.
     ##
-    def get_index_pages(url, pagination_index, options={})
+    def get_index_pages(url, pagination_index, pagination_interval, options={})
       resps = [self.get_page(url, @index_debug, options)]
       prev_url = url
       while !resps.last.empty?
-        pagination_index += 1
+        pagination_index += pagination_interval
         next_url = self.next_index_page_url(url, pagination_index)
         next_url = resolve_url(next_url, url)
         break if next_url == prev_url || next_url.empty?
@@ -307,6 +330,19 @@ module Upton
       end
       resps
     end
+
+    ##
+    # Return a list of URLs for the instances you want to scrape.
+    # This can optionally be overridden if, for example, the list of instances
+    # comes from an API.
+    ##
+    def get_indexes!
+      @indexes.each do |index_url, index_selector|
+        #TODO: cope with pagination stuff per URL
+        @instance_urls += get_index_pages(index_url, @pagination_start_index, @pagination_interval).map{|page| parse_index(page, index_selector, index_url) }.flatten
+      end
+    end
+
 
     # Just a helper for +scrape+.
     def scrape_from_list(list, blk)

@@ -52,7 +52,7 @@ describe Upton do
     stub_request(:get, "www.example.com/sixfacts.html").
       to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
 
-    propubscraper = Upton::Scraper.new("http://www.example.com/propublica.html", "section#river section h1 a")
+    propubscraper = Upton::Scraper.index("http://www.example.com/propublica.html", "section#river section h1 a")
     propubscraper.debug = true
     propubscraper.verbose = false
     propubscraper.sleep_time_between_requests = 0
@@ -86,7 +86,7 @@ describe Upton do
       to_return(:body => File.new('./spec/data/discussion.html'), :status => 200)
 
 
-    propubscraper = Upton::Scraper.new("http://www.example.com/propublica-relative.html", "section#river h1 a")
+    propubscraper = Upton::Scraper.index("http://www.example.com/propublica-relative.html", "section#river h1 a")
     propubscraper.debug = true
     propubscraper.verbose = false
     propubscraper.sleep_time_between_requests = 0
@@ -103,7 +103,7 @@ describe Upton do
     stub_request(:get, "www.example.com/propublica.html").
       to_return(:body => File.new('./spec/data/propublica.html'), :status => 200)
 
-    propubscraper = Upton::Scraper.new(["http://www.example.com/propublica.html"])
+    propubscraper = Upton::Scraper.instances(["http://www.example.com/propublica.html"])
     propubscraper.debug = true
     propubscraper.verbose = false
     propubscraper.sleep_time_between_requests = 0
@@ -118,7 +118,7 @@ describe Upton do
     stub_request(:get, "www.example.com/easttimor.html").
       to_return(:body => File.new('./spec/data/easttimor.html'), :status => 200)
 
-    propubscraper = Upton::Scraper.new(["http://www.example.com/easttimor.html"])
+    propubscraper = Upton::Scraper.instances(["http://www.example.com/easttimor.html"])
     propubscraper.debug = true
     propubscraper.verbose = false
     propubscraper.sleep_time_between_requests = 0
@@ -149,7 +149,7 @@ describe Upton do
       to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
 
 
-    propubscraper = Upton::Scraper.new("http://www.example.com/propublica_search.html", '.compact-list a.title-link')
+    propubscraper = Upton::Scraper.index("http://www.example.com/propublica_search.html", '.compact-list a.title-link')
     propubscraper.debug = true
     propubscraper.verbose = false
     propubscraper.paginated = true
@@ -172,7 +172,7 @@ describe Upton do
 
   it "should sleep after requests with caching disabled" do
     stub_request(:get, "www.example.com")
-    u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u = Upton::Scraper.index("http://www.example.com", '.whatever')
     u.index_debug = false
     u.sleep_time_between_requests = 1 #don't sleep too long, that's annoying.
     u.should_receive(:sleep)
@@ -182,7 +182,7 @@ describe Upton do
   it "should sleep after uncached requests when caching is enabled" do
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
     stub_request(:get, "www.example.com")
-    u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u = Upton::Scraper.index("http://www.example.com", '.whatever')
     u.index_debug = true
     u.stash_folder = "test_stashes"
     u.sleep_time_between_requests = 1 #don't sleep too long, that's annoying.
@@ -206,7 +206,7 @@ describe Upton do
       to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
 
 
-    u = Upton::Scraper.new("http://www.example.com/propublica_search.html", '.nonexistent')
+    u = Upton::Scraper.index("http://www.example.com/propublica_search.html", '.nonexistent')
     u.index_debug = false
     u.debug = false
     u.paginated = true
@@ -227,7 +227,7 @@ describe Upton do
     stub_request(:get, "www.example.com").
       to_return(:body => '', :status => 200)
 
-    u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u = Upton::Scraper.index("http://www.example.com", '.whatever')
     u.sleep_time_between_requests = 0.0
     u.stash_folder = custom_cache_folder
     u.debug = true
@@ -238,6 +238,59 @@ describe Upton do
     expect(files).not_to be_empty
   end
 
+  it "should scrape in the basic case with the index method" do
+    stub_request(:get, "www.example.com/propublica.html").
+      to_return(:body => File.new('./spec/data/propublica.html'), :status => 200)
+    stub_request(:get, "www.example.com/discussion.html").
+      to_return(:body => File.new('./spec/data/discussion.html'), :status => 200)
+    stub_request(:get, "www.example.com/prosecutor.html").
+      to_return(:body => File.new('./spec/data/prosecutor.html'), :status => 200)
+    stub_request(:get, "www.example.com/webinar.html").
+      to_return(:body => File.new('./spec/data/webinar.html'), :status => 200)
+    stub_request(:get, "www.example.com/sixfacts.html").
+      to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
+
+    propubscraper = Upton::Scraper.index("http://www.example.com/propublica.html", "section#river section h1 a")
+    propubscraper.debug = true
+    propubscraper.verbose = false
+    propubscraper.sleep_time_between_requests = 0
+    propubscraper.stash_folder = "test_stashes"
+
+    heds = propubscraper.scrape do |doc|
+      hed = doc.css('h1.article-title').text
+    end
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+    heds.should eql @headlines
+  end
+
+  it "should allow instances to be set on a new Scraper" do
+    stub_request(:get, "www.example.com/propublica.html").
+      to_return(:body => File.new('./spec/data/propublica.html'), :status => 200)
+    stub_request(:get, "www.example.com/discussion.html").
+      to_return(:body => File.new('./spec/data/discussion.html'), :status => 200)
+    stub_request(:get, "www.example.com/prosecutor.html").
+      to_return(:body => File.new('./spec/data/prosecutor.html'), :status => 200)
+    stub_request(:get, "www.example.com/webinar.html").
+      to_return(:body => File.new('./spec/data/webinar.html'), :status => 200)
+    stub_request(:get, "www.example.com/sixfacts.html").
+      to_return(:body => File.new('./spec/data/sixfacts.html'), :status => 200)
+
+    propubscraper = Upton::Scraper.instances(["www.example.com/webinar.html",
+                                              "www.example.com/discussion.html", 
+                                              "www.example.com/prosecutor.html", 
+                                              "www.example.com/sixfacts.html"])
+
+    propubscraper.debug = true
+    propubscraper.verbose = false
+    propubscraper.sleep_time_between_requests = 0
+    propubscraper.stash_folder = "test_stashes"
+
+    heds = propubscraper.scrape do |doc|
+      hed = doc.css('h1.article-title').text
+    end
+    FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
+    heds.should eql @headlines
+  end
 
   before do
     Upton::Scraper.stub(:puts)
@@ -245,7 +298,7 @@ describe Upton do
 
   it "should be silent if verbose is false" do
     stub_request(:get, "www.example.com")
-    u = Upton::Scraper.new("http://www.example.com", '.whatever')
+    u = Upton::Scraper.index("http://www.example.com", '.whatever')
     u.sleep_time_between_requests = 0.0
     u.verbose = false
     u.should_not_receive(:puts)

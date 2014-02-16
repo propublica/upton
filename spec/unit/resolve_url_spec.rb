@@ -6,7 +6,7 @@ describe 'Upton' do
 
     before(:each) do 
       @page_url = 'http://www.propublica.org/'
-      @u = Upton::Scraper.new(@page_url, "a")
+      @u = Upton::Scraper.index(@page_url, "a")
     end
 
     context 'arguments' do 

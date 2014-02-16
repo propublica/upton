@@ -7,7 +7,7 @@ describe 'Upton' do
       describe '#next_index_page_url' do 
 
         let(:page_url){ 'http://www.propublica.org/search.php?q=test' }
-        let(:u){ Upton::Scraper.new(@page_url, "a") }
+        let(:u){ Upton::Scraper.index(@page_url, "a") }
 
         it "should return an empty string by default" do
           expect(u.next_index_page_url(page_url, 1)).to be_empty
