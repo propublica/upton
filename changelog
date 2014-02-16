@@ -1,10 +1,11 @@
 2014-02-16  Jeremy B. Merrill  <jeremy.merrill@propublica.org>
 
-  * adds HTML comment to stashed pages with date/time downloaded, URL.
+  * adds HTML comment to stashed pages with date/time downloaded, URL
   * @pagination_interval option
+  * separate Upton::Scraper into its own file
 
 2014-02-15  Jeremy B. Merrill  <jeremy.merrill@propublica.org>
-  * Various other changes. Sorry, forgot to keep track.
+  * Various other changes. Sorry, forgot to keep track... :/
 
 2013-05-30  Jeremy B. Merrill  <jeremy.merrill@propublica.org>
 

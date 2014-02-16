@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.description = "Don't re-write web scrapers every time. Upton gives you a scraper template that's easy to use for debugging and doesn't hammer servers by default."
   s.authors     = ["Jeremy B. Merrill"]
   s.email       = 'jeremybmerrill@jeremybmerrill.com'
-  s.files       = ["lib/upton.rb", "lib/upton/utils.rb", "lib/upton/downloader.rb", "lib/upton/version.rb"]
+  s.files       = ["lib/upton.rb", "lib/upton/scraper.rb", "lib/upton/utils.rb", "lib/upton/downloader.rb", "lib/upton/version.rb"]
   s.has_rdoc    = true
   s.test_files  = Dir.glob('spec/data/*.html') + ['spec/upton_spec.rb', 'spec/spec_helper.rb', 'spec/upton_downloader_spec.rb']
   s.required_ruby_version = ">= 1.9.2" 
