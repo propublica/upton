@@ -2,6 +2,7 @@ require "fileutils"
 require "open-uri"
 require "tmpdir"
 require "restclient"
+require_relative "./version"
 
 module Upton
 
@@ -88,9 +89,28 @@ module Upton
             puts "Writing #{uri} data to the cache"
           end
         end
-        open(cached_file, 'w'){|f| f << resp}
+        commented_resp = add_comment(resp)
+        open(cached_file, 'w'){|f| f << commented_resp}
       end
       {:resp => resp, :from_resource => from_resource }
+    end
+
+    def add_comment(resp)
+      # n = Nokogiri::HTML("<html></html>")
+      # c = Nokogiri::XML::Comment.new(n, "asdfasdf")
+      # n.root.add_child(c)
+      # <!----Retrieved by Upton from http://www.somesite.com on January 15 at 4:28 p.m.-->
+      msg = "Stashed file retrieved by Upton #{Upton::VERSION} from #{@uri} at #{Time.now}"
+      resp_html = Nokogiri::HTML(resp)
+      comment = Nokogiri::XML::Comment.new(resp_html, msg)
+      if resp_html.root.nil?
+        return resp
+      elsif resp_html.root.children.empty?
+        resp_html.root.add_child(comment)
+      else
+        resp_html.root.children.before(comment)
+      end
+      resp_html.to_html
     end
 
     def cache_enabled?
