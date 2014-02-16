@@ -93,7 +93,7 @@ module Upton
         return
       elsif index_url_or_array.respond_to? :each_with_index
         # @instance_urls = index_url_or_array
-        instances(index_url_or_array)
+        instances = index_url_or_array
       else
         index(index_url_or_array, selector)
         # @index_url = index_url_or_array
@@ -135,19 +135,23 @@ module Upton
       s
     end
 
-    def add_instances(urls)
-      #for future:
-      # @instances += urls
-      # @instances.uniq!
-      @instance_urls ||= []
-      @instance_urls += urls
-      @instance_urls.uniq!
+    # does 
+    # def add_instances(urls)
+    #   #for future:
+    #   # @instances += urls
+    #   # @instances.uniq!
+    #   @instance_urls ||= []
+    #   @instance_urls += urls
+    #   @instance_urls.uniq!
+    # end
+
+    def instances
+      @instance_urls
     end
 
-    def instances(urls)
+    def instances=(urls)
       #for future: @instances = urls
       @instance_urls = urls
-      self
     end
 
     ##
