@@ -306,7 +306,7 @@ module Upton
       prev_url = url
       while !resps.last.empty?
         pagination_index += options[:pagination_interval]
-        break if pagination_index > options[:pagination_max_pages]
+        break unless options[:pagination_max_pages] === false || pagination_index <= options[:pagination_max_pages]
 
         next_url = self.next_index_page_url(url, options[:pagination_param], pagination_index)
         next_url = resolve_url(next_url, url)
