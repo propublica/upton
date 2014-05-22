@@ -312,7 +312,7 @@ module Upton
         next_url = resolve_url(next_url, url)
         break if next_url == prev_url || next_url.empty?
 
-        next_resp = self.get_page(next_url, @index_debug, options).to_s
+        next_resp = self.get_page(next_url, options[:index_debug] || @index_debug, options).to_s
         prev_url = next_url
         resps << next_resp
       end
