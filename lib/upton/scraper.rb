@@ -300,7 +300,7 @@ module Upton
     # e.g. a site listing links with 2+ pages.
     ##
     def get_index_pages(url, pagination_index, options={})
-      resps = [self.get_page(url, @index_debug, options)]
+      resps = [self.get_page(url, options[:index_debug] || @index_debug, options)]
       return resps unless options[:paginated]
 
       prev_url = url
