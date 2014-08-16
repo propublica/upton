@@ -20,9 +20,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'webmock'
   s.add_development_dependency 'thin'
-  s.add_development_dependency 'nokogiri', [">= 1.5.1"]
   s.add_development_dependency 'yard'
 
   s.add_runtime_dependency "rest-client", ["~> 1.6.7"]
-  s.add_runtime_dependency 'nokogiri'
+  s.add_runtime_dependency 'nokogiri', [">= 1.5.1"]
 end
