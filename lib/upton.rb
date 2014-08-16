@@ -46,6 +46,7 @@ module Upton
     ##
     def scrape(&blk)
       self.url_array = self.get_index unless self.url_array
+      blk = Proc.new{|x| x} if blk.nil?
       self.scrape_from_list(self.url_array, blk)
     end
 
@@ -146,7 +147,7 @@ module Upton
     #
     ##
     def next_index_page_url(url, pagination_index)
-      return EMPTY_STRING unless @paginated
+      return url unless @paginated
 
       if pagination_index > @pagination_max_pages
         puts "Exceeded pagination limit of #{@pagination_max_pages}" if @verbose
@@ -291,17 +292,19 @@ module Upton
     # Returns the concatenated output of each member of a paginated index,
     # e.g. a site listing links with 2+ pages.
     ##
-    def get_index_pages(url, pagination_index, pagination_interval, options={})
-      resps = [self.get_page(url, @index_debug, options)]
-      prev_url = url
-      while !resps.last.empty?
-        pagination_index += pagination_interval
-        next_url = self.next_index_page_url(url, pagination_index)
-        next_url = resolve_url(next_url, url)
-        break if next_url == prev_url || next_url.empty?
+    def get_index_pages(original_url, pagination_index, pagination_interval, options={})
+      resps = []
+      prev_url = nil
+      while resps.empty? || !resps.last.empty?
+        next_url = self.next_index_page_url(original_url, pagination_index)
+        break if next_url.empty?
+        
+        next_url = resolve_url(next_url, original_url)
+        break if next_url == prev_url
 
         next_resp = self.get_page(next_url, @index_debug, options).to_s
         prev_url = next_url
+        pagination_index += pagination_interval
         resps << next_resp
       end
       resps

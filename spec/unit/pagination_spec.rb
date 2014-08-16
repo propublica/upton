@@ -9,8 +9,8 @@ describe 'Upton' do
         let(:page_url){ 'http://www.propublica.org/search.php?q=test' }
         let(:u){ Upton::Scraper.new(@page_url, "a") }
 
-        it "should return an empty string by default" do
-          expect(u.next_index_page_url(page_url, 1)).to be_empty
+        it "should return an the original URL if pagination is off" do
+          expect(u.next_index_page_url(page_url, 1)).to eq page_url
         end
 
         context "@paginated is true" do
