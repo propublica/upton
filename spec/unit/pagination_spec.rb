@@ -11,10 +11,6 @@ describe 'Upton' do
         let(:unpaginated_scraper){ Upton::Scraper.index(@page_url, "a", {:paginated => false, :pagination_param => pagination_param})}
         let(:u){ Upton::Scraper.index(@page_url, "a", {:paginated => true, :pagination_param => pagination_param}) }
 
-        #obsolete, since get_index_pages controls whether next_index_page_url gets called
-        # it "should return an empty string by default" do
-        #   expect(u.next_index_page_url(page_url, pagination_param, 1)).to be_empty
-        # end
         it "should not call next_index_page_url if paginated is false" do
           unpaginated_scraper.should_not_receive(:next_index_page_url)
         end

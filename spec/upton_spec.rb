@@ -137,6 +137,8 @@ describe Upton do
   it "should scrape paginated pages" do
     stub_request(:get, "www.example.com/propublica_search.html").
       to_return(:body => File.new('./spec/data/propublica_search.html'), :status => 200)
+    stub_request(:get, "www.example.com/propublica_search.html?p=1").
+      to_return(:body => File.new('./spec/data/propublica_search.html'), :status => 200)
     stub_request(:get, "www.example.com/propublica_search.html?p=2").
       to_return(:body => File.new('./spec/data/propublica_search_page_2.html'), :status => 200)
     stub_request(:get, "www.example.com/propublica_search.html?p=3").
@@ -198,6 +200,8 @@ describe Upton do
   it "should sleep after paginated requests when caching is disabled" do
     FileUtils.rm_r("test_stashes") if Dir.exists?("test_stashes")
     stub_request(:get, "www.example.com/propublica_search.html").
+      to_return(:body => File.new('./spec/data/propublica_search.html'), :status => 200)
+    stub_request(:get, "www.example.com/propublica_search.html?p=1").
       to_return(:body => File.new('./spec/data/propublica_search.html'), :status => 200)
     stub_request(:get, "www.example.com/propublica_search.html?p=2").
       to_return(:body => File.new('./spec/data/propublica_search_page_2.html'), :status => 200)

@@ -164,7 +164,7 @@ module Upton
       uri = URI.parse(url)
       query = uri.query ? Hash[URI.decode_www_form(uri.query)] : {}
       # update the pagination query string parameter
-      query[pagination_param] = pagination_index
+      query[pagination_param] = pagination_index 
       uri.query = URI.encode_www_form(query)
       puts "Next index pagination url is #{uri}" if @verbose
       uri.to_s
@@ -296,23 +296,42 @@ module Upton
     end
 
     ##
-    # Returns the concatenated output of each member of a paginated index,
+    # Returns a list of page contents for each member of a paginated index,
     # e.g. a site listing links with 2+ pages.
     ##
-    def get_index_pages(url, pagination_index, options={})
-      resps = [self.get_page(url, @index_debug, options)]
+
+    # def get_index_pages(original_url, pagination_index, options={})
+    #   resps = []
+    #   prev_url = nil
+
+    #   while resps.empty? || !resps.last.empty?
+    #     next_url = self.next_index_page_url(original_url, options[:pagination_param], pagination_index)
+    #     break if next_url.empty?
+    #     next_url = resolve_url(next_url, original_url)
+    #     break if next_url == prev_url
+
+    #     next_resp = self.get_page(next_url, options[:index_debug] || @index_debug, options).to_s
+    #     resps << next_resp
+    #     break unless options[:paginated] || options[:pagination_max_pages] === false || pagination_index <= options[:pagination_max_pages]
+    #     prev_url = next_url
+    #     pagination_index += options[:pagination_interval]
+    #   end
+    #   resps
+    # end
+
+    def get_index_pages(original_url, pagination_index, options={})
+      next_url = options[:paginated] ? self.next_index_page_url(original_url, options[:pagination_param], pagination_index) : original_url
+      resps = [self.get_page(next_url, options[:index_debug] || @index_debug, options)]
       return resps unless options[:paginated]
 
-      prev_url = url
       while !resps.last.empty?
+        prev_url = next_url
         pagination_index += options[:pagination_interval]
         break unless options[:pagination_max_pages] === false || pagination_index <= options[:pagination_max_pages]
-
-        next_url = self.next_index_page_url(url, options[:pagination_param], pagination_index)
-        next_url = resolve_url(next_url, url)
+        next_url = self.next_index_page_url(original_url, options[:pagination_param], pagination_index)
+        next_url = resolve_url(next_url, original_url)
         break if next_url == prev_url || next_url.empty?
-
-        next_resp = self.get_page(next_url, @index_debug, options).to_s
+        next_resp = self.get_page(next_url, options[:index_debug] || @index_debug, options).to_s
         prev_url = next_url
         resps << next_resp
       end

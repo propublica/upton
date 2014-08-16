@@ -23,5 +23,4 @@ module Upton
   # 2. Instance pages, which represent the goal of your scraping, e.g.
   #     job listings or news articles.
   ##
-
 end
