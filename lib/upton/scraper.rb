@@ -184,7 +184,7 @@ module Upton
     #
     ##
     def next_index_page_url(url, pagination_index)
-      return EMPTY_STRING unless @paginated
+      return url unless @paginated
 
       if pagination_index > @pagination_max_pages
         puts "Exceeded pagination limit of #{@pagination_max_pages}" if @verbose
