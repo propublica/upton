@@ -8,7 +8,7 @@ Documentation
 With Upton, you can scrape complex sites to a CSV in just a few lines of code:
 
 ```ruby
-scraper = Upton::Scraper.new("http://www.propublica.org", "section#river h1 a")
+scraper = Upton::Scraper.new("https://www.propublica.org/", "section#river h1 a")
 scraper.scrape_to_csv "output.csv" do |html|
   Nokogiri::HTML(html).search("#comments h2.title-link").map &:text
 end
@@ -31,7 +31,7 @@ Upton can handle pagination too. Scraping paginated index pages that use a query
 
 To handle non-standard pagination, you can override the `next_index_page_url` and `next_instance_page_url` methods; Upton will get each page's URL returned by these functions and return their contents.
 
-<b>For more complete documentation</b>, see [the RDoc](http://rubydoc.info/gems/upton/frames/index).
+<b>For more complete documentation</b>, see [the RDoc](http://www.rubydoc.info/gems/upton/frames/index).
 
 <b>Important Note:</b> Upton is alpha software. The API may change at any time. 
 
@@ -44,7 +44,7 @@ Here are some similar libraries to check out for inspiration. No promises, since
 - [Pismo](https://github.com/peterc/pismo)
 - [Spidey](https://github.com/joeyAghion/spidey)
 - [Anemone](http://anemone.rubyforge.org/)
-- [Pupa.rb](https://github.com/opennorth/pupa-ruby) / [Pupa](https://github.com/opencivicdata/pupa)
+- [Pupa.rb](https://github.com/jpmckinney/pupa-ruby) / [Pupa](https://github.com/opencivicdata/pupa)
 
 And these are some libraries that do related things:
 
@@ -57,7 +57,7 @@ Examples
 If you want to scrape ProPublica's website with Upton, this is how you'd do it. (Scraping our [RSS feed](http://feeds.propublica.org/propublica/main) would be smarter, but not every site has a full-text RSS feed...)
 
 ```ruby
-scraper = Upton::Scraper.new("http://www.propublica.org", "section#river section h1 a")
+scraper = Upton::Scraper.new("https://www.propublica.org/", "section#river section h1 a")
 scraper.scrape do |article_html_string|
   puts "here is the full html content of the ProPublica article listed on the homepage: "
   puts "#{article_html_string}"
@@ -68,14 +68,14 @@ end
 Simple sites can be scraped with pre-written `list` block in `Upton::Utils', as below:
 
 ```ruby
-scraper = Upton::Scraper.new("http://nytimes.com", "ul.headlinesOnly a")
+scraper = Upton::Scraper.new("http://www.nytimes.com/", "ul.headlinesOnly a")
 scraper.scrape_to_csv("output.csv", &Upton::Utils.list("h6.byline"))
 ```
 
 A `table` block also exists in `Upton::Utils` to scrape tables to an array of arrays, as below:
 
 ```ruby
-> scraper = Upton::Scraper.new(["http://website.com/story.html"])
+> scraper = Upton::Scraper.new(["http://www.website.com/story.html"])
 > scraper.scrape(&Upton::Utils.table("//table[2]"))
 [["Jeremy", "$8.00"], ["John Doe", "$15.00"]]
 ```
@@ -94,7 +94,7 @@ This example shows how to scrape the first three pages of ProPublica's search re
 
 Contributing
 ----------------------
-I'd love to hear from you if you're using Upton. I also appreciate your suggestions/complaints/bug reports/pull requests. If you're interested, check out the issues tab or [drop me a note](http://github.com/jeremybmerrill).
+I'd love to hear from you if you're using Upton. I also appreciate your suggestions/complaints/bug reports/pull requests. If you're interested, check out the issues tab or [drop me a note](https://github.com/jeremybmerrill).
 
 In particular, if you have a common, *abstract* use case, please add them to [lib/utils.rb](https://github.com/propublica/upton/blob/master/lib/utils.rb). Check out the `table_to_csv` and `list_to_csv` methods for examples.
 
