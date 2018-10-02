@@ -1,9 +1,16 @@
-Upton
-==========
+# Upton
+
 Upton is a framework for easy web-scraping with a useful debug mode that doesn't hammer your target's servers. It does the repetitive parts of writing scrapers, so you only have to write the unique parts for each site.
 
-Documentation
-----------------------
+## Installation
+
+Add the gem to your `Gemfile` and run the bundle command:
+
+```ruby
+gem 'upton'
+```
+
+## Documentation
 
 With Upton, you can scrape complex sites to a CSV in just a few lines of code:
 
@@ -52,8 +59,8 @@ And these are some libraries that do related things:
 - [HayStax](https://github.com/danhillreports/haystax)
 
 
-Examples
-----------------------
+## Examples
+
 If you want to scrape ProPublica's website with Upton, this is how you'd do it. (Scraping our [RSS feed](http://feeds.propublica.org/propublica/main) would be smarter, but not every site has a full-text RSS feed...)
 
 ```ruby
@@ -83,28 +90,28 @@ A `table` block also exists in `Upton::Utils` to scrape tables to an array of ar
 This example shows how to scrape the first three pages of ProPublica's search results for the term `tools`:
 
 ```ruby
-> scraper = Upton::Scraper.new("http://www.propublica.org/search/search.php?q=tools",
-                               ".compact-list a.title-link")
-> scraper.paginated = true
-> scraper.pagination_param = 'p'    # default is 'page'
-> scraper.pagination_max_pages = 3  # default is 2
-> scraper.scrape_to_csv("output.csv", &Upton::Utils.list("h2"))
+scraper = Upton::Scraper.new("http://www.propublica.org/search/search.php?q=tools",
+                             ".compact-list a.title-link")
+scraper.paginated = true
+scraper.pagination_param = 'p'    # default is 'page'
+scraper.pagination_max_pages = 3  # default is 2
+scraper.scrape_to_csv("output.csv", &Upton::Utils.list("h2"))
 ```
 
 
-Contributing
-----------------------
+## Contributing
+
 I'd love to hear from you if you're using Upton. I also appreciate your suggestions/complaints/bug reports/pull requests. If you're interested, check out the issues tab or [drop me a note](http://github.com/jeremybmerrill).
 
 In particular, if you have a common, *abstract* use case, please add them to [lib/utils.rb](https://github.com/propublica/upton/blob/master/lib/utils.rb). Check out the `table_to_csv` and `list_to_csv` methods for examples.
 
 (The pull request process is pretty easy. Fork the project in Github (or via the `git` CLI), make your changes, then submit a pull request on Github.) 
 
-Why "Upton"
-----------------------
+## Why "Upton"
+
 Upton Sinclair was a pioneering, muckraking journalist who is most famous for _The Jungle_, a novel portraying the reality of immigrant labor struggles in Chicago meatpacking plants at the start of the 1900s. Upton, the gem, sprang out of a ProPublica project pertaining to labor issues.
 
-Notes
-------------------------
+## Notes
+
 Test data is copyrighted by either ProPublica or various Wikipedia contributors.
 In either case, it's reproduced here under a Creative Commons license. In ProPublica's case, it's BY-NC-ND; in Wikipedia's it's BY-SA.
