@@ -58,6 +58,8 @@ module Upton
         puts "500 Error, skipping: #{uri}" if @verbose
       rescue URI::InvalidURIError
         puts "Invalid URI: #{uri}" if @verbose
+      rescue RestClient::ServiceUnavailable
+        puts "503 Error, skipping: #{uri}" if @verbose
       rescue RestClient::RequestTimeout
         puts "Timeout: #{uri}" if @verbose
         retry
