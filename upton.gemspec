@@ -23,5 +23,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'yard'
 
   s.add_runtime_dependency "rest-client", [">= 1.6", "~> 2.0"]
-  s.add_runtime_dependency 'nokogiri', [">= 1.5"]
+  s.add_runtime_dependency 'nokogiri', ["~> 1.5"]
 end
